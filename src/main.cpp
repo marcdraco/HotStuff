@@ -144,29 +144,29 @@ void annunciators(void)
 
   if (testAlarm(alarm.frost) == true)
   {
-    printMessage(text.frostWarnX, text.frostWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.small, messages.frost);
+    printMessage(text.frostWarnX, text.frostWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.frost);
   }
   else
   {
-    printMessage(text.frostWarnX, text.frostWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.small, messages.frost);
+    printMessage(text.frostWarnX, text.frostWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.frost);
   }
 
   if (testAlarm(alarm.damp) == true)
   {
-    printMessage(text.mouldWarnX, text.mouldWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.small, messages.damp);
+    printMessage(text.mouldWarnX, text.mouldWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.damp);
   }
   else
   {
-    printMessage(text.mouldWarnX, text.mouldWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.small, messages.damp);
+    printMessage(text.mouldWarnX, text.mouldWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.damp);
   }
 
   if (testAlarm(alarm.dry) == true)
   {
-    printMessage(text.dryWarnX, text.dryWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.small, messages.dry);
+    printMessage(text.dryWarnX, text.dryWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.dry);
   }
   else
   {
-    printMessage(text.dryWarnX, text.dryWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.small, messages.dry);
+    printMessage(text.dryWarnX, text.dryWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.dry);
   }
 }
 
@@ -648,7 +648,8 @@ void sensorFailed(UniversalDHT::Response response)
   while (true); // loop until re-set.
 }
 
-#ifndef TOPLESS
+#ifndef TOPLESS  
+
 
 void labelTemperature(void)
 {
@@ -666,7 +667,7 @@ void labelTemperature(void)
 void initMainScreen(void)
 {
   drawGraphLines();
-  drawHeadingTexts();
+  drawUnits();
   screen.fillRect(0, text.uptimeTimeY, tft.width, text.small * text.baseHeight + 2, GREY); //just that little Uptime display, a nod to *nix.
 }
 
@@ -699,22 +700,11 @@ void initGraphPoints(void)
   }
 }
 
-void drawHeadingTexts(void)
-{
-  //printMessage(text.leftMargin, text.temperatureY, text.colour.defaultForeground, text.colour.defaultBackground, text.large, messages.temperature);
-  //printMessage(text.leftMargin, text.humidityY,    text.colour.defaultForeground, text.colour.defaultBackground, text.large, messages.humidity);
-  drawUnits();
-  screen.setCursor(text.percentX, text.humidityY);
-  screen.print(F(" %"));
-}
+  
 
 void drawUnits(void)
 {
-  screen.setTextSize(text.small);
-  screen.setCursor(text.degreeSymbolX, text.degreeSymbolY);
-  screen.print(F("o"));         // poor man's degree symbol
-
-  screen.setTextSize(text.large);
+  return;
   screen.setCursor(text.scaleX, text.temperatureY);
   if (temperature.useMetric == true)
   {
@@ -730,7 +720,7 @@ void drawGraphLines(void)
 {
   labelTemperature();
   printMessage(text.axisYPosition, 
-        tft.width - (text.small * text.baseWidth),  
+        tft.width - text.baseHeight, 
         text.colour.defaultForeground, 
         text.colour.defaultBackground, 
         text.small, 
@@ -869,15 +859,15 @@ void showReadings(void)
 
 
   screen.setCursor(text.bigReadXTemp, text.BigReadY);
-
   colour = colourValue((float)temperature.reading, temperature.minComfort, temperature.maxComfort, temperature.guard);
   printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, temperature.reading, temperature.useMetric);
+
 
   screen.setCursor(text.bigReadXHumid + text.baseWidth * text.small, text.BigReadY);
   colour = colourValue((float)humidity.reading, humidity.minComfort, humidity.maxComfort, humidity.guard);
   printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, humidity.reading, true);
+  printMessage(text.rhpc, text.BigReadY, text.colour.defaultForeground, text.colour.defaultBackground, text.large, "%");
 
-  screen.setFont(NULL);
   //screen.print(magnusDewpoint(humidity.reading, temperature.reading));
 
   screen.setCursor(text.lowTempX, text.lowTempY);
@@ -888,9 +878,9 @@ void showReadings(void)
   screen.setTextSize(text.small);
   screen.setCursor(text.lowHumidX, text.lowHumidY);
 
-  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.lowestReading, temperature.useMetric);
+  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.lowestReading, true);
   printMessage(messages.slash);
-  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.highestReading, temperature.useMetric);
+  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.highestReading, true);
 }
 
 uint16_t colourValue(float value, uint16_t lowerLimit, uint16_t upperLimit, uint16_t guard)

@@ -128,7 +128,7 @@ struct
   humidityScale, working, caution, xcaution, danger, xdanger};
 
   const char * msg[18] = {
-    "C", "F", "o", "%", " / ", 
+    "C", "F", "o", "%", "/", 
     "DAMP", "DRY", "FROST", "Uptime: ", 
     "Air Temp:", "Humidity:", "Temperature in ", 
     "Relative Humidity", "Effective Working Temperature: ", 
@@ -208,33 +208,32 @@ struct
     const uint16_t defaultForeground = CYAN;
     const uint16_t reticleColour     = DEEPGREY;
   } colour;
-  const uint8_t  bigReadXTemp    = 10 / WIDTH_SCALE;
-  const uint8_t  bigReadXHumid   = 170 / WIDTH_SCALE;
-  const uint8_t  bigReadXDew     = 250 / WIDTH_SCALE;
+  const uint8_t  bigReadXTemp    = 10  / WIDTH_SCALE;
+  const uint8_t  bigReadXHumid   = 140 / WIDTH_SCALE;
   const uint16_t degreeX         = 280 / WIDTH_SCALE;
   const uint16_t degreeSymbolX   = 280 / WIDTH_SCALE;
-  const uint8_t  dryWarnX        = 50  / WIDTH_SCALE;
-  const uint8_t  frostWarnX      = 20  / WIDTH_SCALE;
-  const uint8_t  lowHumidX       = 200 / WIDTH_SCALE;
-  const uint8_t  lowTempX        = 200 / WIDTH_SCALE;
+  const uint8_t  dryWarnX        = 180  / WIDTH_SCALE;
+  const uint8_t  frostWarnX      = 42  / WIDTH_SCALE;
+  const uint8_t  lowHumidX       = 176 / WIDTH_SCALE;
+  const uint8_t  lowTempX        = 42  / WIDTH_SCALE;
   const uint8_t  leftMargin      = 20  / WIDTH_SCALE;
   const uint8_t  leftAxisLabel   = 5   / WIDTH_SCALE;
-  const uint8_t  mouldWarnX      = 20  / WIDTH_SCALE;
-  const uint16_t percentX        = 280 / WIDTH_SCALE;
+  const uint8_t  mouldWarnX      = 180  / WIDTH_SCALE;
+  const uint16_t rhpc            = 295 / WIDTH_SCALE;
   const uint16_t scaleX          = 295 / WIDTH_SCALE;
   
   const uint16_t axisYPosition   = 30  / HEIGHT_SCALE;
   const uint8_t  degreeSymbolY   = 8   / HEIGHT_SCALE;
-  const uint8_t  BigReadY        = 100  / HEIGHT_SCALE;
+  const uint8_t  BigReadY        = 5  / HEIGHT_SCALE;
   const uint8_t  degreeY         = 8   / HEIGHT_SCALE;
-  const uint8_t  dryWarnY        = 90  / HEIGHT_SCALE;
-  const uint8_t  frostWarnY      = 40  / HEIGHT_SCALE;
-  const uint8_t  temperatureY    = 10  / HEIGHT_SCALE;
-  const uint8_t  humidityY       = 10  / HEIGHT_SCALE;
+  const uint8_t  dryWarnY        = 80  / HEIGHT_SCALE;
+  const uint8_t  frostWarnY      = 80  / HEIGHT_SCALE;
+  const uint8_t  temperatureY    = 74  / HEIGHT_SCALE;
+  const uint8_t  humidityY       = 74  / HEIGHT_SCALE;
   const uint8_t  heatIndexY      = 110 / HEIGHT_SCALE;
-  const uint8_t  lowTempY        = 40  / HEIGHT_SCALE;
-  const uint8_t  lowHumidY       = 90  / HEIGHT_SCALE;
-  const uint8_t  mouldWarnY      = 90  / HEIGHT_SCALE;
+  const uint8_t  lowTempY        = 60  / HEIGHT_SCALE;
+  const uint8_t  lowHumidY       = 60  / HEIGHT_SCALE;
+  const uint8_t  mouldWarnY      = 80  / HEIGHT_SCALE;
   const uint8_t  uptimeTimeY     = 228 / HEIGHT_SCALE;
   const uint8_t  baseHeight      = 8;
   const uint8_t  baseWidth       = 6;
