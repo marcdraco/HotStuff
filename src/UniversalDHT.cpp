@@ -5,7 +5,7 @@
 
   https://github.com/timcharper
 
-  modified a little by Marc Draco
+  Modified a little by Marc Draco
   
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
