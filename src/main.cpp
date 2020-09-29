@@ -34,7 +34,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>     // Core graphics library by AdaFruit
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
-#include "lcd.h"
+#include "lcdfont.h"
 #include <protos.hpp>
 
 /*
