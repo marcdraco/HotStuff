@@ -873,7 +873,7 @@ void showReadings(void)
 
   screen.setCursor(text.bigReadXTemp, 60);
   colour = colourValue((float)temperature.reading, temperature.minComfort, temperature.maxComfort, temperature.guard);
-  printNumber(colour, text.colour.defaultBackground, 0, 0, temperature.reading, temperature.useMetric);
+  printNumber(colour, text.colour.defaultBackground, 1, 2, temperature.reading, temperature.useMetric);
 /*
   screen.setCursor(text.bigReadXHumid + text.baseWidth * text.small, text.humidityY);
   colour = colourValue((float)humidity.reading, humidity.minComfort, humidity.maxComfort, humidity.guard);
