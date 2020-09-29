@@ -125,13 +125,13 @@ struct
 {
   enum messages {c, f, percent, slash, damp, dry, 
   frost, uptime, temperature, humidity, temperatureScale, 
-  humidityScale, working, caution, xcaution, danger, xdanger};
+  humidityScale, work1, work2, caution, xcaution, danger, xdanger};
 
   const char * msg[18] = {
     "C", "F", "%", "/", 
     "DAMP", "DRY", "FROST", "Uptime: ", 
     "Air Temp:", "Humidity:", "Temperature in ", 
-    "Relative Humidity", "Effective Working Temperature: ", 
+    "Relative Humidity", "High temp & humidity!", "Temp Equivalent: ", 
     "Caution", "Extreme Caution", "DANGER", "-DANGER TO LIFE-"};
 } messages;
 
@@ -154,8 +154,8 @@ struct {
   uint8_t lastHumidityY    = 0;
   bool flashing            = false;
   bool warnDanger          = false;
-  bool graphActive         = false;
-  enum {rotatePortrait=2, rotateDefault=3};     // Use 0 and 1 for or 2 and 3 depending on how you want your screen displayed
+  bool graphActive         = true;
+  enum {rotatePortrait=0, rotateDefault=1};     // Use 0 and 1 for or 2 and 3 depending on how you want your screen displayed
 } tft;
 
 /*
@@ -187,6 +187,7 @@ struct {
   bool     alarmedDampAir  = false;
   bool     alarmedLowTemp  = false;
   bool     alarmedHighTemp = false; 
+  bool     highRisk        = false;
 } alarm;
 
 // a couple of variables to determine the button multi-functions.

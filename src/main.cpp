@@ -531,19 +531,24 @@ void doHeatIndex(float T, float H)
 
   apparentTemperature = (int8_t) heatIndex(T, H);
 
-
   // heat index routine only works reliably(ish) for temps >26 celcius and RH >= 40%
   if ((apparentTemperature < 26) || T < 26 || H < 40)
   {
-    tft.warnDanger = false;
+    if (tft.warnDanger == true)
+    {
+      blankArea(0, 100, tft.width, tft.height - 110);
+      tft.warnDanger = false;      
+    }
     return;
   }
+
+
 
   // This flags up that the lower half of the display is set to warning!
   tft.warnDanger = true;
 
 #ifndef TOPLESS
-  blankArea(0, 100, tft.width, tft.height);
+  blankArea(0, 100, tft.width, tft.height - 110);
 #endif
 
   if (apparentTemperature >= 26 && (apparentTemperature <= temperature.caution))
@@ -572,20 +577,24 @@ void doHeatIndex(float T, float H)
 
 void ewt(float apparentTemperature)
 {
-  String message = (F("Working temperature:         "));  // allocate sufficient space for concatenation
-  message = (F("Working temperature:"));
+  String message = (F("temperature:         "));  // allocate sufficient space for concatenation
+  message = (F("temperature:"));
   screen.setTextSize(text.large);
 
   if (temperature.useMetric == true)
   {
-    printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.working);
+    printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work1);
+    printMessage(text.leftMargin, text.heatIndexY + 80, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work2);
     screen.print(apparentTemperature);
+    screen.print(" ");
     printMessage(messages.c);
   }
   else
   {
-    printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.working);
+    printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work1);
+    printMessage(text.leftMargin, text.heatIndexY + 80, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work2);
     screen.print(round(apparentTemperature * 1.8 + 32));
+    screen.print(" ");
     printMessage(messages.f);
   }
 }
@@ -882,8 +891,6 @@ void showReadings(void)
   colour = colourValue((float)humidity.reading, humidity.minComfort, humidity.maxComfort, humidity.guard);
   printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, humidity.reading, true);
   printMessage(text.rhpc, text.BigReadY, text.colour.defaultForeground, text.colour.defaultBackground, text.large, "%");
-
-  //screen.print(magnusDewpoint(humidity.reading, temperature.reading));
 
   screen.setCursor(text.lowTempX, text.lowTempY);
   printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, temperature.lowestReading, temperature.useMetric);
