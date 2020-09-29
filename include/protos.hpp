@@ -55,7 +55,7 @@
 
 // #define DEBUG_OVERTEMP_ALARM 45
 // #define DEBUG_EXCESS_DAMP_ALARM 90
-#define DEBUG_DRY_AIR_ALARM 10
+// #define DEBUG_DRY_AIR_ALARM 10
 // #define DEBUG_FROST_ALARM -5
 
 #define SimpleDHTSuccess         0 
@@ -168,6 +168,8 @@ struct {
   off at any time but the alarm beacon isn't cancelled by a single one going green.
   Note that the enumeration is a binary sequence: 1, 2, 4, 8, 16, 32 etc.
   16 or even 32 bits are possible but that would be exceptional in such limited space.
+
+  This takes slightly longer than a simple true/false bool so we uses those where practical
 */
 struct {
   enum     
@@ -217,12 +219,12 @@ struct
   const uint16_t degreeX         = 280 / WIDTH_SCALE;
   const uint16_t degreeSymbolX   = 280 / WIDTH_SCALE;
   const uint8_t  dryWarnX        = 180  / WIDTH_SCALE;
+  const uint8_t  dampWarnX       = 228  / WIDTH_SCALE;
   const uint8_t  frostWarnX      = 42  / WIDTH_SCALE;
   const uint8_t  lowHumidX       = 176 / WIDTH_SCALE;
   const uint8_t  lowTempX        = 42  / WIDTH_SCALE;
   const uint8_t  leftMargin      = 20  / WIDTH_SCALE;
   const uint8_t  leftAxisLabel   = 5   / WIDTH_SCALE;
-  const uint8_t  mouldWarnX      = 180  / WIDTH_SCALE;
   const uint16_t rhpc            = 295 / WIDTH_SCALE;
   const uint16_t scaleX          = 295 / WIDTH_SCALE;
   
@@ -237,7 +239,7 @@ struct
   const uint8_t  heatIndexY      = 110 / HEIGHT_SCALE;
   const uint8_t  lowTempY        = 60  / HEIGHT_SCALE;
   const uint8_t  lowHumidY       = 60  / HEIGHT_SCALE;
-  const uint8_t  mouldWarnY      = 80  / HEIGHT_SCALE;
+  const uint8_t  dampWarnY       = 80  / HEIGHT_SCALE;
   const uint8_t  uptimeTimeY     = 228 / HEIGHT_SCALE;
   const uint8_t  baseHeight      = 8;
   const uint8_t  baseWidth       = 6;

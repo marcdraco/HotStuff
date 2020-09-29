@@ -163,11 +163,11 @@ void annunciators(void)
 
   if (testAlarm(alarm.damp) == true)
   {
-    printMessage(text.mouldWarnX, text.mouldWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.damp);
+    printMessage(text.dampWarnX, text.dampWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.damp);
   }
   else
   {
-    printMessage(text.mouldWarnX, text.mouldWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.damp);
+    printMessage(text.dampWarnX, text.dampWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.damp);
   }
 
   if (testAlarm(alarm.dry) == true)
@@ -784,7 +784,7 @@ void checkAlarm(void)
   {
     digitalWrite(ALARM_PIN, LOW);
   }
-  
+
   if (testAlarm(alarm.all) == true)
   {
     if (tft.flashing == true)
