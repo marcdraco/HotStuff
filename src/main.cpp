@@ -34,7 +34,6 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>     // Core graphics library by AdaFruit
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
-#include "lcdfont.h"
 #include <protos.hpp>
 
 /*
@@ -869,32 +868,29 @@ void showReadings(void)
   }
 
 
-  screen.setFont(&LCD1414pt7b);
+  screen.setCursor(text.bigReadXTemp, text.BigReadY);
 
-  screen.setCursor(text.bigReadXTemp, 60);
   colour = colourValue((float)temperature.reading, temperature.minComfort, temperature.maxComfort, temperature.guard);
-  printNumber(colour, text.colour.defaultBackground, 1, 2, temperature.reading, temperature.useMetric);
-/*
-  screen.setCursor(text.bigReadXHumid + text.baseWidth * text.small, text.humidityY);
+  printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, temperature.reading, temperature.useMetric);
+
+  screen.setCursor(text.bigReadXHumid + text.baseWidth * text.small, text.BigReadY);
   colour = colourValue((float)humidity.reading, humidity.minComfort, humidity.maxComfort, humidity.guard);
-  printNumber(colour, text.colour.defaultBackground, text.small, text.small, humidity.reading, true);
+  printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, humidity.reading, true);
+
+  screen.setFont(NULL);
+  //screen.print(magnusDewpoint(humidity.reading, temperature.reading));
 
   screen.setCursor(text.lowTempX, text.lowTempY);
   printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, temperature.lowestReading, temperature.useMetric);
   printMessage(messages.slash);
   printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, temperature.highestReading, temperature.useMetric);
-*/
-  screen.setFont(NULL);
 
   screen.setTextSize(text.small);
-  screen.setCursor(text.lowHumidX-60, text.lowHumidY);
-  screen.print(magnusDewpoint(humidity.reading, temperature.reading));
- 
-  screen.setTextSize(text.small);
   screen.setCursor(text.lowHumidX, text.lowHumidY);
-  screen.print(humidity.lowestReading, 1);
+
+  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.lowestReading, temperature.useMetric);
   printMessage(messages.slash);
-  screen.print(humidity.highestReading, 1);
+  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.highestReading, temperature.useMetric);
 }
 
 uint16_t colourValue(float value, uint16_t lowerLimit, uint16_t upperLimit, uint16_t guard)

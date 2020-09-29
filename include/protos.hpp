@@ -209,8 +209,8 @@ struct
     const uint16_t reticleColour     = DEEPGREY;
   } colour;
   const uint8_t  bigReadXTemp    = 10 / WIDTH_SCALE;
-  const uint8_t  bigReadXHumid   = 120 / WIDTH_SCALE;
-  const uint8_t bigReadXDew     = 250 / WIDTH_SCALE;
+  const uint8_t  bigReadXHumid   = 170 / WIDTH_SCALE;
+  const uint8_t  bigReadXDew     = 250 / WIDTH_SCALE;
   const uint16_t degreeX         = 280 / WIDTH_SCALE;
   const uint16_t degreeSymbolX   = 280 / WIDTH_SCALE;
   const uint8_t  dryWarnX        = 50  / WIDTH_SCALE;
@@ -225,6 +225,7 @@ struct
   
   const uint16_t axisYPosition   = 30  / HEIGHT_SCALE;
   const uint8_t  degreeSymbolY   = 8   / HEIGHT_SCALE;
+  const uint8_t  BigReadY        = 100  / HEIGHT_SCALE;
   const uint8_t  degreeY         = 8   / HEIGHT_SCALE;
   const uint8_t  dryWarnY        = 90  / HEIGHT_SCALE;
   const uint8_t  frostWarnY      = 40  / HEIGHT_SCALE;
