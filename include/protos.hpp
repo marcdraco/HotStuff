@@ -56,7 +56,7 @@
 // #define DEBUG_OVERTEMP_ALARM 45
 // #define DEBUG_EXCESS_DAMP_ALARM 90
 // #define DEBUG_DRY_AIR_ALARM 10
-// #define DEBUG_FROST_ALARM 0
+// #define DEBUG_FROST_ALARM -1
 
 #define SimpleDHTSuccess         0 
 #define SimpleDHTErrStartLow     1
@@ -123,12 +123,12 @@ int err = 0;
 
 struct 
 {
-  enum messages {c, f, degree, percent, slash, damp, dry, 
+  enum messages {c, f, percent, slash, damp, dry, 
   frost, uptime, temperature, humidity, temperatureScale, 
   humidityScale, working, caution, xcaution, danger, xdanger};
 
   const char * msg[18] = {
-    "C", "F", "o", "%", "/", 
+    "C", "F", "%", "/", 
     "DAMP", "DRY", "FROST", "Uptime: ", 
     "Air Temp:", "Humidity:", "Temperature in ", 
     "Relative Humidity", "Effective Working Temperature: ", 

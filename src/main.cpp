@@ -700,8 +700,6 @@ void initGraphPoints(void)
   }
 }
 
-  
-
 void drawUnits(void)
 {
   return;
@@ -983,7 +981,7 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
   {
     screen.setTextColor(foregroundColour, backgroundColour);
     screen.setTextSize(largeCharacterSize);
-    printMessage("ICE ", RED);
+    printMessage("ICE  ", RED);
     return;
   }
 
