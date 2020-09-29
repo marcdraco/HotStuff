@@ -55,8 +55,8 @@
 
 // #define DEBUG_OVERTEMP_ALARM 45
 // #define DEBUG_EXCESS_DAMP_ALARM 90
-// #define DEBUG_DRY_AIR_ALARM 10
-// #define DEBUG_FROST_ALARM -1
+#define DEBUG_DRY_AIR_ALARM 10
+// #define DEBUG_FROST_ALARM -5
 
 #define SimpleDHTSuccess         0 
 #define SimpleDHTErrStartLow     1
@@ -179,8 +179,12 @@ struct {
     all =    0xFF
   };
 
-  uint8_t  semaphore = 0;
-  bool     silenced = false;
+  uint8_t  semaphore       = 0;
+  bool     silenced        = false;
+  bool     alarmedDryAir   = false;
+  bool     alarmedDampAir  = false;
+  bool     alarmedLowTemp  = false;
+  bool     alarmedHighTemp = false; 
 } alarm;
 
 // a couple of variables to determine the button multi-functions.
@@ -285,9 +289,6 @@ struct
   const float correction               = 0;     // % correction if the RH is off
   const float    dampAirWatershed      = 60;
   const float    dryAirWatershed       = 40;
-  uint16_t       dryAirCounter         = 0;
-  uint16_t       dampAirCounter        = 0;
-
 } humidity;
 
 struct
@@ -312,7 +313,6 @@ struct
   const float correction        = 0;    // centigrade correction if the temp is off
   int validRead                 = 0;
   const float frostWatershed    = 4.0;   // ice can appear/persist around this temp
-  uint16_t frostCounter         = 0;    // track how long it's being above 4.0f/32f before it clears the warn
 #ifdef METRIC
   bool     useMetric            = true;
 #else
@@ -351,7 +351,9 @@ void sensorFailed(UniversalDHT::Response);
 void initGraphPoints(void);
 void initGraph(void);
 void setup(void);
-void loop();
+void loop(void);
+void checkHumidityCondtions(void);
+void checkTemperatureConditions(void);
 void checkAlarm(void);
 void checkButton(void);
 void initMainScreen(void);

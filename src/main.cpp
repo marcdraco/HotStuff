@@ -76,26 +76,26 @@ void setup(void)
   if (temperature.reading == -1)
   {
     screen.setTextSize(text.large);
-   { 
-    delay(2500);                                    // wait for it to catch its breath or it will whinge and crash.
-    dht22.read(&humidity.reading, &temperature.reading);
-    #ifndef TOPLESS
-    blankArea(0, 0, tft.width, tft.height);
-   }
-    #endif
+    {
+      delay(2500);                                    // wait for it to catch its breath or it will whinge and crash.
+      dht22.read(&humidity.reading, &temperature.reading);
+#ifndef TOPLESS
+      blankArea(0, 0, tft.width, tft.height);
+    }
+#endif
   }
-  #ifndef TOPLESS
-  
+#ifndef TOPLESS
+
   screen.setRotation(tft.rotateDefault);
-  
+
   initGraphPoints();
   initMainScreen();
-  
-    #ifdef CLOCKWISE
-    drawRadials();
-    #endif
-    
-  #endif
+
+#ifdef CLOCKWISE
+  drawRadials();
+#endif
+
+#endif
 }
 
 void drawRadials(void)
@@ -106,14 +106,14 @@ void drawRadials(void)
   {
     float x = cos(radians(theta));
     float y = sin(radians(theta));
-    
+
     uint16_t innerX = x * radials.innerRadius + radials.tRadialX;
     uint16_t innerY = y * radials.innerRadius + radials.tRadialY;
     uint16_t outerX = x * radials.outerRadius + radials.tRadialX;
     uint16_t outerY = y * radials.outerRadius + radials.tRadialY;
     screen.drawLine(innerX, innerY, outerX, outerY, GREEN);
     screen.drawLine(innerX + radials.hRadial, innerY, outerX + radials.hRadial, outerY, RED);
-  } 
+  }
 }
 
 void loop()
@@ -132,10 +132,20 @@ void loop()
     showReadings();
   }
 
-showUptime();
-checkAlarm();
-annunciators();
-checkButton();
+  showUptime();
+  checkAlarm();
+  annunciators();
+  checkButton();
+
+  if (isrTimings.timeInSeconds == 0) // this ticks every minute
+  {
+    graph.updateGraphReadings = true;
+    if (isrTimings.timeInMinutes == 0) // this ticks every hour
+    {
+      temperature.cmaCounter = 0;
+      humidity.cmaCounter    = 0;
+    }   
+  }
 }
 
 void annunciators(void)
@@ -317,7 +327,7 @@ void drawReticles(void)
   }
 #endif
 }
- 
+
 /*
    A slightly hacky way of keeping the display tidy
    by sticking a leading zero in front of the times
@@ -381,18 +391,18 @@ float magnusDewpoint(float RH, float T)
   // https://en.wikipedia.org/wiki/Dew_point
   // Magnus dew point constants
 
-  const double a = 17.62;     
-  const double b = 243.12;  
+  const double a = 17.62;
+  const double b = 243.12;
   double c = (a * T) / (b + T);
-  double r = log(RH/100);
-  
+  double r = log(RH / 100);
+
   return (float) b * (r + c) / (a - (r + c));
 }
 
 void takeReadings(void)
 {
-   UniversalDHT::Response reading = dht22.read(&humidity.reading, &temperature.reading);
-  
+  UniversalDHT::Response reading = dht22.read(&humidity.reading, &temperature.reading);
+
   /*
     check that the DHT22 didn't develop a fault or break
     during since the last read. If it did, we're going
@@ -401,14 +411,14 @@ void takeReadings(void)
     these devices are in their environment.
   */
   if (reading.error != 0)
-  { 
+  {
     sensorFailed(reading);
   }
 
-temperature.reading = temperature.reading + temperature.correction ;
-humidity.reading = humidity.reading + humidity.correction;
+  temperature.reading = temperature.reading + temperature.correction ;
+  humidity.reading = humidity.reading + humidity.correction;
 
-isrTimings.timeToRead = 0;
+  isrTimings.timeToRead = 0;
 
 #ifdef DEBUG_OVERTEMP_ALARM
   temperature.reading = DEBUG_OVERTEMP_ALARM;
@@ -440,62 +450,69 @@ isrTimings.timeToRead = 0;
   temperature.cmaCounter = temperature.cmaCounter + 1;
   temperature.cumulativeMovingAverage = temperature.cumulativeMovingAverage + ((temperature.reading - temperature.cumulativeMovingAverage) / temperature.cmaCounter);
 
-  // Note the instant we register "freezing" we set the alarm
-  // this is by design, it's not a bug!
-  if (temperature.reading <= 1.0 && alarm.silenced == false)   // 1.0 degrees (C) to allow for errors in the sensor.
-  {
-    setAlarmFlag(alarm.frost);
-  }
+  checkHumidityCondtions();
+  checkTemperatureConditions();
+}
 
-  // Note the watershed is 4C and the AVERAGE needs go above that
-  // this is by design, it's not a bug!
-  if (temperature.cumulativeMovingAverage > temperature.frostWatershed)
-  {
-    clearAlarmFlag(alarm.frost);
-    if (alarm.semaphore == 0)
-    {
-      alarm.silenced = true;
-    }
-  }
-
+void checkHumidityCondtions(void)
+{
   if (humidity.cumulativeMovingAverage > humidity.dampAirWatershed)
   {
-    setAlarmFlag(alarm.damp);
+    if (alarm.alarmedDampAir == false)
+    {
+      setAlarmFlag(alarm.damp);
+      alarm.alarmedDampAir = true;
+    }
   }
 
   if (humidity.cumulativeMovingAverage < humidity.dryAirWatershed)
   {
-    setAlarmFlag(alarm.dry);
-  }
-
-  if (humidity.cumulativeMovingAverage <= humidity.dampAirWatershed)
-  {
-    clearAlarmFlag(alarm.damp);
-    if (alarm.semaphore == 0)
+    if (alarm.alarmedDryAir == false)
     {
-      alarm.silenced = true;
+      setAlarmFlag(alarm.dry);
+      alarm.alarmedDryAir = true;
     }
   }
 
   if (humidity.cumulativeMovingAverage >= humidity.dryAirWatershed)
   {
     clearAlarmFlag(alarm.dry);
-    if (alarm.semaphore == 0)
+    if (alarm.alarmedDryAir == true)
     {
-      alarm.silenced = true;
+      alarm.alarmedDryAir = false;
+    }
+  }
+  
+  if (humidity.cumulativeMovingAverage <= humidity.dampAirWatershed)
+  {
+    clearAlarmFlag(alarm.damp);
+    if (alarm.alarmedDryAir == true)
+    {
+      alarm.alarmedDampAir = false;
+    }
+  }
+}
+
+void checkTemperatureConditions(void)
+{
+  // Note the instant we register "freezing" we set the alarm
+  // this is by design, it's not a bug!
+  if (temperature.reading <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
+  {
+    if (alarm.alarmedLowTemp == false)
+    {
+      setAlarmFlag(alarm.frost);          // start blinkig light
+      alarm.alarmedLowTemp = true;        // true prevents re-firing
     }
   }
 
-  if (isrTimings.timeInSeconds == 0) // this ticks every minute
+  // Note the watershed is 4C and the AVERAGE needs go above that this is by design, it's not a bug!
+  if (temperature.cumulativeMovingAverage > temperature.frostWatershed)
   {
-    graph.updateGraphReadings = true;
+    clearAlarmFlag(alarm.frost);
+    alarm.alarmedLowTemp = false;        // Enable re-firing
   }
 
-  if (isrTimings.timeInSeconds == 0 && isrTimings.timeInMinutes == 0) // this ticks every hour
-  {
-    temperature.cmaCounter = 0;
-    humidity.cmaCounter    = 0;
-  }
 }
 
 /*
@@ -504,7 +521,7 @@ isrTimings.timeToRead = 0;
    are able to tolerate higher apparent temperatures because our bodies are
    not producing as much heat.
 */
- 
+
 void doHeatIndex(float T, float H)
 {
 
@@ -575,9 +592,9 @@ void ewt(float apparentTemperature)
 
 void sensorFailed(UniversalDHT::Response response)
 {
-  #ifdef SENSOR_MISSING_OR_BUSTED
-    return;
-  #endif
+#ifdef SENSOR_MISSING_OR_BUSTED
+  return;
+#endif
   screen.fillRect(0, 0, tft.width, tft.height, text.colour.defaultBackground);
   const char * failed =  " -Sensor Fail-";
   const char * times =  "             Y  M  D  H";
@@ -609,7 +626,7 @@ void sensorFailed(UniversalDHT::Response response)
   switch (response.error)
   {
     case SimpleDHTErrStartLow:
-    
+
       screen.print(F("Start came too early ("));
       screen.print(response.time);
       screen.print(F(") microseconds"));
@@ -648,8 +665,7 @@ void sensorFailed(UniversalDHT::Response response)
   while (true); // loop until re-set.
 }
 
-#ifndef TOPLESS  
-
+#ifndef TOPLESS
 
 void labelTemperature(void)
 {
@@ -690,9 +706,9 @@ void initGraphPoints(void)
 {
   uint8_t index;
 
- // This only runs once to set clear everything in case of memory junk
- // so we know not to plot these until a real one is recorded
- // No point storing real numbers when single a byte (Y-coord) will do!
+  // This only runs once to set clear everything in case of memory junk
+  // so we know not to plot these until a real one is recorded
+  // No point storing real numbers when single a byte (Y-coord) will do!
   for (index = 0; index < graph.width; index++)
   {
     humidity.pipe[index]    = (graph.Y + graph.height);
@@ -717,13 +733,13 @@ void drawUnits(void)
 void drawGraphLines(void)
 {
   labelTemperature();
-  printMessage(text.axisYPosition, 
-        tft.width - text.baseHeight, 
-        text.colour.defaultForeground, 
-        text.colour.defaultBackground, 
-        text.small, 
-        tft.rotatePortrait, 
-        messages.humidityScale);
+  printMessage(text.axisYPosition,
+               tft.width - text.baseHeight,
+               text.colour.defaultForeground,
+               text.colour.defaultBackground,
+               text.small,
+               tft.rotatePortrait,
+               messages.humidityScale);
 
   // Insert the scale and graduation marks
 
@@ -763,14 +779,15 @@ void drawGraphLines(void)
 
 void checkAlarm(void)
 {
-  if (alarm.silenced == false)
+
+  if (alarm.semaphore == 0)
   {
     digitalWrite(ALARM_PIN, LOW);
   }
-
+  
   if (testAlarm(alarm.all) == true)
   {
-    if (tft.flashing)
+    if (tft.flashing == true)
     {
       digitalWrite(ALARM_PIN, HIGH);
     }
@@ -789,9 +806,9 @@ void checkButton(void)
     {
       if (button.timer < button.shortPress) // button.shortPress)
       {
-        alarm.silenced = true;
         alarm.semaphore = 0;
         button.timer = 0;
+        digitalWrite(ALARM_PIN, LOW);
       }
     }
   }
@@ -809,26 +826,26 @@ void checkButton(void)
 
   if (button.timer > button.longPress)
   {
-          // Toggle metric/imperial
-          (temperature.useMetric = !temperature.useMetric);
-          screen.fillRect(text.lowTempX,       text.lowTempY,   72,  8,     text.colour.defaultBackground);
-          screen.fillRect(text.leftMargin - 2, text.lowHumidY + 12, 20, 40, text.colour.defaultBackground);
-          button.timer = 0;
+    // Toggle metric/imperial
+    (temperature.useMetric = !temperature.useMetric);
+    screen.fillRect(text.lowTempX,       text.lowTempY,   72,  8,     text.colour.defaultBackground);
+    screen.fillRect(text.leftMargin - 2, text.lowHumidY + 12, 20, 40, text.colour.defaultBackground);
+    button.timer = 0;
 
-          showReadings();
-          #ifndef TOPLESS
-            drawUnits();
-            drawGraphLines();
-          #endif
+    showReadings();
+#ifndef TOPLESS
+    drawUnits();
+    drawGraphLines();
+#endif
   }
 }
 
 void showReadings(void)
 {
   uint16_t colour;
-  #ifndef TOPLESS
+#ifndef TOPLESS
   displayGraph();
-  #endif
+#endif
 
   doHeatIndex(temperature.reading, humidity.reading);
 
@@ -977,7 +994,7 @@ void printMessage(uint8_t text)
 
 void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool metric)
 {
-  if (number < 0) 
+  if (number < 0)
   {
     screen.setTextColor(foregroundColour, backgroundColour);
     screen.setTextSize(largeCharacterSize);
@@ -1011,12 +1028,12 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
   }
 
   fraction = modf(number, &integer);
-  screen.print(integer,0);
-  
+  screen.print(integer, 0);
+
   modf(fraction * 10, &integer);
   screen.setTextSize(smallCharacterSize);
   screen.print(".");
-  screen.print(integer,0);
+  screen.print(integer, 0);
 }
 
 void flashText(uint8_t message, uint8_t X, uint8_t Y, uint16_t colour1, uint16_t colour2)
