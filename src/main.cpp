@@ -1101,6 +1101,17 @@ void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t ba
   screen.setRotation(tft.rotateDefault);
 }
 
+/**
+ * @brief Prints a a short enumerated message
+ * 
+ * @param X Absolute X value to position the cursor 
+ * @param Y Absolute Y value to position the cursor
+ * @param foregroundColour text's foreground colour
+ * @param backgroundColour text's background (fill) colour
+ * @param characterSize enumerated character size
+ * @param rotation enumerated character size
+ * @param text enumerated value for the first message
+ */
 void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t rotation, uint8_t text)
 {
   screen.setRotation(rotation);
@@ -1108,6 +1119,16 @@ void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t ba
   screen.setRotation(tft.rotateDefault);
 }
 
+/**
+ * @brief  Prints a a short message (via a pointer)
+ * 
+ * @param X Absolute X value to position the cursor 
+ * @param Y Absolute Y value to position the cursor
+ * @param foregroundColour text's foreground colour
+ * @param backgroundColour text's background (fill) colour
+ * @param characterSize enumerated character size
+ * @param pText pointer to a block of text
+ */
 void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, const char * pText)
 {
   screen.setCursor(X, Y);
@@ -1115,6 +1136,17 @@ void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t ba
   screen.setTextSize(characterSize);
   printMessage(pText, foregroundColour);
 }
+
+/**
+ * @brief prints a short enumerated message
+ * 
+ * @param X Absolute X value to position the cursor 
+ * @param Y Absolute Y value to position the cursor
+ * @param foregroundColour text's foreground colour
+ * @param backgroundColour text's background (fill) colour
+ * @param characterSize enumerated character size
+ * @param text enumerated message
+ */
 
 void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t text)
 {
@@ -1124,6 +1156,15 @@ void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t ba
   printMessage(text);
 }
 
+/**
+ * @brief prints a short enumerated message
+ * 
+ * @param foregroundColour text's foreground colour
+ * @param backgroundColour text's background (fill) colour
+ * @param characterSize enumerated character size
+ * @param text enumerated message
+ */
+
 void printMessage(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t text)
 {
   screen.setTextColor(foregroundColour, backgroundColour);
@@ -1131,16 +1172,40 @@ void printMessage(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t 
   printMessage(text);
 }
 
+/**
+ * @brief prints a short message via a pointer
+ * 
+ * @param pText null terminated block of text
+ * @param col foreground colour of text
+ */
+
 void printMessage(const char * pText, uint16_t col)
 {
   screen.setTextColor(col, text.colour.defaultBackground);
   screen.print(pText);
 }
 
+/**
+ * @brief prints an enumerated block of text
+ * 
+ * @param text 
+ */
+
 void printMessage(uint8_t text)
 {
   screen.print(messages.msg[text]);
 }
+
+/**
+ * @brief Displays a reading inserts "ICE" alert if < 0
+ * 
+ * @param foregroundColour foreground colour of text
+ * @param backgroundColour background colour of text
+ * @param largeCharacterSize enumerated size of the large characters 
+ * @param smallCharacterSize  enumerated size of the small characters 
+ * @param number printable number 
+ * @param metric set to true to display number in degrees C
+ */
 
 void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool metric)
 {
@@ -1158,6 +1223,16 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
   }
   printNumber(foregroundColour, backgroundColour, largeCharacterSize, smallCharacterSize, number);
 }
+
+/**
+ * @brief prints a right-aligned number (+0-999)
+ * 
+ * @param foregroundColour text foreground colour
+ * @param backgroundColour text background colour
+ * @param largeCharacterSize enumerated large character size
+ * @param smallCharacterSize enumerated small character size
+ * @param number the value to display
+ */
 
 void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number)
 {
@@ -1186,17 +1261,34 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
   screen.print(integer, 0);
 }
 
-void flashText(uint8_t message, uint8_t X, uint8_t Y, uint16_t colour1, uint16_t colour2)
+/**
+ * @brief Displays those horrible and annoying flashing messages
+ * 
+ * @param message enumerated message to display
+ * @param X cursor position in absolute screen X coords
+ * @param Y cursor position in absolute screen Y coords
+ * @param foreground Foreground colour
+ * @param background background colour 
+ */
+
+void flashText(uint8_t message, uint8_t X, uint8_t Y, uint16_t foreground, uint16_t background)
 {
   if (tft.flashing == true)
   {
-    printMessage(X, Y, colour1, colour2, text.large, message);
+    printMessage(X, Y, foreground, background, text.large, message);
   }
   else
   {
-    printMessage(X, Y, colour2, colour1, text.large, message);
+    printMessage(X, Y, background, foreground, text.large, message);
   }
 }
+/**
+ * @brief Centers a block of text given character size
+ * 
+ * @param text String of characters
+ * @param charWidth width of the current font
+ * @return uint8_t central X offset based on the screen width
+ */
 
 uint8_t centerText(String text, uint8_t charWidth)
 {

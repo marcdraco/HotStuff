@@ -1,6 +1,6 @@
 /*
   Copyright 2020, Marc Draco & Daniel Melvin
-
+ 
   Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
 
@@ -30,31 +30,33 @@
 */
 
 void annunciators(void);
-void setAlarmFlag(uint8_t flag);
-void clearAlarmFlag(uint8_t flag);
-bool testAlarm(uint8_t flag);
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t rotation, uint8_t text, uint8_t text2 );
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t rotation, uint8_t text);
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, const char * pText);
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t text);
-void printMessage(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t text);
-void printMessage(uint8_t characterSize, uint8_t text);
-void printMessage(const char * pText, uint16_t col);
-void printMessage(uint8_t text);
-void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number);
-void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool metric);
-void printLeadingZero(uint8_t value);
+void setAlarm(uint8_t);
+void clearAlarm(uint8_t);
+bool testAlarm(uint8_t);
+
+void printMessage(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, uint8_t, uint8_t);
+void printMessage(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, uint8_t);
+void printMessage(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t, const char *);
+void printMessage(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t, uint8_t);
+void printMessage(uint16_t, uint16_t, uint8_t, uint8_t);
+void printMessage(uint8_t, uint8_t);
+void printMessage(const char * pText, uint16_t, uint16_t);
+void printMessage(const char * pText, uint16_t);
+void printMessage(uint8_t);
+void printNumber(uint16_t, uint16_t, uint8_t, uint8_t, float);
+void printNumber(uint16_t, uint16_t, uint8_t, uint8_t, float, bool);
+void printLeadingZero(uint8_t, uint8_t);
 void displayGraph(void);
 void drawMainAxes(void);
 void drawReticles(void);
 void takeReadings(void);
-void doHeatIndex(float T, float H);
-void flashText(uint8_t message, uint8_t X, uint8_t Y, uint16_t colour1, uint16_t colour2);
-void unsafeTempWarnings(float apparentTemperature);
+void doHeatIndex(float, float);
+void flashText(uint8_t, uint8_t, uint8_t, uint16_t, uint16_t);
+void unsafeTempWarnings(float);
 void drawGraphLines(void);
 void labelTemperature(void);
-void postMainTemperature(float value, uint16_t lowerLimit, uint16_t upperLimit, uint16_t guard);
-void blankArea(uint16_t X, uint8_t Y, uint16_t width, uint8_t height);
+void postMainTemperature(float, uint16_t, uint16_t, uint16_t);
+void blankArea(uint16_t, uint8_t, uint16_t, uint8_t);
 void sensorFailed(UniversalDHT::Response);
 void initGraphPoints(void);
 void initGraph(void);
@@ -73,5 +75,5 @@ void showUptime(void);
 void resetTextColour(void);
 void drawRadials(void);
 float magnusDewpoint(float, float);
-uint8_t centerText(String text, uint8_t charWidth);
-uint16_t colourValue(float value, uint16_t lowerLimit, uint16_t upperLimit, uint16_t guard);
+uint8_t centerText(String, uint8_t);
+uint16_t colourValue(float, uint16_t, uint16_t, uint16_t);
