@@ -25,8 +25,6 @@
   YES, IT'S WORDY AND WE'VE ESCHEWED MANY C "SHORTCUTS" TO MAKE IT EASIER FOR BEGINNERS
 */
 
-
-
 #include <Arduino.h>
 #include "UniversalDHT.hpp"        // @winlinvip's DHT22 library functions modified by Tim Harper
 #include <math.h>
@@ -36,17 +34,8 @@
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
 #include <protos.hpp>
 
-/*
-   The following constants set up various values to calculate the graphing functions and should
-   be fairly self-explanatory. As set here, the chart covers temperatures from 0 to 50C
-   and RH (humidity.reading) across the whole range. The DHT22 is good for -40 to 80C but this
-   device is for humans at work or elderly so is set for those temperature ranges.
-   Compare the DHT22 information sheet for complete specifications.
-*/
-
 void setup(void)
 {
-  Serial.begin(9600);
   uint16_t ID = screen.readID();
   if (ID == 0xD3D3)
   {
@@ -73,17 +62,12 @@ void setup(void)
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
 
-  if (temperature.reading == -1)
-  {
-    screen.setTextSize(text.large);
-    {
-      delay(2500);                                    // wait for it to catch its breath or it will whinge and crash.
-      dht22.read(&humidity.reading, &temperature.reading);
+  dht22.read(&humidity.reading, &temperature.reading);
+
 #ifndef TOPLESS
-      blankArea(0, 0, tft.width, tft.height);
-    }
+  blankArea(0, 0, tft.width, tft.height);
 #endif
-  }
+
 #ifndef TOPLESS
 
   screen.setRotation(tft.rotateDefault);
@@ -119,9 +103,9 @@ void loop()
   /*
     Open by checking if it's time to take the current readings from the DHT22
     the "timeToRead" variable is incremented by the interupt service routine
-    once every second.
-    After three seconds we take a new read. Use a larger int if you prefer.
-    Area temperatures don't vary much unless the sensor is in a drafty corner!
+    once every second. After three seconds we take a new read. Use a larger 
+    int if you prefer. Area temperatures don't vary much unless the sensor is 
+    in a drafty corner!
   */
 
   if (isrTimings.timeToRead == 3)
@@ -130,10 +114,10 @@ void loop()
     showReadings();
   }
 
-  showUptime();
   checkAlarm();
   annunciators();
   checkButton();
+  showUptime();
 
   if (isrTimings.timeInSeconds == 0) // this ticks every minute
   {
@@ -236,8 +220,8 @@ void displayGraph(void)
   }
   graph.updateGraphReadings = false;
 
-
   drawReticles();
+
   // convert the temperature and humidity.reading readings into something that scales to the chart.
   // the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
   // the first few lines just wall off temperatures from under freezing and above 50.
@@ -264,7 +248,7 @@ void displayGraph(void)
   // clear the old lines
   for (uint8_t index = 2; index < graph.width; index ++)
   {
-    uint16_t xPosition = 0;             // These values can get larger than 255 so we need 16 
+    uint16_t xPosition = 0; 
     xPosition = index + graph.X;
     screen.drawLine(xPosition - 1, humidity.pipe[index    - 2], xPosition, humidity.pipe[index - 1],    BLACK);
     screen.drawLine(xPosition - 1, temperature.pipe[index - 2], xPosition, temperature.pipe[index - 1], BLACK);
@@ -297,11 +281,13 @@ void drawReticles(void)
   uint8_t temperatureMax = (graph.Y + graph.height) - ((temperature.maxComfort + temperature.guard) * 2);
   uint8_t temperatureMin = (graph.Y + graph.height) - ((temperature.minComfort - temperature.guard) * 2);
 
-  for (uint8_t index = 1; index < graph.width; index++)     // draws vertical blanking strokes and reticules
+   // draws vertical blanking strokes and reticules 
+  for (uint8_t index = 1; index < graph.width; index++)    
   {
     uint16_t xPosition  = index + graph.X;
 
-    if (index % (graph.width / 8) == 0)              // seven vertical divisions
+    // seven vertical divisions
+    if (index % (graph.width / 8) == 0)              
     {
       screen.drawFastVLine(xPosition , graph.Y, graph.height, text.colour.reticleColour);
     }
@@ -323,10 +309,6 @@ void drawReticles(void)
 #endif
 }
 
-/*
-   A slightly hacky way of keeping the display tidy
-   by sticking a leading zero in front of the times
-*/
 void printLeadingZero(uint8_t value)
 {
   if (value < 10)
@@ -517,15 +499,12 @@ void checkTemperatureConditions(void)
    not producing as much heat.
 */
 
-void doHeatIndex(float T, float H)
+void  checkHeatIndex(float T, float H)
 {
-
-  // Note that the following temperatures are giving in degrees C for simplicity in coding.
-
-  int8_t apparentTemperature = (int8_t) heatIndex(T, H);
+  int8_t effectiveTemperature = (int8_t) heatIndex(T, H);
 
   // heat index routine only works reliably(ish) for temps >26 celcius and RH >= 40%
-  if ((apparentTemperature < 26) || T < 26 || H < 40)
+  if ((effectiveTemperature < 26) || T < 26 || H < 40)
   {
     if (tft.warnDanger == true)
     {
@@ -535,39 +514,39 @@ void doHeatIndex(float T, float H)
     return;
   }
 
-  // This flags up that the lower half of the display is set to warning!
   tft.warnDanger = true;
 
 #ifndef TOPLESS
   blankArea(0, 100, tft.width, tft.height - 110);
 #endif
 
-  if ( (apparentTemperature >= 26) && 
-        (apparentTemperature <= temperature.caution) )
+  if ( (effectiveTemperature >= 26) && 
+       (effectiveTemperature <= temperature.caution) 
+     )
   {
     flashText(messages.caution, centerText(messages.msg[messages.caution], text.baseWidth * text.large), tft.height / 2, text.colour.defaultForeground, text.colour.defaultBackground);
-    ewt(apparentTemperature);
+    unsafeTempWarnings(effectiveTemperature);
   }
 
-  if (apparentTemperature >= temperature.caution && apparentTemperature <= temperature.warning)
+  if (effectiveTemperature >= temperature.caution && effectiveTemperature <= temperature.warning)
   {
     flashText(messages.xcaution, centerText(messages.msg[messages.xcaution], text.baseWidth * text.large), tft.height / 2, YELLOW, text.colour.defaultBackground);
-    ewt(apparentTemperature);
+    unsafeTempWarnings(effectiveTemperature);
   }
 
-  if (apparentTemperature >= temperature.warning  && apparentTemperature <= temperature.risk)
+  if (effectiveTemperature >= temperature.warning  && effectiveTemperature <= temperature.risk)
   {
     flashText(messages.danger, centerText(messages.msg[messages.danger], text.baseWidth * text.large), tft.height / 2, RED, text.colour.defaultBackground);
-    ewt(apparentTemperature);
+    unsafeTempWarnings(effectiveTemperature);
   }
-  if (apparentTemperature >= temperature.risk)
+  if (effectiveTemperature >= temperature.risk)
   {
     flashText(messages.xdanger, centerText(messages.msg[messages.xdanger], text.baseWidth * text.large), tft.height / 2, RED, YELLOW);
-    ewt(apparentTemperature);
+    unsafeTempWarnings(effectiveTemperature);
   }
 }
 
-void ewt(float apparentTemperature)
+void unsafeTempWarnings(float effectiveTemperature)
 {
   screen.setTextSize(text.large);
 
@@ -575,7 +554,7 @@ void ewt(float apparentTemperature)
   {
     printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work1);
     printMessage(text.leftMargin, text.heatIndexY + 80, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work2);
-    screen.print(apparentTemperature);
+    screen.print(effectiveTemperature);
     screen.print(" ");
     printMessage(messages.c);
   }
@@ -583,7 +562,7 @@ void ewt(float apparentTemperature)
   {
     printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work1);
     printMessage(text.leftMargin, text.heatIndexY + 80, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work2);
-    screen.print(round(apparentTemperature * 1.8 + 32));
+    screen.print(round(effectiveTemperature * 1.8 + 32));
     screen.print(" ");
     printMessage(messages.f);
   }
@@ -824,12 +803,11 @@ void checkButton(void)
 
 void showReadings(void)
 {
-  uint16_t colour;
 #ifndef TOPLESS
   displayGraph();
 #endif
 
-  doHeatIndex(temperature.reading, humidity.reading);
+   checkHeatIndex(temperature.reading, humidity.reading);
 
   temperature.previousRead = temperature.reading;
   humidity.previousRead    = humidity.reading;
@@ -854,11 +832,9 @@ void showReadings(void)
     humidity.highestReading = humidity.reading;
   }
 
-
   screen.setCursor(text.bigReadXTemp, text.BigReadY);
-  colour = colourValue((float)temperature.reading, temperature.minComfort, temperature.maxComfort, temperature.guard);
+  uint16_t colour = colourValue((float)temperature.reading, temperature.minComfort, temperature.maxComfort, temperature.guard);
   printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, temperature.reading, temperature.useMetric);
-
 
   screen.setCursor(text.bigReadXHumid + text.baseWidth * text.small, text.BigReadY);
   colour = colourValue((float)humidity.reading, humidity.minComfort, humidity.maxComfort, humidity.guard);
@@ -888,7 +864,6 @@ uint16_t colourValue(float value, uint16_t lowerLimit, uint16_t upperLimit, uint
   {
     return RED;
   }
-
   return text.colour.defaultForeground;
 }
 

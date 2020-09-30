@@ -155,7 +155,9 @@ struct {
   bool flashing            = false;
   bool warnDanger          = false;
   bool graphActive         = true;
-  enum {rotatePortrait=0, rotateDefault=1};     // Use 0 and 1 for or 2 and 3 depending on how you want your screen displayed
+  enum {
+    rotatePortrait = 0, 
+    rotateDefault = 1};     // Use 0 and 1 for or 2 and 3 depending on how you want your screen displayed
 } tft;
 
 /*
@@ -207,6 +209,14 @@ struct {
   uint8_t failTime[5] = {0, 0, 0, 0, 0};
 } fail;
 
+/*
+   The following constants set up various values to calculate the graphing functions and should
+   be fairly self-explanatory. As set here, the chart covers temperatures from 0 to 50C
+   and RH (humidity.reading) across the whole range. The DHT22 is good for -40 to 80C but this
+   device is for humans at work or elderly so is set for those temperature ranges.
+   Compare the DHT22 information sheet for complete specifications.
+*/
+
 struct
 {
   struct
@@ -215,6 +225,7 @@ struct
     const uint16_t defaultForeground = CYAN;
     const uint16_t reticleColour     = DEEPGREY;
   } colour;
+
   const uint8_t  bigReadXTemp    = 10  / WIDTH_SCALE;
   const uint8_t  bigReadXHumid   = 140 / WIDTH_SCALE;
   const uint16_t degreeX         = 280 / WIDTH_SCALE;
@@ -338,14 +349,14 @@ void printMessage(const char * pText, uint16_t col);
 void printMessage(uint8_t text);
 void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number);
 void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool metric);
+void printLeadingZero(uint8_t value);
 void displayGraph(void);
 void drawMainAxes(void);
 void drawReticles(void);
-void printLeadingZero(uint8_t value);
 void takeReadings(void);
 void doHeatIndex(float T, float H);
 void flashText(uint8_t message, uint8_t X, uint8_t Y, uint16_t colour1, uint16_t colour2);
-void ewt(float apparentTemperature);
+void unsafeTempWarnings(float apparentTemperature);
 void drawGraphLines(void);
 void labelTemperature(void);
 void postMainTemperature(float value, uint16_t lowerLimit, uint16_t upperLimit, uint16_t guard);
@@ -353,13 +364,13 @@ void blankArea(uint16_t X, uint8_t Y, uint16_t width, uint8_t height);
 void sensorFailed(UniversalDHT::Response);
 void initGraphPoints(void);
 void initGraph(void);
+void initMainScreen(void);
 void setup(void);
 void loop(void);
 void checkHumidityCondtions(void);
 void checkTemperatureConditions(void);
 void checkAlarm(void);
 void checkButton(void);
-void initMainScreen(void);
 void drawHeadingTexts(void);
 void drawUnits(void);
 void showReadings(void);
