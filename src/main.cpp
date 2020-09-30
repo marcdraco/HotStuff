@@ -26,16 +26,20 @@
 */
 
 #include <Arduino.h>
-#include "UniversalDHT.hpp"        // @winlinvip's DHT22 library functions modified by Tim Harper
+#include "UniversalDHT.hpp"   // @winlinvip's DHT11/22 library functions modified by Tim Harper
 #include <math.h>
 #include <string.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>     // Core graphics library by AdaFruit
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
+#include <hotstuff.h>
 #include <protos.hpp>
+  
 
 void setup(void)
 {
+
+
   uint16_t ID = screen.readID();
   if (ID == 0xD3D3)
   {
@@ -276,11 +280,7 @@ void drawMainAxes(void)
 
 void drawReticles(void)
 {
-  uint8_t humidityMax    = (graph.Y + graph.height) - (humidity.maxComfort + humidity.guard);
-  uint8_t humidityMin    = (graph.Y + graph.height) - (humidity.minComfort - humidity.guard);
-  uint8_t temperatureMax = (graph.Y + graph.height) - ((temperature.maxComfort + temperature.guard) * 2);
-  uint8_t temperatureMin = (graph.Y + graph.height) - ((temperature.minComfort - temperature.guard) * 2);
-
+  
    // draws vertical blanking strokes and reticules 
   for (uint8_t index = 1; index < graph.width; index++)    
   {
@@ -299,6 +299,12 @@ void drawReticles(void)
   }
 
 #ifdef SHOW_BANDS
+
+  uint8_t humidityMax   = (graph.Y + graph.height) - (humidity.maxComfort + humidity.guard);
+  uint8_t humidityMin    = (graph.Y + graph.height) - (humidity.minComfort - humidity.guard);
+  uint8_t temperatureMax = (graph.Y + graph.height) - ((temperature.maxComfort + temperature.guard) * 2);
+  uint8_t temperatureMin = (graph.Y + graph.height) - ((temperature.minComfort - temperature.guard) * 2);
+
   for (uint8_t index = 1; index < graph.width; index += 10)     // draws vertical blanking strokes and reticules
   {
     screen.drawFastHLine(graph.X + index,    humidityMax, 3, BROWNISH);
