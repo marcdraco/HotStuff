@@ -87,12 +87,10 @@ void setup()
 #endif
 }
 
-
-/**************************************************************************/
-/*!
-   @brief   draws circular plots for the analogue version
-*/
-/**************************************************************************/
+/**
+ * @brief draws circular plots for the analogue version
+ * 
+ */
 
 void drawRadials(void)
 {
@@ -109,7 +107,6 @@ void drawRadials(void)
     screen.drawLine(innerX + radials.hRadial, innerY, outerX + radials.hRadial, outerY, RED);
   }
 }
-
 
 void loop()
 {
@@ -143,12 +140,10 @@ void loop()
   }
 }
 
-
-/**************************************************************************/
-/*!
-   @brief    Dry air, damp air and frost annunciator
-*/
-/**************************************************************************/
+/**
+ * @brief @brief    Dry air, damp air and frost annunciator
+ * 
+ */
 
 void annunciators(void)
 {
@@ -182,19 +177,11 @@ void annunciators(void)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief    Dry air, damp air and frost annunciator
-   @param    flag enumerated flag number
-*/
-/**************************************************************************/
-
-/**************************************************************************/
-/*!
-   @brief    Sets a numbered sempahore in the alarm flag set
-   @param    flag enumerated flag number
-*/
-/**************************************************************************/
+/**
+ * @brief Sets a numbered sempahore in the alarm flag set
+ * 
+ * @param flag enumerated flag number
+ */
 
 void setAlarmFlag(uint8_t flag)
 {
@@ -218,12 +205,11 @@ void setAlarmFlag(uint8_t flag)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief    Clears a numbered sempahore in the alarm flag set
-   @param    flag enumerated flag number
-*/
-/**************************************************************************/
+/**
+ * @brief Clears a numbered sempahore in the alarm flag set
+ * 
+ * @param flag enumerated flag number
+ */
 
 void clearAlarmFlag(uint8_t flag)
 {
@@ -248,25 +234,26 @@ void clearAlarmFlag(uint8_t flag)
   }
 }
 
-
-/**************************************************************************/
-/*!
-   @brief    Sets a numbered sempahore in the alarm flag set
-   @param    flag enumerated flag number
-   @return   Returns true if the specified flag is set
-*/
-/**************************************************************************/
+/**
+ * @brief  Sets a numbered sempahore in the alarm flag set
+ * 
+ * @param flag flag enumerated flag number
+ * @return true if the specified flag is set
+ * @return false if the specified flag is UNSET
+ */
 
 bool testAlarm(uint8_t flag)
 {
   return (alarm.semaphore & flag);
 }
 
-/**************************************************************************/
-/*!
-   @brief    Displays the main graph
-*/
-/**************************************************************************/
+/**
+ * @brief Displays the main graph
+ * 
+ * convert the temperature and humidity.reading readings into something that scales to the chart.
+ * the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
+ * the first few lines just wall off temperatures from under freezing and above 50.
+ */
 
 void displayGraph(void)
 {
@@ -277,10 +264,6 @@ void displayGraph(void)
   graph.updateGraphReadings = false;
 
   drawReticles();
-
-  // convert the temperature and humidity.reading readings into something that scales to the chart.
-  // the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
-  // the first few lines just wall off temperatures from under freezing and above 50.
 
   if (temperature.cumulativeMovingAverage > 50)
   {
@@ -323,11 +306,10 @@ void displayGraph(void)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief    Overdraws the graph outline in the current foreground
-*/
-/**************************************************************************/
+/**
+ * @brief  Overdraws the graph outline in the current foreground
+ * 
+ */
 
 void drawMainAxes(void)
 {
@@ -336,11 +318,10 @@ void drawMainAxes(void)
   screen.drawFastVLine(graph.X   +  graph.width, graph.Y,   graph.FSD, text.colour.defaultForeground);
 }
 
-/**************************************************************************/
-/*!
-   @brief    Displays the reticles UNDER the current plots
-*/
-/**************************************************************************/
+/**
+ * @brief  Displays the reticles UNDER the current plots
+ * 
+ */
 
 void drawReticles(void)
 {
@@ -379,12 +360,11 @@ void drawReticles(void)
 #endif
 }
 
-/**************************************************************************/
-/*!
-   @brief  Puts a leading 0 in front of the "uptime" numbers
-   @param  value the number of interest - always <99.
-*/
-/**************************************************************************/
+/**
+ * @brief Puts a leading 0 in front of the "uptime" numbers
+ * 
+ * @param value the number of interest - always <99.
+ */
 
 void printLeadingZero(uint8_t value)
 {
@@ -395,32 +375,31 @@ void printLeadingZero(uint8_t value)
   screen.print(value);
 }
 
-/**************************************************************************/
-/*!
-   @brief     Steadman's 1994 approximation for heat in given humidity 
-   @param  T  Temperature in degrees C
-   @param  R  Relative humidity in %
-
-  @remarks  Approximate the "Heat index" per Steadman 1994. While the dry bulb temperature
-   may be well within safe limits for humans, the addition of humidity reading
-   prevents our bodies from effectively evaporatively cooling with the result
-   that our internal temperature rises - and the different of just a few degrees
-   C can cause fatigue, aggression and eventually heat stroke and possibly death.
-   These figures assume the person is doing mildly stressful work such as housework
-   Workers in more extreme physical labour will suffer faster and vice versa.
-  This is becoming a much more widespread problem as our climate changes.
-
-  Wikipedia https://en.wikipedia.org/wiki/Heat_index
-  
-   26–32 °C Caution: fatigue is possible with prolonged exposure and activity.
-            Continuing activity could result in heat cramps.
-   32–41 °C Extreme caution: heat cramps and heat exhaustion are possible.
-            Continuing activity could result in heat stroke.
-   41–54 °C Danger: heat cramps and heat exhaustion are likely.
-            Heat stroke is probable with continued activity.
-   > 54 °C  Extreme danger: heat stroke is imminent.
-*/
-/**************************************************************************/
+/**
+ * @brief Steadman's 1994 approximation for heat in given humidity 
+ * 
+ * @param T Temperature in degrees C
+ * @param R Relative humidity in %
+ * @return float 
+ * 
+ * @remarks  Approximate the "Heat index" per Steadman 1994. While the dry bulb temperature
+ *  may be well within safe limits for humans, the addition of humidity reading
+ * prevents our bodies from effectively evaporatively cooling with the result
+ * that our internal temperature rises - and the different of just a few degrees
+ * C can cause fatigue, aggression and eventually heat stroke and possibly death.
+ * These figures assume the person is doing mildly stressful work such as housework
+ * Workers in more extreme physical labour will suffer faster and vice versa.
+ * This is becoming a much more widespread problem as our climate changes.
+ * 
+ * Wikipedia https://en.wikipedia.org/wiki/Heat_index
+ * 26–32 °C Caution: fatigue is possible with prolonged exposure and activity.
+ *          Continuing activity could result in heat cramps.
+ * 32–41 °C Extreme caution: heat cramps and heat exhaustion are possible.
+ *          Continuing activity could result in heat stroke.
+ * 41–54 °C Danger: heat cramps and heat exhaustion are likely.
+ *          Heat stroke is probable with continued activity.
+ * > 54 °C  Extreme danger: heat stroke is imminent.
+ */
 
 float heatIndex(float T, float R)
 {
@@ -437,19 +416,20 @@ float heatIndex(float T, float R)
   return (c1 + (c2 * T) + (c3 * R) + (c4 * T * R) + (c5 * (T * T)) + (c6 * (R * R)) + (c7 * (T * T) * R) + (c8 * T * (R * R)) + (c9 * (T * T) * (R * R)));
 }
 
-/**************************************************************************/
-/*!
-   @brief     Magnus' Dew Point (condensation temperature) calculation 
-   @param  T  Temperature in degrees C
-   @param  R  Relative humidity in %
-*/
-/**************************************************************************/
+/**
+ * @brief Magnus' Dew Point (condensation temperature) calculation 
+ * 
+ * @param T Temperature in degrees C
+ * @param R Relative humidity in %
+ * @return float 
+ * @remarks 
+ * https://en.wikipedia.org/wiki/Dew_point
+ * 
+ */
 
 float magnusDewpoint(float T, float R)
 {
-  // https://en.wikipedia.org/wiki/Dew_point
   // Magnus dew point constants
-
   const double a = 17.62;
   const double b = 243.12;
   double c = (a * T) / (b + T);
@@ -458,11 +438,10 @@ float magnusDewpoint(float T, float R)
   return (float) b * (r + c) / (a - (r + c));
 }
 
-/**************************************************************************/
-/*!
-   @brief     Get the current RH and Temp from the DHT11/22
-*/
-/**************************************************************************/
+/**
+ * @brief Get the current RH and Temp from the DHT11/22
+ * 
+ */
 
 void takeReadings(void)
 {
@@ -519,11 +498,10 @@ void takeReadings(void)
   checkTemperatureConditions();
 }
 
-/**************************************************************************/
-/*!
-   @brief     Test the humidity is within watershed (and trigger alarms)
-*/
-/**************************************************************************/
+/**
+ * @brief Test the humidity is within watershed (and trigger alarms)
+ * 
+ */
 
 void checkHumidityCondtions(void)
 {
@@ -564,26 +542,28 @@ void checkHumidityCondtions(void)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief     Test the temperature is within limits (and trigger alarms)
-*/
-/**************************************************************************/
+/**
+ * @brief Test the temperature is within limits (and trigger alarms)
+ * 
+ * @remarks Note the instant we register "freezing" we set the alarm
+ * this is by design, it's not a bug!
+ * Similarly, the watershed is 4C and the AVERAGE needs go above that 
+ * this is by design, it's not a bug!
+ */
+
 
 void checkTemperatureConditions(void)
 {
-  // Note the instant we register "freezing" we set the alarm
-  // this is by design, it's not a bug!
+  
   if (temperature.reading <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
   {
     if (alarm.alarmedLowTemp == false)
     {
-      setAlarmFlag(alarm.frost);          // start blinkig light
+      setAlarmFlag(alarm.frost);          // start das-blinky-flashun light
       alarm.alarmedLowTemp = true;        // true prevents re-firing
     }
   }
 
-  // Note the watershed is 4C and the AVERAGE needs go above that this is by design, it's not a bug!
   if (temperature.cumulativeMovingAverage > temperature.frostWatershed)
   {
     clearAlarmFlag(alarm.frost);
@@ -592,17 +572,12 @@ void checkTemperatureConditions(void)
 
 }
 
-/**************************************************************************/
-/*!
-   @brief     Set warning conditions if Steadman's temp is exceeded
-   @param   T Temperature in C
-   @param   H Relative humidity in %
-   
-   @remarks Sedentary workers (or just relaxing on the beach) we
-   are able to tolerate higher apparent temperatures because our bodies are
-   not producing as much heat.
-*/
-/**************************************************************************/
+/**
+ * @brief Set warning conditions if Steadman's temp is exceeded
+ * 
+ * @param T Temperature in C
+ * @param H Relative humidity in %
+ */
 
 void  checkHeatIndex(float T, float H)
 {
@@ -651,15 +626,14 @@ void  checkHeatIndex(float T, float H)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief     Display warnings about effective working temperature
-   @param   T Steadman's Effective temperature in C
-   
-   @remarks Displays warnings in the lower half of the screen to stop or reduce 
-   activity for health and safety. 
-*/
-/**************************************************************************/
+/**
+ * @brief Display warnings about effective working temperature
+ * 
+ * @param T Steadman's Effective temperature in C
+ * 
+ * @remarks Displays warnings in the lower half of the screen to stop or reduce 
+ * activity for health and safety. 
+ */
 
 void unsafeTempWarnings(float T)
 {
@@ -683,15 +657,13 @@ void unsafeTempWarnings(float T)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief   Brings everthing to a halt if the DHT sensor breaks during use
-   @param   response Returned 16 bit from the DHT libary
-   
-  @remarks  Displays warnings in the lower half of the screen to stop or reduce 
-   activity for health and safety. 
-*/
-/**************************************************************************/
+/**
+ * @brief Brings everthing to a halt if the DHT sensor breaks during use
+ * 
+ * @param response response Returned 16 bit from the DHT libary
+ * @remarks  Displays warnings in the lower half of the screen to stop or reduce 
+ * activity for health and safety. 
+ */
 
 void sensorFailed(UniversalDHT::Response response)
 {
@@ -770,11 +742,10 @@ void sensorFailed(UniversalDHT::Response response)
 
 #ifndef TOPLESS
 
-/**************************************************************************/
-/*!
-   @brief   Labels the temperature graph axes according to C/F
-*/
-/**************************************************************************/
+/**
+ * @brief Labels the temperature graph axes according to C/F
+ */
+
 void labelTemperature(void)
 {
   if (temperature.useMetric == true)
@@ -787,26 +758,25 @@ void labelTemperature(void)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief   Draws a rectange over an area in the current background colour
-   @param X Left corner
-   @param Y Top corner
-   @param width Width of area to blank
-   @param height Height of area to blank
-*/
-/**************************************************************************/
+/**
+ * @brief Draws a rectange over an area in the current background colour
+ * 
+ * @param X Top corner
+ * @param Y Left corner
+ * @param width of area to blank
+ * @param height of area to blank
+ */
 
 void blankArea(uint16_t X, uint8_t Y, uint16_t width, uint8_t height)
 {
   screen.fillRect(X, Y, width, height, text.colour.defaultBackground);
 }
 
-/**************************************************************************/
-/*!
-   @brief   Blanks the chart area if it's not already active 
-*/
-/**************************************************************************/
+/**
+ * @brief Blanks the chart area if it's not already active 
+ * 
+ */
+
 void initGraph(void)
 {
   if (tft.graphActive == true)
@@ -819,12 +789,18 @@ void initGraph(void)
 
 /**************************************************************************/
 /*!
-   @brief   Prepares the initial variables for the plot lines
-   @remarks This only runs once to set clear everything in case of memory junk
-   so we know not to plot these until a real one is recorded
-   No point storing real numbers when single a byte (Y-coord) will do!
+   @brief   
+   
   */
 /**************************************************************************/
+
+/**
+ * @brief Prepares the initial variables for the plot lines
+ * @remarks This only runs once to set clear everything in case of memory junk
+ * so we know not to plot these until a real one is recorded
+ * No point storing real numbers when single a byte (Y-coord) will do!
+ */
+
 void initGraphPoints(void)
 {
   uint8_t index;
@@ -836,11 +812,11 @@ void initGraphPoints(void)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief    Draw the graph lines and chart calibration markings
-  */
-/**************************************************************************/
+/**
+ * @brief Draw the graph lines and chart calibration markings
+ * 
+ */
+
 void drawGraphLines(void)
 {
   labelTemperature();
@@ -886,11 +862,11 @@ void drawGraphLines(void)
 
 #endif
 
-/**************************************************************************/
-/*!
-   @brief    If an alarm condition is set, this flases the LED pin
-  */
-/**************************************************************************/
+/**
+ * @brief If an alarm condition is set, this flases the LED pin
+ * 
+ */
+
 void checkAlarm(void)
 {
 
@@ -912,11 +888,10 @@ void checkAlarm(void)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief    Polls for short AND long button pushes, acts accordingly
-  */
-/**************************************************************************/
+/**
+ * @brief Polls for short AND long button pushes, acts accordingly
+ * @bug Can be a bit fussy resetting the alarms.
+*/
 
 void checkButton(void)
 {
@@ -959,11 +934,10 @@ void checkButton(void)
   }
 }
 
-/**************************************************************************/
-/*!
-   @brief    Display large main reading displays and the min/max values
-  */
-/**************************************************************************/
+/**
+ * @brief  Display large main reading displays and the min/max values
+ * 
+ */
 
 void showReadings(void)
 {
@@ -1018,17 +992,15 @@ void showReadings(void)
   printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.highestReading, true);
 }
 
-
-/**************************************************************************/
-/*!
-   @brief    returns a colour value when values fall outside a range
-   @param value      temperature or relative humidity
-   @param upperlimit normal upper limit of the reading
-   @param lowerlimit normal lower limit of the reading
-   @param guard      A margin of error
-   @return uint16_t  16 bit colour value for MCU_Friend
-*/
-/**************************************************************************/
+/**
+ * @brief returns a colour value when values fall outside a range
+ * 
+ * @param value  temperature or relative humidity
+ * @param lowerLimit normal upper limit of the reading
+ * @param upperLimit normal lower limit of the reading
+ * @param guard A margin of error
+ * @return uint16_t 16 bit colour value for MCU_Friend
+ */
 
 uint16_t colourValue(float value, uint16_t lowerLimit, uint16_t upperLimit, uint16_t guard)
 {
@@ -1043,11 +1015,11 @@ uint16_t colourValue(float value, uint16_t lowerLimit, uint16_t upperLimit, uint
   return text.colour.defaultForeground;
 }
 
-/**************************************************************************/
-/*!
-   @brief    A little not to *nix systems
+/**
+ * @brief A little not to *nix systems
+ * @remark This was developed on Linux due to the much faster compiler
 */
-/**************************************************************************/
+
 void showUptime(void)
 {
   /*
@@ -1079,19 +1051,18 @@ void showUptime(void)
 
 }
 
-/**************************************************************************/
-/*!
-   @brief    Prints TWO enumberated text messages to the screen
-   @param X  Absolute X value to position the cursor 
-   @param Y  Absolute Y value to position the cursor
-   @param foregroundColour text's foreground colour
-   @param backgroundColour text's background (fill) colour
-   @param characterSize enumerated character size
-   @param rotation enumerated value for the screen orientation
-   @param text enumerated value for the first message
-   @param text enumerated value for message printed right after
-*/
-/**************************************************************************/
+/**
+ * @brief  Prints TWO enumberated text messages to the screen
+ * 
+ * @param X Absolute X value to position the cursor 
+ * @param Y Absolute Y value to position the cursor
+ * @param foregroundColour  text's foreground colour
+ * @param backgroundColour  text's background (fill) colour
+ * @param characterSize enumerated character size
+ * @param rotation enumerated value for the screen orientation
+ * @param text enumerated value for the first message
+ * @param text2 enumerated value for message printed right after
+ */
 
 void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t rotation, uint8_t text, uint8_t text2 )
 {
