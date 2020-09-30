@@ -66,10 +66,6 @@ void setup()
 
   screen.fillScreen(text.colour.defaultBackground);
 
-  #ifdef SIMPLE_LCD
-    loop();
-  #endif
-
   pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
   pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
   pinMode(ALARM_PIN, OUTPUT);         // This is usually pin 13 (the board LED)
@@ -77,24 +73,19 @@ void setup()
   digitalWrite(DHT22_POWER, HIGH);    // and saves wiring from the ICSP ports on UNO with a TFT shield
   pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
+#ifndef SIMPLE_LCD
 #ifndef TOPLESS
   blankArea(0, 0, tft.width, tft.height);
-#endif
-
-#ifndef TOPLESS
-
   screen.setRotation(tft.rotateDefault);
   initGraphPoints();
   drawGraphLines();
   screen.fillRect(0, text.uptimeTimeY, tft.width, text.small * text.baseHeight + 2, GREY); //just that little Uptime display, a nod to *nix.
-
 #ifdef CLOCKWISE
   drawRadials();
 #endif
-
+#endif
 #endif
 }
-
 
 void loop()
 {
@@ -140,9 +131,10 @@ void loop()
  * the LCD font we have has no background colour!
  */
 
+#ifdef SIMPLE_LCD
 void showLCDReads(void)
 {
-  static float prevTemp = -100;
+  static float prevTemp  = -100;
   static float prevHumid = -100;
 
   screen.setFont(&FreeSevenSegNumFontPlusPlus);
@@ -162,6 +154,7 @@ void showLCDReads(void)
     printNumber(10, 310, text.colour.defaultForeground, text.colour.defaultBackground, text.large, text.small, humidity.cumulativeMovingAverage, false);
   }
 }
+#endif //SIMPLE_LCD
 
 /**
  * @brief draws circular plots for the analogue version
@@ -365,7 +358,7 @@ void drawMainAxes(void)
  * @brief  Displays the reticles UNDER the current plots
  * 
  */
-
+#ifdef SIMPLE_LCD
 void drawReticles(void)
 {
   
@@ -402,6 +395,7 @@ void drawReticles(void)
   }
 #endif
 }
+#endif //SIMPLE_LCD
 
 /**
  * @brief Puts a leading 0 in front of the "uptime" numbers
@@ -536,7 +530,7 @@ void takeReadings(void)
 
   temperature.cmaCounter = temperature.cmaCounter + 1;
   temperature.cumulativeMovingAverage = temperature.cumulativeMovingAverage + ((temperature.reading - temperature.cumulativeMovingAverage) / temperature.cmaCounter);
-
+  
   checkHumidityCondtions();
   checkTemperatureConditions();
 }

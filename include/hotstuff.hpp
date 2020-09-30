@@ -32,7 +32,6 @@
 #ifndef __HOTSTUFF_H
 #define __HOTSTUFF_H
 
-#define SIMPLE_LCD
 
 /**
  * @brief use this if you have an incident like someone did...
@@ -62,6 +61,18 @@
 //#define CLOCKWISE
 
 /**
+ * @brief Enable the huge metric 7-segLCD display
+ * @remark This ONLY works for metric right now due to the size
+ * of the font.
+ */
+  
+#define SIMPLE_LCD
+#ifdef SIMPLE_LCD
+  #define METRIC                   
+#endif
+
+
+/**
  * @brief 
  * 
  * @remark Poor man's unit testing. These defines can set temperature and humidity.reading
@@ -84,14 +95,14 @@
 #define SimpleDHTErrDataEOF      5
 #define SimpleDHTErrDataChecksum 6
 
-#define SHOW_BANDS            // optionally plot some dotted lines for normal values
-#define BUTTON_PIN 10         // the acknowlegement button to stop alerts for ice, damp etc.
-#define DHT22_POWER 11        // pin to power the DHT22 since the power pins are covered.
-#define DHT22_DATA 12         // The DHT 22 can be powered elsewhere leaving this free however.
-#define ALARM_PIN 13          // LED or a high-impedance buzzer
-#define GRAPH_WIDTH 240       // The absolute width of the graph where used
-#define WIDTH_SCALE 1         // divide the size of the screen based on a 320x240 matrix
-#define HEIGHT_SCALE 1        // divide the size of the screen based on a 320x240 matrix
+#define SHOW_BANDS           // optionally plot some dotted lines for normal values
+#define BUTTON_PIN   10      // the acknowlegement button to stop alerts for ice, damp etc.
+#define DHT22_POWER  11      // pin to power the DHT22 since the power pins are covered.
+#define DHT22_DATA   12      // The DHT 22 can be powered elsewhere leaving this free however.
+#define ALARM_PIN    13      // LED or a high-impedance buzzer
+#define GRAPH_WIDTH  240     // The absolute width of the graph where used
+#define WIDTH_SCALE  1       // divide the size of the screen based on a 320x240 matrix
+#define HEIGHT_SCALE 1       // divide the size of the screen based on a 320x240 matrix
 
 /*
    A good selection of simple colour defines
@@ -106,9 +117,9 @@
 #define CYAN      0x07FF
 #define MAGENTA   0xF81F
 #define YELLOW    0xFFE0
-#define WHITE     0xFFFF
-#define GREY      RGB(127, 127, 127)
-#define GRAY      RGB(127, 127, 127)
+#define WHITE     0xFFFFWHITE
+#define LIGHTGREY RGB(200, 200, 200)
+#define GREY      RGB(128, 128, 128)
 #define DARKGREY  RGB(64, 64, 64)
 #define DARKGRAY  RGB(64, 64, 64)
 #define DEEPGREY  RGB(16, 16, 16)
@@ -254,12 +265,13 @@ struct
   struct
   {
 #ifdef SIMPLE_LCD
-    const uint16_t defaultBackground = WHITE;
+    const uint16_t defaultBackground = GREY;
     const uint16_t defaultForeground = BLACK;
     const uint16_t reticleColour     = DEEPGREY;
 #else
     const uint16_t defaultBackground = BLACK;
     const uint16_t defaultForeground = CYAN;
+    const uint16_t reticleColour     = DEEPGREY;
 #endif
   } colour;
 
