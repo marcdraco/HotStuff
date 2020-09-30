@@ -67,9 +67,6 @@
  */
   
 #define SIMPLE_LCD
-#ifdef SIMPLE_LCD
-  #define METRIC                   
-#endif
 
 
 /**
@@ -85,7 +82,7 @@
 // #define DEBUG_OVERTEMP_ALARM 45
 // #define DEBUG_EXCESS_DAMP_ALARM 90
 // #define DEBUG_DRY_AIR_ALARM 10
-// #define DEBUG_FROST_ALARM -5
+ #define DEBUG_FROST_ALARM -5
 
 #define SimpleDHTSuccess         0 
 #define SimpleDHTErrStartLow     1
@@ -117,7 +114,7 @@
 #define CYAN      0x07FF
 #define MAGENTA   0xF81F
 #define YELLOW    0xFFE0
-#define WHITE     0xFFFFWHITE
+#define WHITE     0xFFFF
 #define LIGHTGREY RGB(200, 200, 200)
 #define GREY      RGB(128, 128, 128)
 #define DARKGREY  RGB(64, 64, 64)
@@ -265,8 +262,8 @@ struct
   struct
   {
 #ifdef SIMPLE_LCD
-    const uint16_t defaultBackground = GREY;
-    const uint16_t defaultForeground = BLACK;
+    const uint16_t defaultBackground = BLACK;
+    const uint16_t defaultForeground = WHITE;
     const uint16_t reticleColour     = DEEPGREY;
 #else
     const uint16_t defaultBackground = BLACK;

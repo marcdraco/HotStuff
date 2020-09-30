@@ -45,7 +45,7 @@ void printMessage(const char * pText, uint16_t);
 void printMessage(uint8_t);
 void printNumber(uint16_t, uint16_t, uint8_t, uint8_t, float);
 void printNumber(uint16_t, uint16_t, uint8_t, uint8_t, float, bool);
-void printNumber(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, float, bool);
+void printNumber(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, float, float, bool);
 void printLeadingZero(uint8_t, uint8_t);
 void displayGraph(void);
 void drawMainAxes(void);

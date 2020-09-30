@@ -35,6 +35,7 @@
 #include "UniversalDHT.hpp"   // @winlinvip's DHT11/22 library functions modified by Tim Harper
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>     // Core graphics library by AdaFruit
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
@@ -44,6 +45,7 @@
 
 void setup()
 {
+  Serial.begin(9600);
   uint16_t ID = screen.readID();
   if (ID == 0xD3D3)
   {
@@ -139,19 +141,20 @@ void showLCDReads(void)
 
   screen.setFont(&FreeSevenSegNumFontPlusPlus);
   screen.setRotation(tft.rotatePortrait);
-
   if (prevTemp != temperature.cumulativeMovingAverage)
   {
-    printNumber(10, 160, text.colour.defaultBackground, text.colour.defaultBackground, text.large, text.small, prevTemp, temperature.useMetric);  
-    printNumber(10, 160, text.colour.defaultForeground, text.colour.defaultBackground, text.large, text.small, temperature.cumulativeMovingAverage, temperature.useMetric);
+    printNumber(10, 160, text.colour.defaultForeground, text.colour.defaultBackground, 
+                  text.large, text.small, prevTemp, temperature.cumulativeMovingAverage, temperature.useMetric);  
+
     prevTemp = temperature.cumulativeMovingAverage;
   }
 
   if (prevHumid != humidity.cumulativeMovingAverage)
   {
-    printNumber(10, 310, text.colour.defaultBackground, text.colour.defaultBackground, text.large, text.small, prevHumid, false);
+    printNumber(10, 310, text.colour.defaultForeground, text.colour.defaultBackground, 
+                  text.large, text.small, prevHumid, humidity.cumulativeMovingAverage, true);
+
     prevHumid = humidity.cumulativeMovingAverage;
-    printNumber(10, 310, text.colour.defaultForeground, text.colour.defaultBackground, text.large, text.small, humidity.cumulativeMovingAverage, false);
   }
 }
 #endif //SIMPLE_LCD
@@ -1274,13 +1277,14 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
 }
 
 /**
- * @brief prints a right-aligned number (+0-999)
+ * @brief prints a right-aligned number (+0-99)
  * 
  * @param foregroundColour text foreground colour
  * @param backgroundColour text background colour
  * @param largeCharacterSize enumerated large character size
  * @param smallCharacterSize enumerated small character size
  * @param number the value to display
+ * @param lastValue the value to BLANK OUT!
  * @param X cursor X position
  * @param Y cursor Y position
  * @remark This function is designed to print the "fractional"
@@ -1288,31 +1292,50 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
  * Specifically for the "ULTRA" LCD display this places the fraction
  */
 
-void printNumber(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool useMetric)
+void printNumber(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, 
+        uint8_t largeCharacterSize, uint8_t smallCharacterSize, float lastValue, float number, bool useMetric)
 {
   screen.setTextColor(foregroundColour, backgroundColour);
   screen.setTextSize(largeCharacterSize);
   screen.setCursor(X,Y);
-
-  if (number >= 0 && number < 100)
+  
+  if (useMetric == false)
   {
-    screen.print(" ");
+    number = number * 1.8 + 32;
   }
 
-  if (number >= 0 && number < 10)
+  if (number >= 100)
   {
-    screen.print(" ");
+      number = 99;  // range is limited to two digits (about 37.5 f). This is space constraint.
   }
 
+  else if (number <= 0)
+  {
+      number = 0;  // current font does NOT have a negative bar!
+  }
+
+  char printable[5];
+  
   double integer;
   double fraction = modf(number, &integer);
-  screen.print(integer, 0);
-
-  screen.setCursor(screen.getCursorX(), screen.getCursorY() - 80);
   
+  sprintf(printable, "%d", (int) integer);
+
+  if (integer < 10)
+  {
+    screen.print("0");
+  }
+
+  screen.print(printable);
+
   modf(fraction * 10, &integer);
+  screen.setCursor(screen.getCursorX(), screen.getCursorY() - 80);
   screen.setTextSize(smallCharacterSize);
-  screen.print(integer, 0);
+  sprintf(printable, "%d", (int) integer);
+  screen.print(printable);
+
+  double prevInteger;
+  double prevFraction = modf(lastValue, &integer);
 }
 
 /**
