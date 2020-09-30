@@ -1,3 +1,5 @@
+
+
 /*
   Copyright 2020, Marc Draco & Daniel Melvin & Garrie
   Redistribution and use in source and binary forms, with or without modification,
@@ -23,6 +25,10 @@
   THERE ARE NO BUGS IN THIS CODE, JUST FEATURES, SOME OF WHICH MAY CAUSE IT TO BEHAVE
   ERRATICALLY. SINCE YOU GOT IT FOR FREE, FIX THEM OR DON'T COME CRYING TO US!
   YES, IT'S WORDY AND WE'VE ESCHEWED MANY C "SHORTCUTS" TO MAKE IT EASIER FOR BEGINNERS
+
+@file
+@brief This file is marvelous.
+
 */
 
 #include <Arduino.h>

@@ -1,0 +1,759 @@
+\hypertarget{main_8cpp}{}\doxysection{main.\+cpp File Reference}
+\label{main_8cpp}\index{main.cpp@{main.cpp}}
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Universal\+D\+H\+T.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$Wire.\+h$>$}\newline
+{\ttfamily \#include $<$Adafruit\+\_\+\+G\+F\+X.\+h$>$}\newline
+{\ttfamily \#include $<$M\+C\+U\+F\+R\+I\+E\+N\+D\+\_\+kbv.\+h$>$}\newline
+{\ttfamily \#include $<$hotstuff.\+hpp$>$}\newline
+{\ttfamily \#include $<$protos.\+hpp$>$}\newline
+Include dependency graph for main.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup}} ()
+\item 
+void \mbox{\hyperlink{main_8cpp_a7833932274d1da25a569143019fc04f4}{draw\+Radials}} (void)
+\begin{DoxyCompactList}\small\item\em draws circular plots for the analogue version \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop}} ()
+\item 
+void \mbox{\hyperlink{main_8cpp_ae370ca8a88d924eac4addd67363d50f3}{annunciators}} (void)
+\begin{DoxyCompactList}\small\item\em Dry air, damp air and frost annunciator. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_aa83d3d2a61ebb6b7235a61570b923ab4}{set\+Alarm\+Flag}} (uint8\+\_\+t flag)
+\begin{DoxyCompactList}\small\item\em Sets a numbered sempahore in the alarm flag set. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a94b3c359fa64c6fc095c5d1124288200}{clear\+Alarm\+Flag}} (uint8\+\_\+t flag)
+\begin{DoxyCompactList}\small\item\em Clears a numbered sempahore in the alarm flag set. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{main_8cpp_ad66e99775baab9dfdc9955831621616b}{test\+Alarm}} (uint8\+\_\+t flag)
+\begin{DoxyCompactList}\small\item\em Sets a numbered sempahore in the alarm flag set. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_adc983323712ae39d9492c261a082ddaa}{display\+Graph}} (void)
+\begin{DoxyCompactList}\small\item\em Displays the main graph. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a8e8cb10fed5e8f84a72f76ae16340098}{draw\+Main\+Axes}} (void)
+\begin{DoxyCompactList}\small\item\em Overdraws the graph outline in the current foreground. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a01b18b42f39d8264bab6f542ebc647b2}{draw\+Reticles}} (void)
+\begin{DoxyCompactList}\small\item\em Displays the reticles U\+N\+D\+ER the current plots. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_ad42291814b2e2efd4562aaa95c555cf8}{print\+Leading\+Zero}} (uint8\+\_\+t value)
+\begin{DoxyCompactList}\small\item\em Puts a leading 0 in front of the \char`\"{}uptime\char`\"{} numbers. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{main_8cpp_a107880a47ea6166ed287a1690ba8d473}{heat\+Index}} (float T, float R)
+\begin{DoxyCompactList}\small\item\em Steadman\textquotesingle{}s 1994 approximation for heat in given humidity. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{main_8cpp_a58f11a3e2a40bbe4f77c17d373483699}{magnus\+Dewpoint}} (float T, float R)
+\begin{DoxyCompactList}\small\item\em Magnus\textquotesingle{} Dew Point (condensation temperature) calculation. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_af1f848ca7b857fc13b561d65cdfa7c70}{take\+Readings}} (void)
+\begin{DoxyCompactList}\small\item\em Get the current RH and Temp from the D\+H\+T11/22. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a08f340c367cdc579703e08b57e24d7f6}{check\+Humidity\+Condtions}} (void)
+\begin{DoxyCompactList}\small\item\em Test the humidity is within watershed (and trigger alarms) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a4ea0e1b951574d392d68e7d480623368}{check\+Temperature\+Conditions}} (void)
+\begin{DoxyCompactList}\small\item\em Test the temperature is within limits (and trigger alarms) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a80ff0ed5ec5a32fd110d259024c8f0ff}{check\+Heat\+Index}} (float T, float H)
+\begin{DoxyCompactList}\small\item\em Set warning conditions if Steadman\textquotesingle{}s temp is exceeded. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_af8ebbd6a73836aa8158a9d92b4fea6f7}{unsafe\+Temp\+Warnings}} (float T)
+\begin{DoxyCompactList}\small\item\em Display warnings about effective working temperature. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_acb375545576a873c5553ea17e816cc62}{sensor\+Failed}} (Universal\+D\+H\+T\+::\+Response response)
+\begin{DoxyCompactList}\small\item\em Brings everthing to a halt if the D\+HT sensor breaks during use. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_af9a17c5595986d28e5e3fc2eb332e1c7}{label\+Temperature}} (void)
+\begin{DoxyCompactList}\small\item\em Labels the temperature graph axes according to C/F. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_af72cf5611f3a19af9488b516945daa4a}{blank\+Area}} (uint16\+\_\+t X, uint8\+\_\+t Y, uint16\+\_\+t width, uint8\+\_\+t height)
+\begin{DoxyCompactList}\small\item\em Draws a rectange over an area in the current background colour. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a477dd2821cac07b0dd56d67a72eacaba}{init\+Graph}} (void)
+\begin{DoxyCompactList}\small\item\em Blanks the chart area if it\textquotesingle{}s not already active. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a80ca785c7d3771fbbe40eb703b3b7938}{init\+Graph\+Points}} (void)
+\begin{DoxyCompactList}\small\item\em ~\newline
+ \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_aefdad2649c99814c7880486483828b5b}{draw\+Graph\+Lines}} (void)
+\begin{DoxyCompactList}\small\item\em Draw the graph lines and chart calibration markings. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a450976150371d71bf66f3fd22e75867f}{check\+Alarm}} (void)
+\begin{DoxyCompactList}\small\item\em If an alarm condition is set, this flases the L\+ED pin. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a6ede7dd44bee8e77917cdc3aba0e8bbe}{check\+Button}} (void)
+\begin{DoxyCompactList}\small\item\em Polls for short A\+ND long button pushes, acts accordingly. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a06929503bdb90ee229bf57ed4e46a571}{show\+Readings}} (void)
+\begin{DoxyCompactList}\small\item\em Display large main reading displays and the min/max values. \end{DoxyCompactList}\item 
+uint16\+\_\+t \mbox{\hyperlink{main_8cpp_ab3688861dd7327edc8a5a1fe27fc3ea5}{colour\+Value}} (float value, uint16\+\_\+t lower\+Limit, uint16\+\_\+t upper\+Limit, uint16\+\_\+t guard)
+\begin{DoxyCompactList}\small\item\em returns a colour value when values fall outside a range \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a995d0e9acbfa0945600bebf3566a76b5}{show\+Uptime}} (void)
+\begin{DoxyCompactList}\small\item\em A little not to $\ast$nix systems. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a1b4fdf62d4763129e768bc5234bc1152}{print\+Message}} (uint16\+\_\+t X, uint16\+\_\+t Y, uint16\+\_\+t foreground\+Colour, uint16\+\_\+t background\+Colour, uint8\+\_\+t character\+Size, uint8\+\_\+t rotation, uint8\+\_\+t text, uint8\+\_\+t text2)
+\begin{DoxyCompactList}\small\item\em Prints T\+WO enumberated text messages to the screen. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_ab86f9d1959cd265786360a22fc1324c4}{print\+Message}} (uint16\+\_\+t X, uint16\+\_\+t Y, uint16\+\_\+t foreground\+Colour, uint16\+\_\+t background\+Colour, uint8\+\_\+t character\+Size, uint8\+\_\+t rotation, uint8\+\_\+t text)
+\begin{DoxyCompactList}\small\item\em Prints a a short enumerated message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_aac1201fbc8f36a3eb2041a12da869b3e}{print\+Message}} (uint16\+\_\+t X, uint16\+\_\+t Y, uint16\+\_\+t foreground\+Colour, uint16\+\_\+t background\+Colour, uint8\+\_\+t character\+Size, const char $\ast$p\+Text)
+\begin{DoxyCompactList}\small\item\em Prints a a short message (via a pointer) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a17250de214104ca0a3e40fb38208b1b2}{print\+Message}} (uint16\+\_\+t X, uint16\+\_\+t Y, uint16\+\_\+t foreground\+Colour, uint16\+\_\+t background\+Colour, uint8\+\_\+t character\+Size, uint8\+\_\+t text)
+\begin{DoxyCompactList}\small\item\em prints a short enumerated message \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a1bc274eee52d047d16171699bf019afd}{print\+Message}} (uint16\+\_\+t foreground\+Colour, uint16\+\_\+t background\+Colour, uint8\+\_\+t character\+Size, uint8\+\_\+t text)
+\begin{DoxyCompactList}\small\item\em prints a short enumerated message \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a7ad7666c1544490e3c77c1e1a8805f0b}{print\+Message}} (const char $\ast$p\+Text, uint16\+\_\+t col)
+\begin{DoxyCompactList}\small\item\em prints a short message via a pointer \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a6be1c712c22133535d35c84df36b3c27}{print\+Message}} (uint8\+\_\+t text)
+\begin{DoxyCompactList}\small\item\em prints an enumerated block of text \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a9e1e75824d6a2155ef2d73607c6857a9}{print\+Number}} (uint16\+\_\+t foreground\+Colour, uint16\+\_\+t background\+Colour, uint8\+\_\+t large\+Character\+Size, uint8\+\_\+t small\+Character\+Size, float number, bool metric)
+\begin{DoxyCompactList}\small\item\em Displays a reading inserts \char`\"{}\+I\+C\+E\char`\"{} alert if $<$ 0. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a78acedbc1e0aa953f9f6bc6a470ac484}{print\+Number}} (uint16\+\_\+t foreground\+Colour, uint16\+\_\+t background\+Colour, uint8\+\_\+t large\+Character\+Size, uint8\+\_\+t small\+Character\+Size, float number)
+\begin{DoxyCompactList}\small\item\em prints a right-\/aligned number (+0-\/999) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_ab27bba3b43eaad7acdc1fdef917b7406}{flash\+Text}} (uint8\+\_\+t message, uint8\+\_\+t X, uint8\+\_\+t Y, uint16\+\_\+t foreground, uint16\+\_\+t background)
+\begin{DoxyCompactList}\small\item\em Displays those horrible and annoying flashing messages. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{main_8cpp_a5ce5bb508f7d33b43aac40a0b3274e19}{center\+Text}} (String text, uint8\+\_\+t char\+Width)
+\begin{DoxyCompactList}\small\item\em Centers a block of text given character size. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{main_8cpp_ab16889ae984b9b798989a0d239283cac}{I\+SR}} (T\+I\+M\+E\+R1\+\_\+\+O\+V\+F\+\_\+vect)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{main_8cpp_ae370ca8a88d924eac4addd67363d50f3}\label{main_8cpp_ae370ca8a88d924eac4addd67363d50f3}} 
+\index{main.cpp@{main.cpp}!annunciators@{annunciators}}
+\index{annunciators@{annunciators}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{annunciators()}{annunciators()}}
+{\footnotesize\ttfamily void annunciators (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Dry air, damp air and frost annunciator. 
+
+\mbox{\Hypertarget{main_8cpp_af72cf5611f3a19af9488b516945daa4a}\label{main_8cpp_af72cf5611f3a19af9488b516945daa4a}} 
+\index{main.cpp@{main.cpp}!blankArea@{blankArea}}
+\index{blankArea@{blankArea}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{blankArea()}{blankArea()}}
+{\footnotesize\ttfamily void blank\+Area (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{X,  }\item[{uint8\+\_\+t}]{Y,  }\item[{uint16\+\_\+t}]{width,  }\item[{uint8\+\_\+t}]{height }\end{DoxyParamCaption})}
+
+
+
+Draws a rectange over an area in the current background colour. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Top corner \\
+\hline
+{\em Y} & Left corner \\
+\hline
+{\em width} & of area to blank \\
+\hline
+{\em height} & of area to blank \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a5ce5bb508f7d33b43aac40a0b3274e19}\label{main_8cpp_a5ce5bb508f7d33b43aac40a0b3274e19}} 
+\index{main.cpp@{main.cpp}!centerText@{centerText}}
+\index{centerText@{centerText}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{centerText()}{centerText()}}
+{\footnotesize\ttfamily uint8\+\_\+t center\+Text (\begin{DoxyParamCaption}\item[{String}]{text,  }\item[{uint8\+\_\+t}]{char\+Width }\end{DoxyParamCaption})}
+
+
+
+Centers a block of text given character size. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & String of characters \\
+\hline
+{\em char\+Width} & width of the current font \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint8\+\_\+t central X offset based on the screen width 
+\end{DoxyReturn}
+\mbox{\Hypertarget{main_8cpp_a450976150371d71bf66f3fd22e75867f}\label{main_8cpp_a450976150371d71bf66f3fd22e75867f}} 
+\index{main.cpp@{main.cpp}!checkAlarm@{checkAlarm}}
+\index{checkAlarm@{checkAlarm}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{checkAlarm()}{checkAlarm()}}
+{\footnotesize\ttfamily void check\+Alarm (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+If an alarm condition is set, this flases the L\+ED pin. 
+
+\mbox{\Hypertarget{main_8cpp_a6ede7dd44bee8e77917cdc3aba0e8bbe}\label{main_8cpp_a6ede7dd44bee8e77917cdc3aba0e8bbe}} 
+\index{main.cpp@{main.cpp}!checkButton@{checkButton}}
+\index{checkButton@{checkButton}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{checkButton()}{checkButton()}}
+{\footnotesize\ttfamily void check\+Button (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Polls for short A\+ND long button pushes, acts accordingly. 
+
+\begin{DoxyRefDesc}{Bug}
+\item[\mbox{\hyperlink{bug__bug000001}{Bug}}]Can be a bit fussy resetting the alarms. \end{DoxyRefDesc}
+\mbox{\Hypertarget{main_8cpp_a80ff0ed5ec5a32fd110d259024c8f0ff}\label{main_8cpp_a80ff0ed5ec5a32fd110d259024c8f0ff}} 
+\index{main.cpp@{main.cpp}!checkHeatIndex@{checkHeatIndex}}
+\index{checkHeatIndex@{checkHeatIndex}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{checkHeatIndex()}{checkHeatIndex()}}
+{\footnotesize\ttfamily void check\+Heat\+Index (\begin{DoxyParamCaption}\item[{float}]{T,  }\item[{float}]{H }\end{DoxyParamCaption})}
+
+
+
+Set warning conditions if Steadman\textquotesingle{}s temp is exceeded. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature in C \\
+\hline
+{\em H} & Relative humidity in \% \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a08f340c367cdc579703e08b57e24d7f6}\label{main_8cpp_a08f340c367cdc579703e08b57e24d7f6}} 
+\index{main.cpp@{main.cpp}!checkHumidityCondtions@{checkHumidityCondtions}}
+\index{checkHumidityCondtions@{checkHumidityCondtions}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{checkHumidityCondtions()}{checkHumidityCondtions()}}
+{\footnotesize\ttfamily void check\+Humidity\+Condtions (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Test the humidity is within watershed (and trigger alarms) 
+
+\mbox{\Hypertarget{main_8cpp_a4ea0e1b951574d392d68e7d480623368}\label{main_8cpp_a4ea0e1b951574d392d68e7d480623368}} 
+\index{main.cpp@{main.cpp}!checkTemperatureConditions@{checkTemperatureConditions}}
+\index{checkTemperatureConditions@{checkTemperatureConditions}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{checkTemperatureConditions()}{checkTemperatureConditions()}}
+{\footnotesize\ttfamily void check\+Temperature\+Conditions (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Test the temperature is within limits (and trigger alarms) 
+
+\begin{DoxyRemark}{Remarks}
+Note the instant we register \char`\"{}freezing\char`\"{} we set the alarm this is by design, it\textquotesingle{}s not a bug! Similarly, the watershed is 4C and the A\+V\+E\+R\+A\+GE needs go above that this is by design, it\textquotesingle{}s not a bug! 
+\end{DoxyRemark}
+\mbox{\Hypertarget{main_8cpp_a94b3c359fa64c6fc095c5d1124288200}\label{main_8cpp_a94b3c359fa64c6fc095c5d1124288200}} 
+\index{main.cpp@{main.cpp}!clearAlarmFlag@{clearAlarmFlag}}
+\index{clearAlarmFlag@{clearAlarmFlag}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{clearAlarmFlag()}{clearAlarmFlag()}}
+{\footnotesize\ttfamily void clear\+Alarm\+Flag (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{flag }\end{DoxyParamCaption})}
+
+
+
+Clears a numbered sempahore in the alarm flag set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em flag} & enumerated flag number \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_ab3688861dd7327edc8a5a1fe27fc3ea5}\label{main_8cpp_ab3688861dd7327edc8a5a1fe27fc3ea5}} 
+\index{main.cpp@{main.cpp}!colourValue@{colourValue}}
+\index{colourValue@{colourValue}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{colourValue()}{colourValue()}}
+{\footnotesize\ttfamily uint16\+\_\+t colour\+Value (\begin{DoxyParamCaption}\item[{float}]{value,  }\item[{uint16\+\_\+t}]{lower\+Limit,  }\item[{uint16\+\_\+t}]{upper\+Limit,  }\item[{uint16\+\_\+t}]{guard }\end{DoxyParamCaption})}
+
+
+
+returns a colour value when values fall outside a range 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & temperature or relative humidity \\
+\hline
+{\em lower\+Limit} & normal upper limit of the reading \\
+\hline
+{\em upper\+Limit} & normal lower limit of the reading \\
+\hline
+{\em guard} & A margin of error \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint16\+\_\+t 16 bit colour value for M\+C\+U\+\_\+\+Friend 
+\end{DoxyReturn}
+\mbox{\Hypertarget{main_8cpp_adc983323712ae39d9492c261a082ddaa}\label{main_8cpp_adc983323712ae39d9492c261a082ddaa}} 
+\index{main.cpp@{main.cpp}!displayGraph@{displayGraph}}
+\index{displayGraph@{displayGraph}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{displayGraph()}{displayGraph()}}
+{\footnotesize\ttfamily void display\+Graph (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Displays the main graph. 
+
+convert the temperature and humidity.\+reading readings into something that scales to the chart. the F\+SD is 100 points giving a temp range of 0 -\/ 50c (32 -\/ 122f) the first few lines just wall off temperatures from under freezing and above 50. \mbox{\Hypertarget{main_8cpp_aefdad2649c99814c7880486483828b5b}\label{main_8cpp_aefdad2649c99814c7880486483828b5b}} 
+\index{main.cpp@{main.cpp}!drawGraphLines@{drawGraphLines}}
+\index{drawGraphLines@{drawGraphLines}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{drawGraphLines()}{drawGraphLines()}}
+{\footnotesize\ttfamily void draw\+Graph\+Lines (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Draw the graph lines and chart calibration markings. 
+
+\mbox{\Hypertarget{main_8cpp_a8e8cb10fed5e8f84a72f76ae16340098}\label{main_8cpp_a8e8cb10fed5e8f84a72f76ae16340098}} 
+\index{main.cpp@{main.cpp}!drawMainAxes@{drawMainAxes}}
+\index{drawMainAxes@{drawMainAxes}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{drawMainAxes()}{drawMainAxes()}}
+{\footnotesize\ttfamily void draw\+Main\+Axes (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Overdraws the graph outline in the current foreground. 
+
+\mbox{\Hypertarget{main_8cpp_a7833932274d1da25a569143019fc04f4}\label{main_8cpp_a7833932274d1da25a569143019fc04f4}} 
+\index{main.cpp@{main.cpp}!drawRadials@{drawRadials}}
+\index{drawRadials@{drawRadials}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{drawRadials()}{drawRadials()}}
+{\footnotesize\ttfamily void draw\+Radials (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+draws circular plots for the analogue version 
+
+\mbox{\Hypertarget{main_8cpp_a01b18b42f39d8264bab6f542ebc647b2}\label{main_8cpp_a01b18b42f39d8264bab6f542ebc647b2}} 
+\index{main.cpp@{main.cpp}!drawReticles@{drawReticles}}
+\index{drawReticles@{drawReticles}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{drawReticles()}{drawReticles()}}
+{\footnotesize\ttfamily void draw\+Reticles (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Displays the reticles U\+N\+D\+ER the current plots. 
+
+\mbox{\Hypertarget{main_8cpp_ab27bba3b43eaad7acdc1fdef917b7406}\label{main_8cpp_ab27bba3b43eaad7acdc1fdef917b7406}} 
+\index{main.cpp@{main.cpp}!flashText@{flashText}}
+\index{flashText@{flashText}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{flashText()}{flashText()}}
+{\footnotesize\ttfamily void flash\+Text (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{message,  }\item[{uint8\+\_\+t}]{X,  }\item[{uint8\+\_\+t}]{Y,  }\item[{uint16\+\_\+t}]{foreground,  }\item[{uint16\+\_\+t}]{background }\end{DoxyParamCaption})}
+
+
+
+Displays those horrible and annoying flashing messages. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & enumerated message to display \\
+\hline
+{\em X} & cursor position in absolute screen X coords \\
+\hline
+{\em Y} & cursor position in absolute screen Y coords \\
+\hline
+{\em foreground} & Foreground colour \\
+\hline
+{\em background} & background colour \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a107880a47ea6166ed287a1690ba8d473}\label{main_8cpp_a107880a47ea6166ed287a1690ba8d473}} 
+\index{main.cpp@{main.cpp}!heatIndex@{heatIndex}}
+\index{heatIndex@{heatIndex}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{heatIndex()}{heatIndex()}}
+{\footnotesize\ttfamily float heat\+Index (\begin{DoxyParamCaption}\item[{float}]{T,  }\item[{float}]{R }\end{DoxyParamCaption})}
+
+
+
+Steadman\textquotesingle{}s 1994 approximation for heat in given humidity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature in degrees C \\
+\hline
+{\em R} & Relative humidity in \% \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float
+\end{DoxyReturn}
+\begin{DoxyRemark}{Remarks}
+Approximate the \char`\"{}\+Heat index\char`\"{} per Steadman 1994. While the dry bulb temperature may be well within safe limits for humans, the addition of humidity reading prevents our bodies from effectively evaporatively cooling with the result that our internal temperature rises -\/ and the different of just a few degrees C can cause fatigue, aggression and eventually heat stroke and possibly death. These figures assume the person is doing mildly stressful work such as housework Workers in more extreme physical labour will suffer faster and vice versa. This is becoming a much more widespread problem as our climate changes.
+\end{DoxyRemark}
+Wikipedia \href{https://en.wikipedia.org/wiki/Heat_index}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Heat\+\_\+index}} 26–32 °C Caution\+: fatigue is possible with prolonged exposure and activity. Continuing activity could result in heat cramps. 32–41 °C Extreme caution\+: heat cramps and heat exhaustion are possible. Continuing activity could result in heat stroke. 41–54 °C Danger\+: heat cramps and heat exhaustion are likely. Heat stroke is probable with continued activity. \begin{quote}
+54 °C Extreme danger\+: heat stroke is imminent. \end{quote}
+\mbox{\Hypertarget{main_8cpp_a477dd2821cac07b0dd56d67a72eacaba}\label{main_8cpp_a477dd2821cac07b0dd56d67a72eacaba}} 
+\index{main.cpp@{main.cpp}!initGraph@{initGraph}}
+\index{initGraph@{initGraph}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{initGraph()}{initGraph()}}
+{\footnotesize\ttfamily void init\+Graph (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Blanks the chart area if it\textquotesingle{}s not already active. 
+
+\mbox{\Hypertarget{main_8cpp_a80ca785c7d3771fbbe40eb703b3b7938}\label{main_8cpp_a80ca785c7d3771fbbe40eb703b3b7938}} 
+\index{main.cpp@{main.cpp}!initGraphPoints@{initGraphPoints}}
+\index{initGraphPoints@{initGraphPoints}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{initGraphPoints()}{initGraphPoints()}}
+{\footnotesize\ttfamily void init\+Graph\+Points (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+~\newline
+ 
+
+Prepares the initial variables for the plot lines \begin{DoxyRemark}{Remarks}
+This only runs once to set clear everything in case of memory junk so we know not to plot these until a real one is recorded No point storing real numbers when single a byte (Y-\/coord) will do! 
+\end{DoxyRemark}
+\mbox{\Hypertarget{main_8cpp_ab16889ae984b9b798989a0d239283cac}\label{main_8cpp_ab16889ae984b9b798989a0d239283cac}} 
+\index{main.cpp@{main.cpp}!ISR@{ISR}}
+\index{ISR@{ISR}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{ISR()}{ISR()}}
+{\footnotesize\ttfamily I\+SR (\begin{DoxyParamCaption}\item[{T\+I\+M\+E\+R1\+\_\+\+O\+V\+F\+\_\+vect}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{main_8cpp_af9a17c5595986d28e5e3fc2eb332e1c7}\label{main_8cpp_af9a17c5595986d28e5e3fc2eb332e1c7}} 
+\index{main.cpp@{main.cpp}!labelTemperature@{labelTemperature}}
+\index{labelTemperature@{labelTemperature}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{labelTemperature()}{labelTemperature()}}
+{\footnotesize\ttfamily void label\+Temperature (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Labels the temperature graph axes according to C/F. 
+
+\mbox{\Hypertarget{main_8cpp_afe461d27b9c48d5921c00d521181f12f}\label{main_8cpp_afe461d27b9c48d5921c00d521181f12f}} 
+\index{main.cpp@{main.cpp}!loop@{loop}}
+\index{loop@{loop}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{loop()}{loop()}}
+{\footnotesize\ttfamily void loop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{main_8cpp_a58f11a3e2a40bbe4f77c17d373483699}\label{main_8cpp_a58f11a3e2a40bbe4f77c17d373483699}} 
+\index{main.cpp@{main.cpp}!magnusDewpoint@{magnusDewpoint}}
+\index{magnusDewpoint@{magnusDewpoint}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{magnusDewpoint()}{magnusDewpoint()}}
+{\footnotesize\ttfamily float magnus\+Dewpoint (\begin{DoxyParamCaption}\item[{float}]{T,  }\item[{float}]{R }\end{DoxyParamCaption})}
+
+
+
+Magnus\textquotesingle{} Dew Point (condensation temperature) calculation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature in degrees C \\
+\hline
+{\em R} & Relative humidity in \% \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float 
+\end{DoxyReturn}
+\begin{DoxyRemark}{Remarks}
+\href{https://en.wikipedia.org/wiki/Dew_point}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Dew\+\_\+point}} 
+\end{DoxyRemark}
+\mbox{\Hypertarget{main_8cpp_ad42291814b2e2efd4562aaa95c555cf8}\label{main_8cpp_ad42291814b2e2efd4562aaa95c555cf8}} 
+\index{main.cpp@{main.cpp}!printLeadingZero@{printLeadingZero}}
+\index{printLeadingZero@{printLeadingZero}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printLeadingZero()}{printLeadingZero()}}
+{\footnotesize\ttfamily void print\+Leading\+Zero (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{value }\end{DoxyParamCaption})}
+
+
+
+Puts a leading 0 in front of the \char`\"{}uptime\char`\"{} numbers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & the number of interest -\/ always $<$99. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a7ad7666c1544490e3c77c1e1a8805f0b}\label{main_8cpp_a7ad7666c1544490e3c77c1e1a8805f0b}} 
+\index{main.cpp@{main.cpp}!printMessage@{printMessage}}
+\index{printMessage@{printMessage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printMessage()}{printMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily void print\+Message (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Text,  }\item[{uint16\+\_\+t}]{col }\end{DoxyParamCaption})}
+
+
+
+prints a short message via a pointer 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Text} & null terminated block of text \\
+\hline
+{\em col} & foreground colour of text \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a1bc274eee52d047d16171699bf019afd}\label{main_8cpp_a1bc274eee52d047d16171699bf019afd}} 
+\index{main.cpp@{main.cpp}!printMessage@{printMessage}}
+\index{printMessage@{printMessage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printMessage()}{printMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily void print\+Message (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{foreground\+Colour,  }\item[{uint16\+\_\+t}]{background\+Colour,  }\item[{uint8\+\_\+t}]{character\+Size,  }\item[{uint8\+\_\+t}]{text }\end{DoxyParamCaption})}
+
+
+
+prints a short enumerated message 
+
+
+\begin{DoxyParams}{Parameters}
+{\em foreground\+Colour} & text\textquotesingle{}s foreground colour \\
+\hline
+{\em background\+Colour} & text\textquotesingle{}s background (fill) colour \\
+\hline
+{\em character\+Size} & enumerated character size \\
+\hline
+{\em text} & enumerated message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_aac1201fbc8f36a3eb2041a12da869b3e}\label{main_8cpp_aac1201fbc8f36a3eb2041a12da869b3e}} 
+\index{main.cpp@{main.cpp}!printMessage@{printMessage}}
+\index{printMessage@{printMessage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printMessage()}{printMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily void print\+Message (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{X,  }\item[{uint16\+\_\+t}]{Y,  }\item[{uint16\+\_\+t}]{foreground\+Colour,  }\item[{uint16\+\_\+t}]{background\+Colour,  }\item[{uint8\+\_\+t}]{character\+Size,  }\item[{const char $\ast$}]{p\+Text }\end{DoxyParamCaption})}
+
+
+
+Prints a a short message (via a pointer) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Absolute X value to position the cursor \\
+\hline
+{\em Y} & Absolute Y value to position the cursor \\
+\hline
+{\em foreground\+Colour} & text\textquotesingle{}s foreground colour \\
+\hline
+{\em background\+Colour} & text\textquotesingle{}s background (fill) colour \\
+\hline
+{\em character\+Size} & enumerated character size \\
+\hline
+{\em p\+Text} & pointer to a block of text \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_ab86f9d1959cd265786360a22fc1324c4}\label{main_8cpp_ab86f9d1959cd265786360a22fc1324c4}} 
+\index{main.cpp@{main.cpp}!printMessage@{printMessage}}
+\index{printMessage@{printMessage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printMessage()}{printMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily void print\+Message (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{X,  }\item[{uint16\+\_\+t}]{Y,  }\item[{uint16\+\_\+t}]{foreground\+Colour,  }\item[{uint16\+\_\+t}]{background\+Colour,  }\item[{uint8\+\_\+t}]{character\+Size,  }\item[{uint8\+\_\+t}]{rotation,  }\item[{uint8\+\_\+t}]{text }\end{DoxyParamCaption})}
+
+
+
+Prints a a short enumerated message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Absolute X value to position the cursor \\
+\hline
+{\em Y} & Absolute Y value to position the cursor \\
+\hline
+{\em foreground\+Colour} & text\textquotesingle{}s foreground colour \\
+\hline
+{\em background\+Colour} & text\textquotesingle{}s background (fill) colour \\
+\hline
+{\em character\+Size} & enumerated character size \\
+\hline
+{\em rotation} & enumerated character size \\
+\hline
+{\em text} & enumerated value for the first message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a1b4fdf62d4763129e768bc5234bc1152}\label{main_8cpp_a1b4fdf62d4763129e768bc5234bc1152}} 
+\index{main.cpp@{main.cpp}!printMessage@{printMessage}}
+\index{printMessage@{printMessage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printMessage()}{printMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily void print\+Message (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{X,  }\item[{uint16\+\_\+t}]{Y,  }\item[{uint16\+\_\+t}]{foreground\+Colour,  }\item[{uint16\+\_\+t}]{background\+Colour,  }\item[{uint8\+\_\+t}]{character\+Size,  }\item[{uint8\+\_\+t}]{rotation,  }\item[{uint8\+\_\+t}]{text,  }\item[{uint8\+\_\+t}]{text2 }\end{DoxyParamCaption})}
+
+
+
+Prints T\+WO enumberated text messages to the screen. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Absolute X value to position the cursor \\
+\hline
+{\em Y} & Absolute Y value to position the cursor \\
+\hline
+{\em foreground\+Colour} & text\textquotesingle{}s foreground colour \\
+\hline
+{\em background\+Colour} & text\textquotesingle{}s background (fill) colour \\
+\hline
+{\em character\+Size} & enumerated character size \\
+\hline
+{\em rotation} & enumerated value for the screen orientation \\
+\hline
+{\em text} & enumerated value for the first message \\
+\hline
+{\em text2} & enumerated value for message printed right after \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a17250de214104ca0a3e40fb38208b1b2}\label{main_8cpp_a17250de214104ca0a3e40fb38208b1b2}} 
+\index{main.cpp@{main.cpp}!printMessage@{printMessage}}
+\index{printMessage@{printMessage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printMessage()}{printMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily void print\+Message (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{X,  }\item[{uint16\+\_\+t}]{Y,  }\item[{uint16\+\_\+t}]{foreground\+Colour,  }\item[{uint16\+\_\+t}]{background\+Colour,  }\item[{uint8\+\_\+t}]{character\+Size,  }\item[{uint8\+\_\+t}]{text }\end{DoxyParamCaption})}
+
+
+
+prints a short enumerated message 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Absolute X value to position the cursor \\
+\hline
+{\em Y} & Absolute Y value to position the cursor \\
+\hline
+{\em foreground\+Colour} & text\textquotesingle{}s foreground colour \\
+\hline
+{\em background\+Colour} & text\textquotesingle{}s background (fill) colour \\
+\hline
+{\em character\+Size} & enumerated character size \\
+\hline
+{\em text} & enumerated message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a6be1c712c22133535d35c84df36b3c27}\label{main_8cpp_a6be1c712c22133535d35c84df36b3c27}} 
+\index{main.cpp@{main.cpp}!printMessage@{printMessage}}
+\index{printMessage@{printMessage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printMessage()}{printMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily void print\+Message (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{text }\end{DoxyParamCaption})}
+
+
+
+prints an enumerated block of text 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a78acedbc1e0aa953f9f6bc6a470ac484}\label{main_8cpp_a78acedbc1e0aa953f9f6bc6a470ac484}} 
+\index{main.cpp@{main.cpp}!printNumber@{printNumber}}
+\index{printNumber@{printNumber}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printNumber()}{printNumber()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void print\+Number (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{foreground\+Colour,  }\item[{uint16\+\_\+t}]{background\+Colour,  }\item[{uint8\+\_\+t}]{large\+Character\+Size,  }\item[{uint8\+\_\+t}]{small\+Character\+Size,  }\item[{float}]{number }\end{DoxyParamCaption})}
+
+
+
+prints a right-\/aligned number (+0-\/999) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em foreground\+Colour} & text foreground colour \\
+\hline
+{\em background\+Colour} & text background colour \\
+\hline
+{\em large\+Character\+Size} & enumerated large character size \\
+\hline
+{\em small\+Character\+Size} & enumerated small character size \\
+\hline
+{\em number} & the value to display \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a9e1e75824d6a2155ef2d73607c6857a9}\label{main_8cpp_a9e1e75824d6a2155ef2d73607c6857a9}} 
+\index{main.cpp@{main.cpp}!printNumber@{printNumber}}
+\index{printNumber@{printNumber}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{printNumber()}{printNumber()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void print\+Number (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{foreground\+Colour,  }\item[{uint16\+\_\+t}]{background\+Colour,  }\item[{uint8\+\_\+t}]{large\+Character\+Size,  }\item[{uint8\+\_\+t}]{small\+Character\+Size,  }\item[{float}]{number,  }\item[{bool}]{metric }\end{DoxyParamCaption})}
+
+
+
+Displays a reading inserts \char`\"{}\+I\+C\+E\char`\"{} alert if $<$ 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em foreground\+Colour} & foreground colour of text \\
+\hline
+{\em background\+Colour} & background colour of text \\
+\hline
+{\em large\+Character\+Size} & enumerated size of the large characters \\
+\hline
+{\em small\+Character\+Size} & enumerated size of the small characters \\
+\hline
+{\em number} & printable number \\
+\hline
+{\em metric} & set to true to display number in degrees C \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_acb375545576a873c5553ea17e816cc62}\label{main_8cpp_acb375545576a873c5553ea17e816cc62}} 
+\index{main.cpp@{main.cpp}!sensorFailed@{sensorFailed}}
+\index{sensorFailed@{sensorFailed}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{sensorFailed()}{sensorFailed()}}
+{\footnotesize\ttfamily void sensor\+Failed (\begin{DoxyParamCaption}\item[{Universal\+D\+H\+T\+::\+Response}]{response }\end{DoxyParamCaption})}
+
+
+
+Brings everthing to a halt if the D\+HT sensor breaks during use. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em response} & response Returned 16 bit from the D\+HT libary \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRemark}{Remarks}
+Displays warnings in the lower half of the screen to stop or reduce activity for health and safety. 
+\end{DoxyRemark}
+\mbox{\Hypertarget{main_8cpp_aa83d3d2a61ebb6b7235a61570b923ab4}\label{main_8cpp_aa83d3d2a61ebb6b7235a61570b923ab4}} 
+\index{main.cpp@{main.cpp}!setAlarmFlag@{setAlarmFlag}}
+\index{setAlarmFlag@{setAlarmFlag}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setAlarmFlag()}{setAlarmFlag()}}
+{\footnotesize\ttfamily void set\+Alarm\+Flag (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{flag }\end{DoxyParamCaption})}
+
+
+
+Sets a numbered sempahore in the alarm flag set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em flag} & enumerated flag number \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}\label{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}} 
+\index{main.cpp@{main.cpp}!setup@{setup}}
+\index{setup@{setup}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setup()}{setup()}}
+{\footnotesize\ttfamily void setup (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{main_8cpp_a06929503bdb90ee229bf57ed4e46a571}\label{main_8cpp_a06929503bdb90ee229bf57ed4e46a571}} 
+\index{main.cpp@{main.cpp}!showReadings@{showReadings}}
+\index{showReadings@{showReadings}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{showReadings()}{showReadings()}}
+{\footnotesize\ttfamily void show\+Readings (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Display large main reading displays and the min/max values. 
+
+\mbox{\Hypertarget{main_8cpp_a995d0e9acbfa0945600bebf3566a76b5}\label{main_8cpp_a995d0e9acbfa0945600bebf3566a76b5}} 
+\index{main.cpp@{main.cpp}!showUptime@{showUptime}}
+\index{showUptime@{showUptime}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{showUptime()}{showUptime()}}
+{\footnotesize\ttfamily void show\+Uptime (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+A little not to $\ast$nix systems. 
+
+\begin{DoxyRemark}{Remarks}
+This was developed on Linux due to the much faster compiler 
+\end{DoxyRemark}
+\mbox{\Hypertarget{main_8cpp_af1f848ca7b857fc13b561d65cdfa7c70}\label{main_8cpp_af1f848ca7b857fc13b561d65cdfa7c70}} 
+\index{main.cpp@{main.cpp}!takeReadings@{takeReadings}}
+\index{takeReadings@{takeReadings}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{takeReadings()}{takeReadings()}}
+{\footnotesize\ttfamily void take\+Readings (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Get the current RH and Temp from the D\+H\+T11/22. 
+
+\mbox{\Hypertarget{main_8cpp_ad66e99775baab9dfdc9955831621616b}\label{main_8cpp_ad66e99775baab9dfdc9955831621616b}} 
+\index{main.cpp@{main.cpp}!testAlarm@{testAlarm}}
+\index{testAlarm@{testAlarm}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{testAlarm()}{testAlarm()}}
+{\footnotesize\ttfamily bool test\+Alarm (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{flag }\end{DoxyParamCaption})}
+
+
+
+Sets a numbered sempahore in the alarm flag set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em flag} & flag enumerated flag number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the specified flag is set 
+
+false if the specified flag is U\+N\+S\+ET 
+\end{DoxyReturn}
+\mbox{\Hypertarget{main_8cpp_af8ebbd6a73836aa8158a9d92b4fea6f7}\label{main_8cpp_af8ebbd6a73836aa8158a9d92b4fea6f7}} 
+\index{main.cpp@{main.cpp}!unsafeTempWarnings@{unsafeTempWarnings}}
+\index{unsafeTempWarnings@{unsafeTempWarnings}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{unsafeTempWarnings()}{unsafeTempWarnings()}}
+{\footnotesize\ttfamily void unsafe\+Temp\+Warnings (\begin{DoxyParamCaption}\item[{float}]{T }\end{DoxyParamCaption})}
+
+
+
+Display warnings about effective working temperature. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Steadman\textquotesingle{}s Effective temperature in C\\
+\hline
+\end{DoxyParams}
+\begin{DoxyRemark}{Remarks}
+Displays warnings in the lower half of the screen to stop or reduce activity for health and safety. 
+\end{DoxyRemark}
