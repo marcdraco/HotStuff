@@ -35,12 +35,12 @@
 
 #include "UniversalDHT.hpp"
 
-UniversalDHT::UniversalDHT(int pin) 
+UniversalDHT::UniversalDHT(uint8_t pin) 
 {
   this->pin = pin;
 }
 
-bool waitWhileValue(int pin, uint8_t value) 
+bool waitWhileValue(uint8_t pin, uint8_t value) 
 {
   uint32_t time_start = micros();
   uint32_t time = 0;
@@ -140,7 +140,7 @@ UniversalDHT::Response UniversalDHT::sample(RawReading *reading)
 
   // Pull high and set to input, before wait 40us.
   digitalWrite(pin, HIGH);           // 2.
-  delayMicroseconds(25);             // specs [2]: 20-40us
+  delayMicroseconds(25);             //unit8_t specs [2]: 20-40us
 
   advance(lf, nf);
 

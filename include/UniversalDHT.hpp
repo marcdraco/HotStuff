@@ -65,7 +65,7 @@ private:
   int pin;
   Response sample(RawReading *reading);
 public:
-  UniversalDHT(int pin);
+  UniversalDHT(uint8_t pin);
   Response read(float* temperature, float* humidity);
 };
 

@@ -29,6 +29,9 @@
   3.5" TFT shield supplied by A-Z Delivery via Amazon.  
 */
 
+#ifndef __HOTSTUFF_H
+#define __HOTSTUFF_H
+
 // use this if you have an incident like someone did...
 #define SENSOR_MISSING_OR_BUSTED  
 
@@ -99,6 +102,9 @@
 #define ORANGE    RGB(255,128,64)
 #define BROWNISH  RGB(0x2e,0x2d,0x0)
 #define PURPLEISH RGB(0x2f,0x00,0x2d)
+
+#define LOW_LIMIT_EXCEEDED BLUE
+#define HIGH_LIMIT_EXCEEDED RED
 
 /*
    Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful!
@@ -342,3 +348,4 @@ struct
 
 MCUFRIEND_kbv screen;
 UniversalDHT dht22(DHT22_DATA);
+#endif
