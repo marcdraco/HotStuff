@@ -100,9 +100,7 @@ void setup(void)
 
 void drawRadials(void)
 {
-  uint16_t theta = 0;
-
-  for (theta = 0; theta < 360; theta += 8)
+  for (uint16_t theta = 0; theta < 360; theta += 8)
   {
     float x = cos(radians(theta));
     float y = sin(radians(theta));
@@ -238,8 +236,6 @@ void displayGraph(void)
   }
   graph.updateGraphReadings = false;
 
-  uint16_t xPosition = 0;             // These values can get larger than 255 so we need 16 bits
-  uint8_t index      = 0;
 
   drawReticles();
   // convert the temperature and humidity.reading readings into something that scales to the chart.
@@ -266,17 +262,18 @@ void displayGraph(void)
   temperature.pipe[graph.width - 1] = temperature.Y;
 
   // clear the old lines
-  for (index = 2; index < graph.width; index ++)
+  for (uint8_t index = 2; index < graph.width; index ++)
   {
+    uint16_t xPosition = 0;             // These values can get larger than 255 so we need 16 
     xPosition = index + graph.X;
     screen.drawLine(xPosition - 1, humidity.pipe[index    - 2], xPosition, humidity.pipe[index - 1],    BLACK);
     screen.drawLine(xPosition - 1, temperature.pipe[index - 2], xPosition, temperature.pipe[index - 1], BLACK);
   }
 
   //draw in new ones (this is supposed to reduce flashing but it's "meh")
-  for (index = 1; index < graph.width; index ++)
+  for (uint8_t index = 1; index < graph.width; index ++)
   {
-    xPosition = index + graph.X;
+    uint16_t xPosition = index + graph.X;
 
     screen.drawLine(xPosition - 1, humidity.pipe[index    - 1],    xPosition, humidity.pipe[index],    humidity.trace);
     screen.drawLine(xPosition - 1, temperature.pipe[index - 1],    xPosition, temperature.pipe[index], temperature.trace);
@@ -295,16 +292,14 @@ void drawMainAxes(void)
 
 void drawReticles(void)
 {
-  uint8_t index      = 0;
-  uint16_t xPosition = 0;             // These values can get larger than 255 so we need 16 bits
   uint8_t humidityMax    = (graph.Y + graph.height) - (humidity.maxComfort + humidity.guard);
   uint8_t humidityMin    = (graph.Y + graph.height) - (humidity.minComfort - humidity.guard);
   uint8_t temperatureMax = (graph.Y + graph.height) - ((temperature.maxComfort + temperature.guard) * 2);
   uint8_t temperatureMin = (graph.Y + graph.height) - ((temperature.minComfort - temperature.guard) * 2);
 
-  for (index = 1; index < graph.width; index++)     // draws vertical blanking strokes and reticules
+  for (uint8_t index = 1; index < graph.width; index++)     // draws vertical blanking strokes and reticules
   {
-    xPosition  = index + graph.X;
+    uint16_t xPosition  = index + graph.X;
 
     if (index % (graph.width / 8) == 0)              // seven vertical divisions
     {
@@ -312,13 +307,13 @@ void drawReticles(void)
     }
   }
 
-  for (index = 0; index < graph.height + 20; index = index + 20)
+  for (uint8_t index = 0; index < graph.height + 20; index = index + 20)
   {
     screen.drawFastHLine(graph.X, graph.Y + index, graph.width, text.colour.reticleColour);
   }
 
 #ifdef SHOW_BANDS
-  for (index = 1; index < graph.width; index += 10)     // draws vertical blanking strokes and reticules
+  for (uint8_t index = 1; index < graph.width; index += 10)     // draws vertical blanking strokes and reticules
   {
     screen.drawFastHLine(graph.X + index,    humidityMax, 3, BROWNISH);
     screen.drawFastHLine(graph.X + index,    humidityMin, 3, BROWNISH);
@@ -527,9 +522,7 @@ void doHeatIndex(float T, float H)
 
   // Note that the following temperatures are giving in degrees C for simplicity in coding.
 
-  int8_t apparentTemperature = 0;
-
-  apparentTemperature = (int8_t) heatIndex(T, H);
+  int8_t apparentTemperature = (int8_t) heatIndex(T, H);
 
   // heat index routine only works reliably(ish) for temps >26 celcius and RH >= 40%
   if ((apparentTemperature < 26) || T < 26 || H < 40)
@@ -542,8 +535,6 @@ void doHeatIndex(float T, float H)
     return;
   }
 
-
-
   // This flags up that the lower half of the display is set to warning!
   tft.warnDanger = true;
 
@@ -551,7 +542,8 @@ void doHeatIndex(float T, float H)
   blankArea(0, 100, tft.width, tft.height - 110);
 #endif
 
-  if (apparentTemperature >= 26 && (apparentTemperature <= temperature.caution))
+  if ( (apparentTemperature >= 26) && 
+        (apparentTemperature <= temperature.caution) )
   {
     flashText(messages.caution, centerText(messages.msg[messages.caution], text.baseWidth * text.large), tft.height / 2, text.colour.defaultForeground, text.colour.defaultBackground);
     ewt(apparentTemperature);
@@ -577,8 +569,6 @@ void doHeatIndex(float T, float H)
 
 void ewt(float apparentTemperature)
 {
-  String message = (F("temperature:         "));  // allocate sufficient space for concatenation
-  message = (F("temperature:"));
   screen.setTextSize(text.large);
 
   if (temperature.useMetric == true)
@@ -686,13 +676,11 @@ void labelTemperature(void)
   {
     printMessage(text.axisYPosition, text.leftAxisLabel, text.colour.defaultForeground, text.colour.defaultBackground, text.small, tft.rotatePortrait, messages.temperatureScale, messages.f);
   }
-  drawUnits();
 }
 
 void initMainScreen(void)
 {
   drawGraphLines();
-  drawUnits();
   screen.fillRect(0, text.uptimeTimeY, tft.width, text.small * text.baseHeight + 2, GREY); //just that little Uptime display, a nod to *nix.
 }
 
@@ -722,20 +710,6 @@ void initGraphPoints(void)
   {
     humidity.pipe[index]    = (graph.Y + graph.height);
     temperature.pipe[index] = (graph.Y + graph.height);
-  }
-}
-
-void drawUnits(void)
-{
-  return;
-  screen.setCursor(text.scaleX, text.temperatureY);
-  if (temperature.useMetric == true)
-  {
-    printMessage(messages.c);
-  }
-  else
-  {
-    printMessage(messages.f);
   }
 }
 
@@ -843,7 +817,6 @@ void checkButton(void)
 
     showReadings();
 #ifndef TOPLESS
-    drawUnits();
     drawGraphLines();
 #endif
   }
