@@ -32,7 +32,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>     // Core graphics library by AdaFruit
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
-#include <hotstuff.h>
+#include <hotstuff.hpp>
 #include <protos.hpp>
   
 
@@ -141,7 +141,7 @@ void loop()
 }
 
 /**
- * @brief @brief    Dry air, damp air and frost annunciator
+ * @brief Dry air, damp air and frost annunciator
  * 
  */
 
