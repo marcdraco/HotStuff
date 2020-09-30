@@ -27,7 +27,7 @@
   YES, IT'S WORDY AND WE'VE ESCHEWED MANY C "SHORTCUTS" TO MAKE IT EASIER FOR BEGINNERS
 
 @file
-@brief This file is marvelous.
+@brief Main code
 
 */
 
@@ -44,24 +44,11 @@
 
 void setup()
 {
-
-
   uint16_t ID = screen.readID();
   if (ID == 0xD3D3)
   {
     ID = 0x9481; //force ID if write-only screen
   }
-
-  screen.begin(ID);
-  screen.setRotation(DEFAULT); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
-  screen.fillScreen(text.colour.defaultBackground);
-
-  pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
-  pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
-  pinMode(ALARM_PIN, OUTPUT);         // This is usually pin 13 (the board LED)
-  pinMode(DHT22_POWER, OUTPUT);       // cheeky way to power the DHT22, but it only requires 1.5mA
-  digitalWrite(DHT22_POWER, HIGH);    // and saves wiring from the ICSP ports on UNO with a TFT shield
-  pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
   noInterrupts();                       // disable all interrupts
   TCCR1A = 0;
@@ -74,6 +61,22 @@ void setup()
 
   dht22.read(&humidity.reading, &temperature.reading);
 
+  screen.begin(ID);
+  screen.setRotation(DEFAULT); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
+
+  screen.fillScreen(text.colour.defaultBackground);
+
+  #ifdef SIMPLE_LCD
+    loop();
+  #endif
+
+  pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
+  pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
+  pinMode(ALARM_PIN, OUTPUT);         // This is usually pin 13 (the board LED)
+  pinMode(DHT22_POWER, OUTPUT);       // cheeky way to power the DHT22, but it only requires 1.5mA
+  digitalWrite(DHT22_POWER, HIGH);    // and saves wiring from the ICSP ports on UNO with a TFT shield
+  pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
+
 #ifndef TOPLESS
   blankArea(0, 0, tft.width, tft.height);
 #endif
@@ -81,7 +84,6 @@ void setup()
 #ifndef TOPLESS
 
   screen.setRotation(tft.rotateDefault);
-
   initGraphPoints();
   drawGraphLines();
   screen.fillRect(0, text.uptimeTimeY, tft.width, text.small * text.baseHeight + 2, GREY); //just that little Uptime display, a nod to *nix.
@@ -91,6 +93,74 @@ void setup()
 #endif
 
 #endif
+}
+
+
+void loop()
+{
+  if (isrTimings.timeInSeconds == 0) // this ticks every minute
+  {
+    graph.updateGraphReadings = true;
+    if (isrTimings.timeInMinutes == 0) // this ticks every hour
+    {
+      temperature.cmaCounter = 0;
+      humidity.cmaCounter    = 0;
+    }   
+  }
+
+  /*
+    Open by checking if it's time to take the current readings from the DHT22
+    the "timeToRead" variable is incremented by the interupt service routine
+    once every second. After three seconds we take a new read. Use a larger 
+    int if you prefer. Area temperatures don't vary much unless the sensor is 
+    in a drafty corner!
+  */
+
+  if (isrTimings.timeToRead == 3)
+  {
+    takeReadings();
+#ifdef SIMPLE_LCD
+    showLCDReads();
+#else
+    showReadings();
+#endif
+  }
+
+#ifndef SIMPLE_LCD
+  checkAlarm();
+  annunciators();
+  showUptime();
+  checkButton();
+#endif
+}
+
+/**
+ * @brief About as simple as the screen can be!
+ * @remark This presents its own challenge as
+ * the LCD font we have has no background colour!
+ */
+
+void showLCDReads(void)
+{
+  static float prevTemp = -100;
+  static float prevHumid = -100;
+
+  screen.setFont(&FreeSevenSegNumFontPlusPlus);
+  screen.setRotation(tft.rotatePortrait);
+
+  if (prevTemp != temperature.cumulativeMovingAverage)
+  {
+    printNumber(10, 160, text.colour.defaultBackground, text.colour.defaultBackground, text.large, text.small, prevTemp, temperature.useMetric);  
+    printNumber(10, 160, text.colour.defaultForeground, text.colour.defaultBackground, text.large, text.small, temperature.cumulativeMovingAverage, temperature.useMetric);
+    prevTemp = temperature.cumulativeMovingAverage;
+  }
+
+  if (prevHumid != humidity.cumulativeMovingAverage)
+  {
+    printNumber(10, 310, text.colour.defaultBackground, text.colour.defaultBackground, text.large, text.small, prevHumid, false);
+    prevHumid = humidity.cumulativeMovingAverage;
+    printNumber(10, 310, text.colour.defaultForeground, text.colour.defaultBackground, text.large, text.small, humidity.cumulativeMovingAverage, false);
+  }
 }
 
 /**
@@ -113,39 +183,6 @@ void drawRadials(void)
     screen.drawLine(innerX + radials.hRadial, innerY, outerX + radials.hRadial, outerY, RED);
   }
 }
-
-void loop()
-{
-  /*
-    Open by checking if it's time to take the current readings from the DHT22
-    the "timeToRead" variable is incremented by the interupt service routine
-    once every second. After three seconds we take a new read. Use a larger 
-    int if you prefer. Area temperatures don't vary much unless the sensor is 
-    in a drafty corner!
-  */
-
-  if (isrTimings.timeToRead == 3)
-  {
-    takeReadings();
-    showReadings();
-  }
-
-  checkAlarm();
-  annunciators();
-  checkButton();
-  showUptime();
-
-  if (isrTimings.timeInSeconds == 0) // this ticks every minute
-  {
-    graph.updateGraphReadings = true;
-    if (isrTimings.timeInMinutes == 0) // this ticks every hour
-    {
-      temperature.cmaCounter = 0;
-      humidity.cmaCounter    = 0;
-    }   
-  }
-}
-
 /**
  * @brief Dry air, damp air and frost annunciator
  * 
@@ -1182,6 +1219,9 @@ void printMessage(uint8_t text)
  * @param smallCharacterSize  enumerated size of the small characters 
  * @param number printable number 
  * @param metric set to true to display number in degrees C
+ * @remark This function is designed to print the "fractional"
+ * part in a smaller font so more fits in the limited screen space.
+ * 
  */
 
 void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool metric)
@@ -1209,13 +1249,13 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
  * @param largeCharacterSize enumerated large character size
  * @param smallCharacterSize enumerated small character size
  * @param number the value to display
+ * @param useMetric allows for converstion C/F without screwing humidity
+ * @remark This function is designed to print the "fractional"
+ * part in a smaller font so more fits in the limited screen space.
  */
 
 void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number)
 {
-  double fraction;
-  double integer;
-
   screen.setTextColor(foregroundColour, backgroundColour);
   screen.setTextSize(largeCharacterSize);
 
@@ -1229,12 +1269,55 @@ void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t l
     screen.print(" ");
   }
 
-  fraction = modf(number, &integer);
+  double integer;
+  double fraction = modf(number, &integer);
   screen.print(integer, 0);
 
   modf(fraction * 10, &integer);
   screen.setTextSize(smallCharacterSize);
   screen.print(".");
+  screen.print(integer, 0);
+}
+
+/**
+ * @brief prints a right-aligned number (+0-999)
+ * 
+ * @param foregroundColour text foreground colour
+ * @param backgroundColour text background colour
+ * @param largeCharacterSize enumerated large character size
+ * @param smallCharacterSize enumerated small character size
+ * @param number the value to display
+ * @param X cursor X position
+ * @param Y cursor Y position
+ * @remark This function is designed to print the "fractional"
+ * part in a smaller font so more fits in the limited screen space.
+ * Specifically for the "ULTRA" LCD display this places the fraction
+ */
+
+void printNumber(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool useMetric)
+{
+  screen.setTextColor(foregroundColour, backgroundColour);
+  screen.setTextSize(largeCharacterSize);
+  screen.setCursor(X,Y);
+
+  if (number >= 0 && number < 100)
+  {
+    screen.print(" ");
+  }
+
+  if (number >= 0 && number < 10)
+  {
+    screen.print(" ");
+  }
+
+  double integer;
+  double fraction = modf(number, &integer);
+  screen.print(integer, 0);
+
+  screen.setCursor(screen.getCursorX(), screen.getCursorY() - 80);
+  
+  modf(fraction * 10, &integer);
+  screen.setTextSize(smallCharacterSize);
   screen.print(integer, 0);
 }
 

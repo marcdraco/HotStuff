@@ -32,24 +32,43 @@
 #ifndef __HOTSTUFF_H
 #define __HOTSTUFF_H
 
-// use this if you have an incident like someone did...
+#define SIMPLE_LCD
+
+/**
+ * @brief use this if you have an incident like someone did...
+ * @remark after Marc's sloppy soldering (and failure to heatsink
+ * the DHT22 pins, it registered a bad output... (blah blah)
+ * The output, however, is still (broadly) within usable limits
+ * so this is used in cases like that to disable the failure screen!
+ */
+ 
 #define SENSOR_MISSING_OR_BUSTED  
 
- // You have a dirty mind! This for the i2C version!
- //#define TOPLESS                
+/**
+ * @brief TOPLESS is for the version with i2C displays (no shield, hence topless)
+ */
+ 
+ //#define TOPLESS                 
 
-// remove this line to have the unit read in fahrenheit
+/**
+ * @brief // remove this line to have the unit read in fahrenheit
+ */
 #define METRIC                   
  
-// This is for the experimental analog display
+/**
+ * @brief This is for the experimental analog display
+ */
+  
 //#define CLOCKWISE
 
-/*
-   Poor man's unit testing. These defines can set temperature and humidity.reading
-   well outside what the DHT22 is sending in order to check changes to code.
-   Remember it makes no sense have both high AND low temp/RH% the same time though
-   Temperature for debug purposes is in CENTIGRADE!
-
+/**
+ * @brief 
+ * 
+ * @remark Poor man's unit testing. These defines can set temperature and humidity.reading
+ * well outside what the DHT22 is sending in order to check changes to code.
+ * Remember it makes no sense have both high AND low temp/RH% the same time though
+ * Temperature for debug purposes is in CENTIGRADE!
+ * 
 */
 
 // #define DEBUG_OVERTEMP_ALARM 45
@@ -221,21 +240,27 @@ struct {
   uint8_t failTime[5] = {0, 0, 0, 0, 0};
 } fail;
 
-/*
-   The following constants set up various values to calculate the graphing functions and should
-   be fairly self-explanatory. As set here, the chart covers temperatures from 0 to 50C
-   and RH (humidity.reading) across the whole range. The DHT22 is good for -40 to 80C but this
-   device is for humans at work or elderly so is set for those temperature ranges.
-   Compare the DHT22 information sheet for complete specifications.
+/**
+ * @brief 
+ * The following constants set up various values to calculate the graphing functions and should
+ * be fairly self-explanatory. As set here, the chart covers temperatures from 0 to 50C
+ * and RH (humidity.reading) across the whole range. The DHT22 is good for -40 to 80C but this
+ * device is for humans at work or elderly so is set for those temperature ranges.
+ * Compare the DHT22 information sheet for complete specifications.
 */
 
 struct
 {
   struct
   {
+#ifdef SIMPLE_LCD
+    const uint16_t defaultBackground = WHITE;
+    const uint16_t defaultForeground = BLACK;
+    const uint16_t reticleColour     = DEEPGREY;
+#else
     const uint16_t defaultBackground = BLACK;
     const uint16_t defaultForeground = CYAN;
-    const uint16_t reticleColour     = DEEPGREY;
+#endif
   } colour;
 
   const uint8_t  bigReadXTemp    = 10  / WIDTH_SCALE;
@@ -345,6 +370,10 @@ struct
   bool     useMetric            = false;
 #endif
 } temperature;
+
+#ifdef SIMPLE_LCD
+#include <FreeSevenSegNumFontPlusPlus.h>
+#endif
 
 MCUFRIEND_kbv screen;
 UniversalDHT dht22(DHT22_DATA);
