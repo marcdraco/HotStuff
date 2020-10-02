@@ -384,7 +384,7 @@ void drawReticles(void)
 
 #ifdef SHOW_BANDS
 
-  uint8_t humidityMax   = (graph.Y + graph.height) - (humidity.maxComfort + humidity.guard);
+  uint8_t humidityMax    = (graph.Y + graph.height) - (humidity.maxComfort + humidity.guard);
   uint8_t humidityMin    = (graph.Y + graph.height) - (humidity.minComfort - humidity.guard);
   uint8_t temperatureMax = (graph.Y + graph.height) - ((temperature.maxComfort + temperature.guard) * 2);
   uint8_t temperatureMin = (graph.Y + graph.height) - ((temperature.minComfort - temperature.guard) * 2);
@@ -529,10 +529,14 @@ void takeReadings(void)
   // using these avoids little odd spikes from throwing the graph and smooths it out too.
 
   humidity.cmaCounter = humidity.cmaCounter + 1;
-  humidity.cumulativeMovingAverage = humidity.cumulativeMovingAverage + ((humidity.reading - humidity.cumulativeMovingAverage) / humidity.cmaCounter);
+  humidity.cumulativeMovingAverage = humidity.cumulativeMovingAverage + 
+                                    ((humidity.reading - humidity.cumulativeMovingAverage) / 
+                                    humidity.cmaCounter);
 
   temperature.cmaCounter = temperature.cmaCounter + 1;
-  temperature.cumulativeMovingAverage = temperature.cumulativeMovingAverage + ((temperature.reading - temperature.cumulativeMovingAverage) / temperature.cmaCounter);
+  temperature.cumulativeMovingAverage = temperature.cumulativeMovingAverage + 
+                                        ((temperature.reading - temperature.cumulativeMovingAverage) / 
+                                        temperature.cmaCounter);
   
   checkHumidityCondtions();
   checkTemperatureConditions();
