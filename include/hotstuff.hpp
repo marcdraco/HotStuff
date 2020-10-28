@@ -122,6 +122,7 @@ class Flags
 
 class Fixed
 {
+  private:
     struct characters_t
     { 
       int16_t X;  
@@ -131,7 +132,6 @@ class Fixed
 
   static const int MAXCELLS {30};
 
-  private:
     int16_t m_X {0};
     uint8_t m_Y {0};
     uint8_t m_xStep {0};
@@ -415,8 +415,7 @@ class Messages
 class Alarm
 {
 
-  public:
-
+  private:
   using cursor = struct 
   {
     uint16_t X;
@@ -424,6 +423,8 @@ class Alarm
   };
 
   uint16_t m_timer;
+
+  public:
 
   /**
    * @brief If an alarm condition is set, this flashes the LED pin

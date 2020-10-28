@@ -88,7 +88,7 @@
 #include "hotstuff_fonts.hpp"
 #include "hotstuff.hpp"
 
-MCUFRIEND_kbv screen;
+Display screen;
 UniversalDHT dht22(DHT22_DATA);
 Graph chart;
 Alarm alarm;
@@ -143,7 +143,7 @@ void setup()
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
 
-  screen.setRotation(display.rotateDefaultSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
+  screen.setRotation(screen.rotateDefaultSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
   chart.initGraph();
@@ -202,7 +202,7 @@ void showLCDReads(void)
   static float prevTemp  = -100;
   static float prevHumid = -100;
  
-  screen.setRotation(display.rotatePortraitSouth);
+  screen.setRotation(screen.rotatePortraitSouth);
   if (prevTemp != temperature.getCMA())
   {
     messages.printNumber(defaultInk,
@@ -326,7 +326,7 @@ void Graph::initGraph(void)
   {
     return;
   }
-  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.paper);
+  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, screen.getPaper());
   drawGraphScaleMarks();
   drawMainAxes();
   drawReticles();
@@ -335,7 +335,7 @@ void Graph::initGraph(void)
 
 void Graph::drawGraphScaleMarks(void)
 {
-  screen.setRotation(display.rotatePortraitSouth);
+  screen.setRotation(screen.rotatePortraitSouth);
   screen.setTextColor(defaultInk);
   screen.setTextSize(TEXTSMALL);
 
@@ -354,7 +354,7 @@ void Graph::drawGraphScaleMarks(void)
   
   screen.setCursor(AXIS_Y_POSITION, TFT_WIDTH - BASEHEIGHT);
   messages.execute(Messages::humidityScale);
-  screen.setRotation(display.rotateDefaultSouth);
+  screen.setRotation(screen.rotateDefaultSouth);
     
   // temp scale
   for (auto temp{0}; temp < 60; temp = temp + 10)
@@ -415,7 +415,7 @@ void Reading::showReadings(void)
 {  
   fixed.reset();
   fixed.setFixedFont(&HOTLARGE);
-  display.ink = defaultInk;
+  screen.setInk(defaultInk);
 
   uint8_t yPosition = fixed.getYstep();
 
@@ -468,7 +468,7 @@ void Reading::showReadings(void)
 
   environment.setColour(humidity.getReading(), hLimits);
   printReading(humidity.getReading(), METRIC);
-  display.ink = defaultInk;
+  screen.setInk(defaultInk);
   fixed.drawGlyph('%');
 
   // Min and Max readings.
@@ -489,7 +489,7 @@ void Reading::showReadings(void)
   
   environment.setColour(humidity.getHighRead(), hLimits);
 
-  fixed.moveTo(screen.width() / 2, fixed.getY());
+  fixed.moveTo(screen.width / 2, fixed.getY());
   fixed.setFixedFont(&HOTSMALL);
 
   printReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
@@ -543,15 +543,15 @@ void Environmental::setColour(const reading_t &value, const limits_t &limits)
 {
   if (value < static_cast<reading_t>(limits.lower))
   {
-    display.ink = LOW_LIMIT_EXCEEDED;
+    screen.setInk(LOW_LIMIT_EXCEEDED);
     return;
   }
   else if (value > static_cast<reading_t>(limits.upper))
   {
-    display.ink = HIGH_LIMIT_EXCEEDED;
+    screen.setInk(HIGH_LIMIT_EXCEEDED);
     return;
   }
-  display.ink = defaultInk;
+  screen.setInk(defaultInk);
   return;
 }
 
@@ -1023,7 +1023,7 @@ void Fixed::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
     data->x      = fixed.getX();
     data->y      = fixed.getY();
     data->glyph  = g;
-    data->colour = display.ink;
+    data->colour = screen.getInk();
 }
 
 void Fixed::printFixed(const char* buffer)
@@ -1054,8 +1054,8 @@ uint8_t Messages::centerText(const uint8_t &M, const uint8_t &charWidth)
 
 void Messages::clear(const uint8_t &message)
 {
-  display.ink   = defaultPaper;
-  display.paper = defaultPaper;
+  screen.setInk(defaultPaper);
+  screen.setPaper(defaultPaper);
   execute(message);
 }
 
@@ -1090,7 +1090,7 @@ void Messages::showUptime(void)
 
 /*
 
-void Graph::draw(quadrilateral_t* quad, colours_t ink, colours_t outline = display.paper)
+void Graph::draw(quadrilateral_t* quad, colours_t ink, colours_t outline = screen.paper)
 {
   screen.fillTriangle(quad->cords[0].X, quad->cords[0].Y,
                       quad->cords[1].X, quad->cords[1].Y,
