@@ -444,7 +444,7 @@ void Reading::showReadings(void)
   printReading(48, METRIC | TEMPERATURE);
 
   //STOP
-  return; 
+  //return; 
 
   limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
   limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
