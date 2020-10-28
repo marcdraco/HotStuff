@@ -64,13 +64,11 @@ using limits_t = struct
   reading_t upper;
 };
 
-
 using minmax_t = struct
 {
   reading_t min;
   reading_t max;
 };
-
 
 using triangle_t = struct
 {
@@ -104,7 +102,6 @@ using hieroglyphs_t = struct
   glyph_t glyphics[];
 };
 
-
 struct 
 {
   volatile isrtiming_t timeInSeconds {0};
@@ -116,7 +113,7 @@ struct
   volatile isrtiming_t timeToRead    {0};
 } isrTimings;
 
-struct 
+struct Display
 {
   const uint16_t width  {TFT_WIDTH};
   const uint16_t height {TFT_HEIGHT};

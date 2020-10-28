@@ -796,49 +796,45 @@ void Alarm::checkAlarm(void)
 
 void Alarm::checkButton(void)
 {
-  if (digitalRead(BUTTON_PIN) == LOW)
-  {
-    STOP
-  }
-
-  if (digitalRead(BUTTON_PIN) == HIGH)
-  {
-    if (button.timer != 0)
+    if (digitalRead(BUTTON_PIN) == LOW)
     {
- 
-      if (button.timer < SHORTPRESS) // button.shortPress)
-      {
-        flags.clear(FROST | DAMP | DRY | OVERTEMP);
-        button.timer = 0;
-        digitalWrite(ALARM_PIN, LOW);
-      }
+        STOP
     }
-  }
-  else
-  {
-    if (! button.timer)
+
+    if (digitalRead(BUTTON_PIN) == HIGH)
     {
-      button.timer = 1;
+        if (! m_timer)
+        {
+            if (m_timer < SHORTPRESS) // button.shortPress)
+            {
+                flags.clear(FROST | DAMP | DRY | OVERTEMP);
+                m_timer = 0;
+                digitalWrite(ALARM_PIN, LOW);
+            }
+        }
     }
     else
     {
-      button.timer += 1;
+        if (! m_timer)
+        {
+            m_timer = 1;
+        }
+        else
+        {
+            m_timer += 1;
+        }
     }
-  }
 
-  if (button.timer > LONGPRESS)
-  {
-    // Toggle metric/imperial
-    (flags.flip(METRIC) );
-    screen.fillRect(LOW_TEMP_X,       LOW_TEMP_Y,   72,  8,     defaultPaper);
-    screen.fillRect(LEFTMARGIN - 2, LOWHUMID_Y + 12, 20, 40, defaultPaper);
-    button.timer = 0;
-
-    temperature.showReadings();
-#ifndef TOPLESS
-    chart.drawGraphScaleMarks();
-#endif
-  }
+    if (m_timer > LONGPRESS)
+    {
+        // Toggle metric/imperial
+        (flags.flip(METRIC) );
+        screen.fillRect(LOW_TEMP_X,     LOW_TEMP_Y,  72,  8,     defaultPaper);
+        screen.fillRect(LEFTMARGIN - 2, LOWHUMID_Y + 12, 20, 40, defaultPaper);
+        m_timer = 0;
+        temperature.showReadings();
+        chart.drawGraphScaleMarks();
+    }
 }
 
 void Alarm::sensorFailed(UniversalDHT::Response response)

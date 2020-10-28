@@ -88,13 +88,6 @@ inline uint8_t* pgm_read_bitmap_ptr(const fixedgfxfont_t* gfxFont) {
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
-  
-/**
- * @brief The "super large" LCD display
- * 
- */
-void showLCDReads();
-
 class Flags 
 {
   private:
@@ -334,7 +327,7 @@ class Messages
     work2, caution, xcaution, danger, xdanger
   };
 
-  String translations[xdanger +1];
+  String translations[xdanger];
 
   char* pText;
 
@@ -429,6 +422,8 @@ class Alarm
     uint16_t X;
     uint16_t Y;
   };
+
+  uint16_t m_timer;
 
   /**
    * @brief If an alarm condition is set, this flashes the LED pin
@@ -533,38 +528,39 @@ class Environmental
 
 class Reading
 {
-  using coordinates_t    = struct 
-  {
-    int16_t X {0}; 
-    int16_t Y {0};
-  };
-
-  reading_t m_lowRead ;
-  reading_t m_highRead;
-  reading_t m_reading;
-  reading_t m_mean;
-  reading_t m_cumulativeMovingAverage {0};
-  reading_t m_correction;
-  uint16_t m_cmaCounter;
-  coordinates_t m_position;
-  colours_t m_trace;           // graph line colour
-  uint8_t* m_pipe;
-
-  public:
-  
-  Reading()
-  {
-    // cumulative moving averages are a form of mean that doesn't need to track every single value
-    // using these avoids little odd spikes from throwing the graph and smooths it out too.
-    m_cmaCounter = 0;
-	
-    // If we run out of memory here, we've got bigger problems!
-    m_pipe = new uint8_t[GRAPH_WIDTH];
-
-    for (auto i {0}; i < GRAPH_WIDTH; ++i)
+    private:
+    using coordinates_t = struct 
     {
-      m_pipe[i] = (GRAPH_Y + HEIGHT);
-    }
+      int16_t X {0}; 
+      int16_t Y {0};
+    };
+
+    reading_t m_lowRead ;
+    reading_t m_highRead;
+    reading_t m_reading;
+    reading_t m_mean;
+    reading_t m_cumulativeMovingAverage {0};
+    reading_t m_correction;
+    uint16_t m_cmaCounter;
+    coordinates_t m_position;
+    colours_t m_trace;           // graph line colour
+    uint8_t* m_pipe;
+
+    public:
+    
+    Reading()
+    {
+      // cumulative moving averages are a form of mean that doesn't need to track every single value
+      // using these avoids little odd spikes from throwing the graph and smooths it out too.
+      m_cmaCounter = 0;
+    
+      // If we run out of memory here, we've got bigger problems!
+      m_pipe = new uint8_t[GRAPH_WIDTH];
+
+      for (auto i {0}; i < GRAPH_WIDTH; ++i)
+      {
+        m_pipe[i] = (GRAPH_Y + HEIGHT);
+      }
   }
   
   ~Reading() 
