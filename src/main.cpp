@@ -413,93 +413,68 @@ void Reading::updateReading(const reading_t &reading)
 }
 
 void Reading::showReadings(void)
-{  
-    fixed.reset();
+{
     fixed.setFixedFont(&HOTLARGE);
     screen.setInk(defaultInk);
-
     uint8_t yPosition = fixed.getYstep();
 
-    Serial.println("SET0");
-    fixed.moveTo(0, yPosition);
-    printReading(11, METRIC | TEMPERATURE);
+    limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
+    limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
 
+    readings_t readings {temperature.getReading(), humidity.getReading()};
+    environment.checkHeatIndex(readings);  
+    chart.displayGraph();
+
+    fixed.setFixedFont(&HOTLARGE);
+    yPosition = fixed.getYstep();
+
+    fixed.moveTo(0, yPosition);
+
+    environment.setColour(temperature.getReading(), tLimits);
+    printReading(temperature.getReading(), 
+                (flags.isSet(USEMETRIC) ? METRIC : 0) | 
+                (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
+                TEMPERATURE);
+
+    fixed.moveTo(180, yPosition);
+
+    environment.setColour(humidity.getReading(), hLimits);
+    printReading(humidity.getReading(), METRIC);
+    screen.setInk(defaultInk);
+    fixed.drawGlyph('%');
+    // Min and Max readings.
+    environment.setColour(temperature.getHighRead(), tLimits);
+    fixed.moveTo(LOW_TEMP_X, yPosition + 20);
+
+    fixed.setFixedFont(&HOTSMALL);
+    printReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
+                (flags.isSet(USEMETRIC)) ? METRIC : 0);
+
+    fixed.setFixedFont(&HOTSMALL);
+    fixed.drawGlyph('/');
+
+    environment.setColour(temperature.getHighRead(), tLimits);
+    fixed.setFixedFont(&HOTSMALL);
+    printReading((temperature.getReading() > temperature.getHighRead()) ? temperature.getReading() : temperature.getHighRead(),
+                (flags.isSet(USEMETRIC)) ? METRIC : 0);
+
+    environment.setColour(humidity.getHighRead(), hLimits);
+
+    fixed.moveTo(screen.width / 2, fixed.getY());
+    fixed.setFixedFont(&HOTSMALL);
+
+    printReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
+
+    fixed.setFixedFont(&HOTSMALL);
+    fixed.drawGlyph('/');
+
+    environment.setColour(humidity.getHighRead(), hLimits);
+    fixed.setFixedFont(&HOTSMALL);
+    printReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
+
+    humidity.setMinMax();
+    temperature.setMinMax();
     fixed.reset();
-    Serial.println("SET1");
-    fixed.moveTo(0, yPosition);
-    printReading(22, METRIC | TEMPERATURE);
-
-    fixed.reset();
-    Serial.println("SET2");
-    fixed.moveTo(0, yPosition);
-    printReading(33, METRIC | TEMPERATURE);
-
-    Serial.println("SET3");
-    fixed.reset();
-    fixed.moveTo(0, yPosition);
-    printReading(44, METRIC | TEMPERATURE);
-
-    Serial.println("SET4");
-    fixed.reset();
-    fixed.moveTo(0, yPosition);
-    printReading(48, METRIC | TEMPERATURE); 
-
-  limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
-  limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
-
-  readings_t readings {temperature.getReading(), humidity.getReading()};
-  environment.checkHeatIndex(readings);  
-  chart.displayGraph();
-
-  fixed.setFixedFont(&HOTLARGE);
-  yPosition = fixed.getYstep();
-
-  fixed.moveTo(0, yPosition);
-
-  environment.setColour(temperature.getReading(), tLimits);
-  printReading(temperature.getReading(), 
-              (flags.isSet(USEMETRIC) ? METRIC : 0) | 
-              (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
-              TEMPERATURE);
-
-  fixed.moveTo(180, yPosition);
-
-  environment.setColour(humidity.getReading(), hLimits);
-  printReading(humidity.getReading(), METRIC);
-  screen.setInk(defaultInk);
-  fixed.drawGlyph('%');
-  // Min and Max readings.
-  environment.setColour(temperature.getHighRead(), tLimits);
-  fixed.moveTo(LOW_TEMP_X, yPosition + 20);
-
-  fixed.setFixedFont(&HOTSMALL);
-  printReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
-               (flags.isSet(USEMETRIC)) ? METRIC : 0);
-  
-  fixed.setFixedFont(&HOTSMALL);
-  fixed.drawGlyph('/');
-  
-  environment.setColour(temperature.getHighRead(), tLimits);
-  fixed.setFixedFont(&HOTSMALL);
-  printReading((temperature.getReading() > temperature.getHighRead()) ? temperature.getReading() : temperature.getHighRead(),
-              (flags.isSet(USEMETRIC)) ? METRIC : 0);
-  
-  environment.setColour(humidity.getHighRead(), hLimits);
-
-  fixed.moveTo(screen.width / 2, fixed.getY());
-  fixed.setFixedFont(&HOTSMALL);
-
-  printReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
-
-  fixed.setFixedFont(&HOTSMALL);
-  fixed.drawGlyph('/');
-  
-  environment.setColour(humidity.getHighRead(), hLimits);
-  fixed.setFixedFont(&HOTSMALL);
-  printReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
-
-  humidity.setMinMax();
-  temperature.setMinMax();
 }
 
 void Reading::printReading(const reading_t &reading, const semaphore_t &flags)
@@ -931,9 +906,23 @@ glyph_t Fixed::findGlyphCode(const glyph_t &glyph)
 
 void Fixed::drawGlyph(const glyph_t &glyph)
 {
-    screen.startWrite();
+//    Serial.println((int16_t) m_oldCursors[m_cell].glyph == (int16_t) m_newCursors[m_cell].glyph);
+    Serial.println((int16_t) m_oldCursors[m_cell].X);
 
-    if (bleachThis())
+    if (  (m_newCursors[m_cell].glyph == m_oldCursors[m_cell].glyph) && 
+          (m_newCursors[m_cell].X == m_oldCursors[m_cell].X ) &&
+          (m_newCursors[m_cell].Y == m_oldCursors[m_cell].Y ))
+    {
+
+        //Serial.println(m_oldCursors[m_cell].glyph);
+        glyphdata_t thisGlyph;
+        drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+        registerPosition(glyph);
+        moveTo(m_X + thisGlyph.xMax, m_Y);
+        return;  
+    }
+
+    screen.startWrite();
     {
         characters_t lastGlyph;
         lastGlyph = getPrevGlyph();
@@ -942,9 +931,6 @@ void Fixed::drawGlyph(const glyph_t &glyph)
         drawGlyphPrep(findGlyphCode(G), &prevGlyph);
         prevGlyph.x = lastGlyph.X;
         prevGlyph.y = lastGlyph.Y;
-        char b [80];
-        sprintf(b,"Bleach: '%c' at: %d", G, prevGlyph.x);
-        //Serial.println(b);
 
         for (uint16_t i {0}; i < prevGlyph.dimensions.H; ++i) 
         {
@@ -959,7 +945,7 @@ void Fixed::drawGlyph(const glyph_t &glyph)
                 }
                 if (prevGlyph.bits & 0x80) 
                 {
-                    screen.writePixel(X, Y, YELLOW);
+                    screen.writePixel(X, Y, defaultPaper);
                 }
                 ++X;
                 ++prevGlyph.bit;
@@ -968,15 +954,8 @@ void Fixed::drawGlyph(const glyph_t &glyph)
         }  
     }
 
-    registerPosition(glyph);
-
     glyphdata_t thisGlyph;
     drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
-
-    char b [80];
-    sprintf(b,"Print: '%c' at: %d, %d, height: %d", glyph, thisGlyph.x, thisGlyph.y, thisGlyph.dimensions.H );
-    //Serial.println(b);
-
     for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
     {
         uint16_t X = thisGlyph.x + thisGlyph.xo;
@@ -1000,6 +979,7 @@ void Fixed::drawGlyph(const glyph_t &glyph)
         }
     }
     screen.endWrite();  
+    registerPosition(glyph);
     moveTo(m_X + thisGlyph.xMax, m_Y);  
 }
 

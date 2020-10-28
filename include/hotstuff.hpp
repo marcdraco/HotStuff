@@ -149,6 +149,10 @@ class Fixed
     {
         m_newCursors = new characters_t[MAXCELLS]();
         m_oldCursors = new characters_t[MAXCELLS]();
+        for (auto i{0}; i < MAXCELLS; ++i) 
+        {
+          m_oldCursors[i].X = -255;
+        }
     };
 
     Fixed(fixedgfxfont_t* font) 
@@ -165,22 +169,12 @@ class Fixed
 
     void registerPosition(const glyph_t &glyph)
     {
-      //m_newCursors[m_cell].glyph = glyph;
-      //m_newCursors[m_cell].X = m_X;
-      //m_newCursors[m_cell].Y = m_Y;
+      m_newCursors[m_cell].glyph = glyph;
+      m_newCursors[m_cell].X = m_X;
+      m_newCursors[m_cell].Y = m_Y;
       ++m_cell;
-      char b[90];
-      sprintf(b, "Registered: '%c' at X: %d, Count: %d", glyph, m_X, m_cell);
-      Serial.println(b);
     }
   
-    bool bleachThis()
-    {
-      return ( (m_newCursors[m_cell].glyph == m_oldCursors[m_cell].glyph) && 
-               (m_newCursors[m_cell].X == m_oldCursors[m_cell].X ) &&
-               (m_newCursors[m_cell].Y == m_oldCursors[m_cell].Y ));
-    }
-
     characters_t getPrevGlyph()
     {
       return {m_oldCursors[m_cell].X, m_oldCursors[m_cell].Y, m_oldCursors[m_cell].glyph};        
