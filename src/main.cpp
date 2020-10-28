@@ -922,6 +922,13 @@ void Fixed::drawGlyph(const glyph_t &glyph)
         return;  
     }
 
+/*
+    %symbol (maybe others) can impinge on NARROWER characters in
+    some circumstaces. Need to mute the "X" position blanking.
+    quick and dirty way is to "repeat" the print process!
+    without the preblanking but that will flicker
+*/
+
     screen.startWrite();
     {
         characters_t lastGlyph;
@@ -1040,6 +1047,7 @@ void Fixed::reset()
     for (auto i{0}; i <  MAXCELLS; ++i)
     {
        m_oldCursors[i] = m_newCursors[i];
+       m_newCursors[i].X = -255;
     }
     m_cell = 0;
 }

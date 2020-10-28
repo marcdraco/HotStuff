@@ -34,7 +34,7 @@
 #include "types.hpp"
 
 // remove this line to have the unit read in fahrenheit
-// #define USE_METRIC                   
+#define USE_METRIC                   
  
 // Many (but maybe not all) non-AVR board installs define macros
 // for compatibility with existing PROGMEM-reading AVR code.

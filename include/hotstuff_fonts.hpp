@@ -37,8 +37,8 @@
 // the number of glyphs to ONLY what's absolutely necessary for
 // the display. 
 
-#include "fonts/expressWay-36.h"
-#define HOTLARGE HotStuff36
+#include "fonts/digital7-42.h"
+#define HOTLARGE HotStuff42
 
 #include "fonts/anonymousPro-6.h"
 #define HOTSMALL HotStuff6
