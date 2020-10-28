@@ -125,7 +125,7 @@ void setup()
   humidity.setTrace(AZURE);    // humidity graph line
   temperature.setTrace(YELLOW);   // temperature graph line
 
-  fixed.setFixedFont((fixedgfxfont_t *)&HOTLARGE);
+  fixed.setFixedFont(static_cast<const fixedgfxfont_t *>(&HOTLARGE));
   humidity.setX(160);
   humidity.setY(10);
   temperature.setY(10);
@@ -170,7 +170,6 @@ void setup()
 
 void loop()
 {
-
   temperature.takeReadings();
   temperature.showReadings();  
 
@@ -293,11 +292,11 @@ void Graph::drawReticles(void)
     // seven vertical divisions
     if (i % (GRAPH_WIDTH / 8) == 0)              
     {
-      screen.drawFastVLine(xPosition, GRAPH_Y, HEIGHT, reticleColour);
+      screen.drawFastVLine(xPosition, GRAPH_Y, FSD, reticleColour);
     }
   }
 
-  for (auto i {0}; i < HEIGHT + 20; i = i + 20)
+  for (auto i {0}; i < FSD + 20; i = i + 20)
   {
     screen.drawFastHLine(GRAPH_X, GRAPH_Y + i, GRAPH_WIDTH, reticleColour);
   }
@@ -335,46 +334,49 @@ void Graph::initGraph(void)
 
 void Graph::drawGraphScaleMarks(void)
 {
-  screen.setRotation(screen.rotatePortraitSouth);
-  screen.setTextColor(defaultInk);
-  screen.setTextSize(TEXTSMALL);
+    screen.setRotation(screen.rotatePortraitSouth);
+    screen.setTextColor(defaultInk);
+    screen.setTextSize(TEXTSMALL);
 
-  screen.setCursor(AXIS_Y_POSITION, 5);
+    screen.setCursor(AXIS_Y_POSITION, 5);
 
-  if (flags.isSet(USEMETRIC))
-  {
-    messages.execute(Messages::temperatureScale);
-    messages.execute(Messages::c);
-  }
-  else
-  {
-    messages.execute(Messages::temperatureScale);
-    messages.execute(Messages::f);
-  }
-  
-  screen.setCursor(AXIS_Y_POSITION, TFT_WIDTH - BASEHEIGHT);
-  messages.execute(Messages::humidityScale);
-  screen.setRotation(screen.rotateDefaultSouth);
-    
-  // temp scale
-  for (auto temp{0}; temp < 60; temp = temp + 10)
-  {
-    char b[6];
-    reading_int_t value;
-    screen.setCursor(GRAPH_X - 22, (GRAPH_Y + HEIGHT - 4) - (temp * 2) );
-    (flags.isSet(USEMETRIC)) ? value = temp : value = static_cast<reading_int_t>(toFahrenheit(temp));
-    sprintf(b, "%3d", value);
-    screen.print(b);
-  }
+    if (flags.isSet(USEMETRIC))
+    {
+        messages.execute(Messages::temperatureScale);
+        messages.execute(Messages::c);
+    }
+    else
+    {
+        messages.execute(Messages::temperatureScale);
+        messages.execute(Messages::f);
+    }
 
-  // humidity scale
-  for (auto humidity{0}; humidity < 120; humidity = humidity + 20)
-  {
-    char b[6];
-    screen.setCursor(GRAPH_X + GRAPH_WIDTH + 3, (GRAPH_Y + HEIGHT - 4) - (humidity) );
-    sprintf(b, "%3d", humidity);
-    screen.print(b);
-  }
+    screen.setCursor(AXIS_Y_POSITION, TFT_WIDTH - BASEHEIGHT);
+    messages.execute(Messages::humidityScale);
+
+    screen.setRotation(screen.rotateDefaultSouth);
+
+    // temp scale
+    for (auto temp{0}; temp < 60; temp = temp + 10)
+    {
+        char b[6];
+        reading_int_t value;
+        screen.setCursor(GRAPH_X - 22, (GRAPH_Y + FSD) - (temp * 2) );
+
+        (flags.isSet(USEMETRIC)) ? value = temp : value = static_cast<reading_int_t>(toFahrenheit(temp));
+        sprintf(b, "%3d", value);
+        screen.print(b);
+        sprintf(b,"X%d, Y%d", screen.getCursorX(), screen.getCursorY());
+    }
+        
+    // humidity scale
+    for (auto humidity{0}; humidity < 120; humidity = humidity + 20)
+    {
+        char b[6];
+        screen.setCursor(GRAPH_X + GRAPH_WIDTH + 3, (GRAPH_Y + FSD - 4) - (humidity) );
+        sprintf(b, "%3d", humidity);
+        screen.print(b);
+    }
 }
 
 void Reading::takeReadings(void)
@@ -443,8 +445,8 @@ void Reading::showReadings(void)
   fixed.moveTo(0, yPosition);
   printReading(48, METRIC | TEMPERATURE);
 
-  //STOP
-  //return; 
+//  STOP
+return; 
 
   limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
   limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
@@ -1041,6 +1043,52 @@ void Fixed::printFixed(const char* buffer)
   setFixedFont((fixedgfxfont_t*) &HOTLARGE);
 }  
 
+void Fixed::calcFontStep(uint8_t* width, uint8_t* height)
+{
+    getGlyphDimensions('%', width, height);
+
+    for (auto i{0}; i < 10; ++i)
+    {
+    dimensions_t size {0,0};
+
+    if (size.W > *width)
+    {
+        *width = size.W;
+    } 
+
+    if (size.H > *height)
+    {
+        *height = size.H;
+    }
+    }
+}
+
+void Fixed::getGlyphDimensions(const glyph_t &glyph, uint8_t* W, uint8_t* H)
+{
+    glyphdata_t G;
+    glyph_t code = findGlyphCode(glyph);
+
+    drawGlyphPrep(code, &G);
+
+    *W = G.dimensions.W;
+    *H = G.dimensions.H;
+}
+
+void Fixed::setFixedFont(const fixedgfxfont_t* pNewSize)
+{
+    m_pFont = pNewSize;
+    calcFontStep(&m_xStep, &m_yStep);
+}
+
+void Fixed::reset()
+{
+    for (auto i{0}; i <  MAXCELLS; ++i)
+    {
+       m_oldCursors[i] = m_newCursors[i];
+    }
+    m_cell = 0;
+}
+
 void Messages::execute(const uint8_t &M)
 {
   screen.setTextColor(defaultInk);
@@ -1088,9 +1136,7 @@ void Messages::showUptime(void)
   screen.print(msg);
 }
 
-/*
-
-void Graph::draw(quadrilateral_t* quad, colours_t ink, colours_t outline = screen.paper)
+void Graph::draw(const quadrilateral_t* quad, const colours_t &ink, const colours_t &outline)
 {
   screen.fillTriangle(quad->cords[0].X, quad->cords[0].Y,
                       quad->cords[1].X, quad->cords[1].Y,
@@ -1108,7 +1154,7 @@ void Graph::draw(quadrilateral_t* quad, colours_t ink, colours_t outline = scree
   screen.drawLine(quad->cords[3].X, quad->cords[3].Y, quad->cords[0].X, quad->cords[0].Y, outline);
 }
 
-void Graph::rotate(quadrilateral_t* quad, int16_t rotation)
+void Graph::rotate(quadrilateral_t* quad, const int16_t &rotation)
 {
   double sinTheta = sin(DEG_TO_RAD * rotation);
   double cosTheta = cos(DEG_TO_RAD * rotation);
@@ -1121,7 +1167,7 @@ void Graph::rotate(quadrilateral_t* quad, int16_t rotation)
   }
 }
 
-void Graph::translate(triangle_t* triangle, coordinates_t cords)
+void Graph::translate(triangle_t* triangle, const coordinates_t &cords)
 {
   for (auto i{0}; i < 4; ++i)
   {
@@ -1130,7 +1176,7 @@ void Graph::translate(triangle_t* triangle, coordinates_t cords)
   }
 }
 
-void Graph::translate(quadrilateral_t* polygon, coordinates_t cords)
+void Graph::translate(quadrilateral_t* polygon, const coordinates_t &cords)
 {
   for (auto i{0}; i < 4; ++i)
   {
@@ -1209,4 +1255,3 @@ void Graph::drawRadials()
     Graph::draw(&tick, RED, RED);
   }
 }
-*/

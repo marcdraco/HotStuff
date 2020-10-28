@@ -113,46 +113,6 @@ struct
   volatile isrtiming_t timeToRead    {0};
 } isrTimings;
 
-class Display : public MCUFRIEND_kbv
-{
-  colours_t m_ink {defaultInk};
-  colours_t m_paper {defaultPaper};
-  uint8_t m_rotation {0};
-
-  public:
-  const uint16_t width  {TFT_WIDTH};
-  const uint16_t height {TFT_HEIGHT};
-  
-  colours_t getInk()
-  {
-    return m_ink;
-  }
-
-  void setInk(const colours_t &C)
-  {
-    m_ink = C;
-  }
-
-  colours_t getPaper()
-  {
-    return m_paper;
-  }
-
-  void setPaper(const colours_t &C)
-  {
-    m_paper = C;
-  }
-
-  enum  
-  {
-    rotatePortraitNorth, 
-    rotateDefaultNorth,
-    rotatePortraitSouth, 
-    rotateDefaultSouth
-  };
-
-};
-
 enum
 {
   FONT1, // 6 x 8 

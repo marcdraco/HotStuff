@@ -138,13 +138,21 @@ class Fixed
     uint8_t m_yStep {0};     
 
     const fixedgfxfont_t* m_pFont;
+    characters_t* m_newCursors {nullptr};
+    characters_t* m_oldCursors {nullptr};
+    
     int8_t m_cell {0};  // cell is a printed charcacter position
-    characters_t* m_newCursors = new characters_t[MAXCELLS]();
-    characters_t* m_oldCursors = new characters_t[MAXCELLS]();
 
   public:
 
-    Fixed() {};
+    Fixed() 
+    {
+      if (! m_newCursors)
+      {
+        m_newCursors = new characters_t[MAXCELLS]();
+        m_oldCursors = new characters_t[MAXCELLS]();
+      }
+    };
 
     Fixed(fixedgfxfont_t* font) 
     {
@@ -154,8 +162,8 @@ class Fixed
     ~Fixed()
     {
       // never called but included to stop auto-code checkers whinging.
-      delete m_newCursors;
-      delete m_oldCursors;
+      delete[] m_newCursors;
+      delete[] m_oldCursors;
     }
 
     void registerPosition(const glyph_t &glyph)
@@ -197,14 +205,7 @@ class Fixed
       m_Y = Y;
     }
 
-    void reset()
-    {
-      for (auto i{0}; i <  MAXCELLS; ++i)
-      {
-        m_oldCursors[i] = m_newCursors[i];
-      }
-      m_cell = 0;
-    }
+    void reset();
 
     int8_t getCount()
     {
@@ -223,46 +224,55 @@ class Fixed
     void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
 
     glyph_t findGlyphCode(const glyph_t &glyph);
+    
+    void calcFontStep(uint8_t* width, uint8_t* height);
+    
+    void getGlyphDimensions(const glyph_t &glyph, uint8_t* W, uint8_t* H);
 
-    void calcFontStep(uint8_t* width, uint8_t* height)
-    {
-      getGlyphDimensions('%', width, height);
-
-      for (auto i{0}; i < 10; ++i)
-      {
-        dimensions_t size {0,0};
-
-        if (size.W > *width)
-        {
-          *width = size.W;
-        } 
-
-        if (size.H > *height)
-        {
-          *height = size.H;
-        }
-      }
-    }
-
-    void getGlyphDimensions(const glyph_t &glyph, uint8_t* W, uint8_t* H)
-    {
-      glyphdata_t G;
-      glyph_t code = findGlyphCode(glyph);
-
-      drawGlyphPrep(code, &G);
-
-      *W = G.dimensions.W;
-      *H = G.dimensions.H;
-    }
-
-    void setFixedFont(const fixedgfxfont_t* pNewSize)
-    {
-      m_pFont = pNewSize;
-      calcFontStep(&m_xStep, &m_yStep);
-    }
+    void setFixedFont(const fixedgfxfont_t* pNewSize);
 };
 
-class Graph
+class Display : public MCUFRIEND_kbv
+{
+  colours_t m_ink {defaultInk};
+  colours_t m_paper {defaultPaper};
+  uint8_t m_rotation {0};
+
+  public:
+  const uint16_t width  {TFT_WIDTH};
+  const uint16_t height {TFT_HEIGHT};
+  
+  colours_t getInk()
+  {
+    return m_ink;
+  }
+
+  void setInk(const colours_t &C)
+  {
+    m_ink = C;
+  }
+
+  colours_t getPaper()
+  {
+    return m_paper;
+  }
+
+  void setPaper(const colours_t &C)
+  {
+    m_paper = C;
+  }
+
+  enum  
+  {
+    rotatePortraitNorth, 
+    rotateDefaultNorth,
+    rotatePortraitSouth, 
+    rotateDefaultSouth
+  };
+
+};
+
+class Graph : public Display
 {
   public:
 
@@ -273,11 +283,11 @@ class Graph
   void draw(const triangle_t* polygon, const colours_t &ink, const colours_t &outline);
   void draw(const quadrilateral_t* polygon, const colours_t &ink, const  colours_t &outline);
 
-  void translate(const triangle_t* polygon, const coordinates_t &cords);
-  void translate(const quadrilateral_t* polygon, const coordinates_t &cords);
-
-  void rotate(const triangle_t* polygon, const angle_t &theta);
-  void rotate(const quadrilateral_t* polygon, const angle_t &theta);
+  void translate(triangle_t* polygon, const coordinates_t &cords);
+  void translate(quadrilateral_t* polygon, const coordinates_t &cords);
+    
+  void rotate(triangle_t* polygon, const angle_t &theta);
+  void rotate(quadrilateral_t* polygon, const angle_t &theta);
 
   /**
    * @brief Displays the main graph
@@ -397,7 +407,7 @@ class Messages
   /**
      * @brief Horrible flashing test
      * 
-     * @param M pre-defined message
+     * @param M translate(triangle_t* triangle, const coordinates_t &cords)pre-defined message
      */
       
   void flashText(const uint8_t &M);
@@ -536,7 +546,7 @@ class Reading
       int16_t Y {0};
     };
 
-    reading_t m_lowRead ;
+    reading_t m_lowRead;
     reading_t m_highRead;
     reading_t m_reading;
     reading_t m_mean;
@@ -560,7 +570,7 @@ class Reading
 
       for (auto i {0}; i < GRAPH_WIDTH; ++i)
       {
-        m_pipe[i] = (GRAPH_Y + HEIGHT);
+        m_pipe[i] = (GRAPH_Y + FSD);
       }
   }
   
