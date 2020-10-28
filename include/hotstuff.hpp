@@ -147,11 +147,8 @@ class Fixed
 
     Fixed() 
     {
-      if (! m_newCursors)
-      {
         m_newCursors = new characters_t[MAXCELLS]();
         m_oldCursors = new characters_t[MAXCELLS]();
-      }
     };
 
     Fixed(fixedgfxfont_t* font) 
@@ -168,9 +165,9 @@ class Fixed
 
     void registerPosition(const glyph_t &glyph)
     {
-      m_newCursors[m_cell].glyph = glyph;
-      m_newCursors[m_cell].X = m_X;
-      m_newCursors[m_cell].Y = m_Y;
+      //m_newCursors[m_cell].glyph = glyph;
+      //m_newCursors[m_cell].X = m_X;
+      //m_newCursors[m_cell].Y = m_Y;
       ++m_cell;
       char b[90];
       sprintf(b, "Registered: '%c' at X: %d, Count: %d", glyph, m_X, m_cell);
@@ -225,9 +222,7 @@ class Fixed
 
     glyph_t findGlyphCode(const glyph_t &glyph);
     
-    void calcFontStep(uint8_t* width, uint8_t* height);
-    
-    void getGlyphDimensions(const glyph_t &glyph, uint8_t* W, uint8_t* H);
+    dimensions_t getGlyphDimensions(const glyph_t &glyph);
 
     void setFixedFont(const fixedgfxfont_t* pNewSize);
 };
@@ -332,7 +327,7 @@ class Messages
 
   enum
   {
-    c, f, percent, slash, damp, dry, 
+    c = 0, f, percent, slash, damp, dry, 
     frost, temperatureScale, humidityScale, work1, 
     work2, caution, xcaution, danger, xdanger
   };

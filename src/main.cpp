@@ -225,54 +225,54 @@ void showLCDReads(void)
 
 void Graph::displayGraph(void)
 {
-  if (flags.isSet(UPDATEREADS))
-  {
-    return;
-  }
-  flags.clear(UPDATEREADS);
+    if (flags.isSet(UPDATEREADS))
+    {
+        return;
+    }
+    flags.clear(UPDATEREADS);
 
-  drawReticles();
+    drawReticles();
 
-  if (temperature.getCMA() > 50)
-  {
-    temperature.setY((GRAPH_Y + HEIGHT) - 100);
-  }
-  else if (temperature.getCMA() < 0)
-  {
-    temperature.setY(GRAPH_Y + HEIGHT);
-  }
-  else
-  {
-    temperature.setY((GRAPH_Y + HEIGHT) - (round(temperature.getCMA()) * 2));
-  }
+    if (temperature.getCMA() > 50)
+    {
+        temperature.setY((GRAPH_Y + FSD) - 100);
+    }
+    else if (temperature.getCMA() < 0)
+    {
+        temperature.setY(GRAPH_Y + FSD);
+    }
+    else
+    {
+        temperature.setY((GRAPH_Y + FSD) - (round(temperature.getCMA()) * 2));
+    }
 
-  humidity.setY((GRAPH_Y + HEIGHT) - round(humidity.getCMA()));
+    humidity.setY((GRAPH_Y + FSD) - round(humidity.getCMA()));
 
-  //put the latest readings at the end of the pipe.
+    //put the latest readings at the end of the pipe.
 
-  humidity.setPipe(GRAPH_WIDTH - 1, humidity.getY());
-  temperature.setPipe(GRAPH_WIDTH - 1, temperature.getY());
+    humidity.setPipe(GRAPH_WIDTH - 1, humidity.getY());
+    temperature.setPipe(GRAPH_WIDTH - 1, temperature.getY());
 
-  // clear the old lines
-  for (auto i {2}; i <GRAPH_WIDTH; ++i)
-  {
-    ucoordinate_t xPosition {0}; 
-    xPosition = i + GRAPH_X;
-    screen.drawLine(xPosition - 1, humidity.getPipe(i - 2), xPosition, humidity.getPipe(i - 1), BLACK);
-    screen.drawLine(xPosition - 1, temperature.getPipe(i - 2), xPosition, temperature.getPipe(i - 1), BLACK);
-  }
+    // clear the old lines
+    for (auto i {2}; i <GRAPH_WIDTH; ++i)
+    {
+        ucoordinate_t xPosition {0}; 
+        xPosition = i + GRAPH_X;
+        screen.drawLine(xPosition - 1, humidity.getPipe(i - 2), xPosition, humidity.getPipe(i - 1), BLACK);
+        screen.drawLine(xPosition - 1, temperature.getPipe(i - 2), xPosition, temperature.getPipe(i - 1), BLACK);
+    }
 
-  //draw in new ones (this is supposed to reduce flashing but it's "meh")
-  for (auto i {1}; i <GRAPH_WIDTH; ++i)
-  {
-    ucoordinate_t xPosition = i + GRAPH_X;
-    screen.drawLine(xPosition - 1, temperature.getPipe(i - 1), xPosition, temperature.getPipe(i), temperature.getTrace());
-    screen.drawLine(xPosition - 1, humidity.getPipe(i - 1),    xPosition, humidity.getPipe(i),    humidity.getTrace());
+    //draw in new ones (this is supposed to reduce flashing but it's "meh")
+    for (auto i {1}; i <GRAPH_WIDTH; ++i)
+    {
+        ucoordinate_t xPosition = i + GRAPH_X;
+        screen.drawLine(xPosition - 1, temperature.getPipe(i - 1), xPosition, temperature.getPipe(i), temperature.getTrace());
+        screen.drawLine(xPosition - 1, humidity.getPipe(i - 1),    xPosition, humidity.getPipe(i),    humidity.getTrace());
 
-    temperature.setPipe(i - 1, temperature.getPipe(i));
-    humidity.setPipe(i - 1,    humidity.getPipe(i));
-    chart.drawMainAxes();
-  }
+        temperature.setPipe(i - 1, temperature.getPipe(i));
+        humidity.setPipe(i - 1,    humidity.getPipe(i));
+        chart.drawMainAxes();
+    }
 }
 
 void Graph::drawMainAxes(void)
@@ -366,7 +366,6 @@ void Graph::drawGraphScaleMarks(void)
         (flags.isSet(USEMETRIC)) ? value = temp : value = static_cast<reading_int_t>(toFahrenheit(temp));
         sprintf(b, "%3d", value);
         screen.print(b);
-        sprintf(b,"X%d, Y%d", screen.getCursorX(), screen.getCursorY());
     }
         
     // humidity scale
@@ -415,38 +414,35 @@ void Reading::updateReading(const reading_t &reading)
 
 void Reading::showReadings(void)
 {  
-  fixed.reset();
-  fixed.setFixedFont(&HOTLARGE);
-  screen.setInk(defaultInk);
+    fixed.reset();
+    fixed.setFixedFont(&HOTLARGE);
+    screen.setInk(defaultInk);
 
-  uint8_t yPosition = fixed.getYstep();
+    uint8_t yPosition = fixed.getYstep();
 
-  Serial.println("SET0");
-  fixed.moveTo(0, yPosition);
-  printReading(11, METRIC | TEMPERATURE);
+    Serial.println("SET0");
+    fixed.moveTo(0, yPosition);
+    printReading(11, METRIC | TEMPERATURE);
 
-  fixed.reset();
-  Serial.println("SET1");
-  fixed.moveTo(0, yPosition);
-  printReading(22, METRIC | TEMPERATURE);
+    fixed.reset();
+    Serial.println("SET1");
+    fixed.moveTo(0, yPosition);
+    printReading(22, METRIC | TEMPERATURE);
 
-  fixed.reset();
-  Serial.println("SET2");
-  fixed.moveTo(0, yPosition);
-  printReading(33, METRIC | TEMPERATURE);
+    fixed.reset();
+    Serial.println("SET2");
+    fixed.moveTo(0, yPosition);
+    printReading(33, METRIC | TEMPERATURE);
 
-  Serial.println("SET3");
-  fixed.reset();
-  fixed.moveTo(0, yPosition);
-  printReading(44, METRIC | TEMPERATURE);
+    Serial.println("SET3");
+    fixed.reset();
+    fixed.moveTo(0, yPosition);
+    printReading(44, METRIC | TEMPERATURE);
 
-  Serial.println("SET4");
-  fixed.reset();
-  fixed.moveTo(0, yPosition);
-  printReading(48, METRIC | TEMPERATURE);
-
-//  STOP
-return; 
+    Serial.println("SET4");
+    fixed.reset();
+    fixed.moveTo(0, yPosition);
+    printReading(48, METRIC | TEMPERATURE); 
 
   limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
   limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
@@ -472,7 +468,6 @@ return;
   printReading(humidity.getReading(), METRIC);
   screen.setInk(defaultInk);
   fixed.drawGlyph('%');
-
   // Min and Max readings.
   environment.setColour(temperature.getHighRead(), tLimits);
   fixed.moveTo(LOW_TEMP_X, yPosition + 20);
@@ -980,7 +975,7 @@ void Fixed::drawGlyph(const glyph_t &glyph)
 
     char b [80];
     sprintf(b,"Print: '%c' at: %d, %d, height: %d", glyph, thisGlyph.x, thisGlyph.y, thisGlyph.dimensions.H );
-    Serial.println(b);
+    //Serial.println(b);
 
     for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
     {
@@ -1043,41 +1038,21 @@ void Fixed::printFixed(const char* buffer)
   setFixedFont((fixedgfxfont_t*) &HOTLARGE);
 }  
 
-void Fixed::calcFontStep(uint8_t* width, uint8_t* height)
-{
-    getGlyphDimensions('%', width, height);
-
-    for (auto i{0}; i < 10; ++i)
-    {
-    dimensions_t size {0,0};
-
-    if (size.W > *width)
-    {
-        *width = size.W;
-    } 
-
-    if (size.H > *height)
-    {
-        *height = size.H;
-    }
-    }
-}
-
-void Fixed::getGlyphDimensions(const glyph_t &glyph, uint8_t* W, uint8_t* H)
+dimensions_t Fixed::getGlyphDimensions(const glyph_t &glyph)
 {
     glyphdata_t G;
     glyph_t code = findGlyphCode(glyph);
 
     drawGlyphPrep(code, &G);
 
-    *W = G.dimensions.W;
-    *H = G.dimensions.H;
+    return {G.dimensions.W, G.dimensions.W};
 }
 
 void Fixed::setFixedFont(const fixedgfxfont_t* pNewSize)
 {
     m_pFont = pNewSize;
-    calcFontStep(&m_xStep, &m_yStep);
+    m_xStep = pNewSize->xMax;
+    m_yStep = pNewSize->yAdvance;     
 }
 
 void Fixed::reset()
