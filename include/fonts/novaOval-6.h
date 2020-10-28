@@ -1,0 +1,49 @@
+
+#ifndef __FIXEDFONTNOVAOVALTTF6
+#define __FIXEDFONTNOVAOVALTTF6
+const uint8_t HotStuff6Bitmaps[] PROGMEM = {
+  0x31, 0x28, 0x61, 0x86, 0x18, 0x52, 0x30, 0xF5, 0x55, 0x40, 0x74, 0x42,
+  0x11, 0x33, 0x11, 0xF8, 0x38, 0x20, 0x84, 0x18, 0x10, 0x51, 0x38, 0x08,
+  0x62, 0x8A, 0x4A, 0x2F, 0xC2, 0x08, 0x38, 0x82, 0x16, 0x24, 0x10, 0x53,
+  0x38, 0x39, 0x18, 0x2E, 0xCE, 0x18, 0x53, 0x38, 0xF8, 0x46, 0x21, 0x18,
+  0x84, 0x60, 0x31, 0x24, 0x9E, 0xCE, 0x18, 0x73, 0x78, 0x73, 0x28, 0x61,
+  0xCD, 0xD0, 0x62, 0x70, 0x00, 0x74, 0x88, 0xF8, 0x88, 0x80, 0x39, 0x38,
+  0x20, 0x82, 0x08, 0x11, 0x38, 0xF8, 0x00, 0x20, 0x84, 0x10, 0x82, 0x10,
+  0x43, 0x08, 0x00, 0x63, 0x24, 0x89, 0x22, 0x50, 0x65, 0x82, 0x90, 0xA4,
+  0x49, 0x11, 0x80, 0x80 };
+
+// Glyph, Offset to bitmap, Width, Height, xAdvance, xOffset, yOffset
+
+const fixedgfxglyph_t HotStuff6Glyphs[] PROGMEM = {
+  {48,     0,   6,   9,   8,    1,   -8 },   // 0x00 '0' 
+  {49,     7,   2,   9,   4,    1,   -8 },   // 0x01 '1' 
+  {50,    10,   5,   9,   8,    1,   -8 },   // 0x02 '2' 
+  {51,    16,   6,   9,   7,    0,   -8 },   // 0x03 '3' 
+  {52,    23,   6,   9,   7,    0,   -8 },   // 0x04 '4' 
+  {53,    30,   6,   9,   7,    0,   -8 },   // 0x05 '5' 
+  {54,    37,   6,   9,   8,    1,   -8 },   // 0x06 '6' 
+  {55,    44,   5,   9,   6,    0,   -8 },   // 0x07 '7' 
+  {56,    50,   6,   9,   8,    1,   -8 },   // 0x08 '8' 
+  {57,    57,   6,   9,   8,    1,   -8 },   // 0x09 '9' 
+  {32,    64,   1,   1,   5,    0,    0 },   // 0x0A ' ' 
+  {70,    65,   4,   9,   7,    1,   -8 },   // 0x0B 'F' 
+  {67,    70,   6,   9,   8,    1,   -8 },   // 0x0C 'C' 
+  {45,    77,   5,   1,   7,    1,   -4 },   // 0x0D '-' 
+  {47,    78,   6,  11,   6,    0,   -9 },   // 0x0E '/' 
+  {37,    87,  10,   9,  12,    1,   -8 },   // 0x0F '%' 
+  {46,    99,   1,   1,   4,    1,    0 }   // 0x10 '.' 
+};
+
+const fixedgfxfont_t HotStuff6 PROGMEM = 
+{
+  (uint8_t  *)HotStuff6Bitmaps, //< Glyph bitmaps, concatenated 
+  (fixedgfxglyph_t *)HotStuff6Glyphs, //< Glyph array
+  17,// total glyphs in the string
+   9,  // newline distance (y axis)
+     0,  // minimum X - left most
+    -1,  // minimum Y - bottom most (descenders can drive this negative)
+    11,  // maximum X - right most
+    10}; // maximum Y - top most
+// Approx. 233 bytes -  but your mileage may vary.
+
+#endif

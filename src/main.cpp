@@ -1,7 +1,7 @@
-
-
 /*
-  Copyright 2020, Marc Draco & Daniel Melvin & Garrie
+  +++++----------------------------------------------------------------------+++++
+
+  Copyright 2020, Marc Draco with Garrington "Garrie" Steele & Daniel Melvin
   Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
 
@@ -20,37 +20,119 @@
   TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
   BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
+  DAMAGE.
 
-  THERE ARE NO BUGS IN THIS CODE, JUST FEATURES, SOME OF WHICH MAY CAUSE IT TO BEHAVE
-  ERRATICALLY. SINCE YOU GOT IT FOR FREE, FIX THEM OR DON'T COME CRYING TO US!
-  YES, IT'S WORDY AND WE'VE ESCHEWED MANY C "SHORTCUTS" TO MAKE IT EASIER FOR BEGINNERS
+  +++++++++++++++++++++++++++ PROGRAMMER'S NOTES ++++++++++++++++++++++++++++++++++
+  <nag mode>
+  BEAUTIFUL CODE IS ELEGANT, CAREFULLY COMMENTED AND AIRY. ALL THAT FREE SPACE 
+  MAKES IT EASIER FOR EVERYONE. YOUR CODE ISN'T GOING TO CATCH COVID AND DEVELOP
+  PNEUMONIA BECAUSE YOU USED A FEW EXTRA SPACES!
+
+  THERE ARE NO BUGS IN THIS CODE, JUST FEATURES, SOME OF WHICH MAY CAUSE IT TO 
+  BEHAVE ERRATICALLY. SINCE YOU GOT IT FOR FREE, FIX THEM OR DON'T COME CRYING TO
+  US!
+  
+  YES, IT'S WORDY AND WE'VE ESCHEWED MANY C "SHORTCUTS" TO MAKE IT EASIER FOR 
+  BEGINNERS. REMEMBER, WE'RE NOT WORKING ON TELETYPES AND MANY SHORTCUTS LEAD TO 
+  OBFUSCATED CODE THAT IS HARD TO READ AND EVEN MORE DIFFICULT TO DEBUG. IF 
+  YOU'RNOT TYPING THIS BY HAND YOURSELF, YOU DON'T HAVE TO WORRY ABOUT THE 
+  ALLMAN/BSD STYLE.
+
+  YES, WE KNOW WHAT K&R SAYS BUT K&R WAS WRITTEN FOR TELETYPES. YOU'RE NOT WORKING 
+  ON A TELETYPE. AND WE KNOW WHAT THE LINUX KERNEL STYLE GUIDE SAYS TOO. SAME 
+  POINT. EVERY BYTE SAVED IS PRECIOUS WHEN YOU HAVE TO TYPE EVERY LETTER WITH A 
+  SMALL HAMMER AND WAIT AN AGE WHILE THE 300 BAUD SERIAL LINE COUGHS BACK AN ACK.
+  BUT THOSE DAYS ARE GONE AND WE ALL NEED TO MOVE WITH THE TIMES. INDENTATION AND
+  CLEARLY MARKED SCOPE IS THE FUTURE.
+  
+  ENCLOSE EVERYTHING IN BRACES AND MAKE SURE IT'S INDENTED CORRECTLY. JUST BECAUSE 
+  C ALLOWS YOU TO LEAVE OUT ENCLOSING BRACES, DOESN'T MEAN YOU *SHOULD* LEAVE THEM 
+  OUT BECAUSE THAT SORT OF THING ONLY LEADS TO ACCIDENTAL LINE INSERTIONS THAT 
+  DON'T WORK AS INTENDED.
+  
+  WANT DO MULTIPLY BY 2? USE VAR = VAR *2, VAR <<= 1 WILL DO THE SAME THING BUT THE 
+  COMPILER WILL DO THAT ASSUMING IT DOESN'T OPTIMISE YOUR HARDER TO READ CODE AWAY 
+  ANYWAY. ONLY USE SHIFT OPERATORS WHEN YOU MEAN TO SHIFT BITS"
+
+  #DEFINES ARE USED IN PREFERENCE TO CONSTS BECAUSE THEY CAN SAVE A LITTLE MEMORY 
+  AND MEMORY IS VERY PRECIOUS ON MCUS!
+  
+  YOU MIGHT THINK YOURSELF CLEVER, BUT BET YOUR BUTT THE COMPILER IS SMARTER AND CAN
+  SEE THINGS YOU NEVER EVEN THOUGHT POSSIBLE SO MAKE IT EASIER FOR EVERYONE AND BE 
+  AS EXPLICIT AS YOU POSSIBLY CAN, BUT NO MORE EXPLICT THAN THE PROGRAM REQUIRES.
+
+  BY THE TIME YOU RECEIVE THIS, THERE SHOULD NOT BE ANY COMPILER WARNINGS UNLESS
+  NEW ONES HAVE BEEN INTRODUCED SINCE WE LAST TOO A DEEP DIVE AND HIT MAKE.
+  WARNINGS MIGHT NOT BE ERRORS (THEY DON'T STOP THINGS RUNNING) BUT THAT DOESN'T 
+  MEAN THAT THEY CAN BE IGNORED. WASTED VARIABLES, WASTED DECLARATIONS AND SO ON
+  MEAN WASTED MEMORY AND AIN'T NO ONE GOT TIME FOR THAT.
+  </nag mode>
 
 @file
 @brief Main code
-
 */
 
+
 #include <Arduino.h>
-#include "UniversalDHT.hpp"   // @winlinvip's DHT11/22 library functions modified by Tim Harper
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <Wire.h>
+
 #include <Adafruit_GFX.h>     // Core graphics library by AdaFruit
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
-#include <hotstuff.hpp>
-#include <protos.hpp>
-  
+#include "UniversalDHT.hpp"   // @winlinvip's DHT11/22 library functions modified by Tim Harper
+
+#include "types.hpp"
+#include "hotstuff_fonts.hpp"
+#include "hotstuff.hpp"
+
+MCUFRIEND_kbv screen;
+UniversalDHT dht22(DHT22_DATA);
+Graph chart;
+Alarm alarm;
+Reading humidity;
+Reading temperature;
+Messages messages;
+Fixed fixed;
+Environmental environment;
+Flags flags;
+
+void pause()
+{
+  if (digitalRead(BUTTON_PIN) == HIGH)
+  {
+    Serial.println("Push the button");
+    while (digitalRead(BUTTON_PIN) == HIGH)
+    {
+
+    }    
+  }
+  delay(100);
+};
 
 void setup()
 {
   Serial.begin(9600);
-  uint16_t ID = screen.readID();
+  uint16_t ID{screen.readID()};
+
   if (ID == 0xD3D3)
   {
     ID = 0x9481; //force ID if write-only screen
   }
+  screen.begin(ID);
+  humidity.setTrace(AZURE);    // humidity graph line
+  temperature.setTrace(YELLOW);   // temperature graph line
+
+  fixed.setFixedFont((fixedgfxfont_t *)&HOTLARGE);
+  humidity.setX(160);
+  humidity.setY(10);
+  temperature.setY(10);
+
+#ifdef USE_METRIC
+  flags.set(USEMETRIC);
+#endif
 
   noInterrupts();                       // disable all interrupts
   TCCR1A = 0;
@@ -61,13 +143,12 @@ void setup()
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
 
-  dht22.read(&humidity.reading, &temperature.reading);
+  screen.setRotation(display.rotateDefaultSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
+  screen.fillScreen(defaultPaper);
 
-  screen.begin(ID);
-  screen.setRotation(DEFAULT); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
-
-  screen.fillScreen(text.colour.defaultBackground);
-
+  chart.initGraph();
+  screen.fillRect(0, UPTIME_Y, TFT_WIDTH, TEXTSMALL * BASEHEIGHT + 2, GREY); //just that little Uptime display, a nod to *nix.
+  
   pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
   pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
   pinMode(ALARM_PIN, OUTPUT);         // This is usually pin 13 (the board LED)
@@ -75,673 +156,722 @@ void setup()
   digitalWrite(DHT22_POWER, HIGH);    // and saves wiring from the ICSP ports on UNO with a TFT shield
   pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
-#ifndef SIMPLE_LCD
-#ifndef TOPLESS
-  blankArea(0, 0, tft.width, tft.height);
-  screen.setRotation(tft.rotateDefault);
-  initGraphPoints();
-  drawGraphLines();
-  screen.fillRect(0, text.uptimeTimeY, tft.width, text.small * text.baseHeight + 2, GREY); //just that little Uptime display, a nod to *nix.
-#ifdef CLOCKWISE
-  drawRadials();
-#endif
-#endif
-#endif
+  //delay(2500);
+  readings_t read;
+  dht22.read(&read.H, &read.T);
+
+  temperature.setLowRead(read.T);
+  temperature.setHighRead(read.T);
+  temperature.updateReading(read.T);
+  humidity.setLowRead(read.H);
+  humidity.setHighRead(read.H);
+  humidity.updateReading(read.H);
 }
 
 void loop()
 {
+
+  temperature.takeReadings();
+  temperature.showReadings();  
+
   if (isrTimings.timeInSeconds == 0) // this ticks every minute
   {
-    graph.updateGraphReadings = true;
-    if (isrTimings.timeInMinutes == 0) // this ticks every hour
-    {
-      temperature.cmaCounter = 0;
-      humidity.cmaCounter    = 0;
-    }   
+    /*
+      The "timeToRead" variable is incremented by the interupt service routine
+      once every second. After three seconds we take a new read. Use a larger 
+      int if you prefer. Area temperatures don't vary much unless the sensor is 
+      in a drafty corner!
+    */
+    flags.set(UPDATEREADS);
   }
 
-  /*
-    Open by checking if it's time to take the current readings from the DHT22
-    the "timeToRead" variable is incremented by the interupt service routine
-    once every second. After three seconds we take a new read. Use a larger 
-    int if you prefer. Area temperatures don't vary much unless the sensor is 
-    in a drafty corner!
-  */
-
-  if (isrTimings.timeToRead == 3)
+  while (isrTimings.timeToRead < 3)
   {
-    takeReadings();
-#ifdef SIMPLE_LCD
-    showLCDReads();
-#else
-    showReadings();
-#endif
+    alarm.checkAlarm();
+    alarm.annunciators();
+    alarm.checkButton();
   }
-
-#ifndef SIMPLE_LCD
-  checkAlarm();
-  annunciators();
-  showUptime();
-  checkButton();
-#endif
+  messages.showUptime();
 }
 
-/**
- * @brief About as simple as the screen can be!
- * @remark This presents its own challenge as
- * the LCD font we have has no background colour!
- */
-
-#ifdef SIMPLE_LCD
 void showLCDReads(void)
 {
+
+  // BUG THIS FUNCTION DOES NOT WORK!!!
+
   static float prevTemp  = -100;
   static float prevHumid = -100;
-
-  screen.setFont(&FreeSevenSegNumFontPlusPlus);
-  screen.setRotation(tft.rotatePortrait);
-  if (prevTemp != temperature.cumulativeMovingAverage)
+ 
+  screen.setRotation(display.rotatePortraitSouth);
+  if (prevTemp != temperature.getCMA())
   {
-    printNumber(10, 160, text.colour.defaultForeground, text.colour.defaultBackground, 
-                  text.large, text.small, prevTemp, temperature.cumulativeMovingAverage, temperature.useMetric);  
+    messages.printNumber(defaultInk,
+                      FONT1, 
+                      static_cast<int>(temperature.getCMA()),
+                      (flags.isSet(USEMETRIC)) ? METRIC : 0);
 
-    prevTemp = temperature.cumulativeMovingAverage;
+    prevTemp = temperature.getCMA();
   }
 
-  if (prevHumid != humidity.cumulativeMovingAverage)
+  if (prevHumid != humidity.getCMA())
   {
-    printNumber(10, 310, text.colour.defaultForeground, text.colour.defaultBackground, 
-                  text.large, text.small, prevHumid, humidity.cumulativeMovingAverage, true);
+    messages.printNumber(defaultInk, 
+                      FONT1, 
+                      static_cast<int>(humidity.getCMA()),
+                      METRIC);
 
-    prevHumid = humidity.cumulativeMovingAverage;
-  }
-}
-#endif //SIMPLE_LCD
-
-/**
- * @brief draws circular plots for the analogue version
- * 
- */
-
-void drawRadials(void)
-{
-  for (uint16_t theta = 0; theta < 360; theta += 8)
-  {
-    float x = cos(radians(theta));
-    float y = sin(radians(theta));
-
-    uint16_t innerX = x * radials.innerRadius + radials.tRadialX;
-    uint16_t innerY = y * radials.innerRadius + radials.tRadialY;
-    uint16_t outerX = x * radials.outerRadius + radials.tRadialX;
-    uint16_t outerY = y * radials.outerRadius + radials.tRadialY;
-    screen.drawLine(innerX, innerY, outerX, outerY, GREEN);
-    screen.drawLine(innerX + radials.hRadial, innerY, outerX + radials.hRadial, outerY, RED);
-  }
-}
-/**
- * @brief Dry air, damp air and frost annunciator
- * 
- */
-
-void annunciators(void)
-{
-
-
-  if (testAlarm(alarm.frost) == true)
-  {
-    printMessage(text.frostWarnX, text.frostWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.frost);
-  }
-  else
-  {
-    printMessage(text.frostWarnX, text.frostWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.frost);
-  }
-
-  if (testAlarm(alarm.damp) == true)
-  {
-    printMessage(text.dampWarnX, text.dampWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.damp);
-  }
-  else
-  {
-    printMessage(text.dampWarnX, text.dampWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.damp);
-  }
-
-  if (testAlarm(alarm.dry) == true)
-  {
-    printMessage(text.dryWarnX, text.dryWarnY, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.dry);
-  }
-  else
-  {
-    printMessage(text.dryWarnX, text.dryWarnY, text.colour.defaultBackground, text.colour.defaultBackground, text.medium, messages.dry);
+    prevHumid = humidity.getCMA();
   }
 }
 
-/**
- * @brief Sets a numbered sempahore in the alarm flag set
- * 
- * @param flag enumerated flag number
- */
-
-void setAlarmFlag(uint8_t flag)
+void Graph::displayGraph(void)
 {
-  switch (flag)
-  {
-    case alarm.frost:
-      alarm.semaphore = alarm.semaphore | alarm.frost;
-      break;
-
-    case alarm.damp:
-      alarm.semaphore = alarm.semaphore | alarm.damp;
-      break;
-
-    case alarm.dry:
-      alarm.semaphore = alarm.semaphore | alarm.dry;
-      break;
-
-    case alarm.overTemp:
-      alarm.semaphore = alarm.semaphore | alarm.overTemp;
-      break;
-  }
-}
-
-/**
- * @brief Clears a numbered sempahore in the alarm flag set
- * 
- * @param flag enumerated flag number
- */
-
-void clearAlarmFlag(uint8_t flag)
-{
-  switch (flag)
-  {
-    case alarm.frost:
-      // bitwise AND (&) with the inverse of the flag using XOR (^) 0xFF
-      alarm.semaphore = alarm.semaphore & (alarm.frost ^ 0xFF);
-      break;
-
-    case alarm.damp:
-      alarm.semaphore = alarm.semaphore & (alarm.damp ^ 0xFF);
-      break;
-
-    case alarm.dry:
-      alarm.semaphore = alarm.semaphore & (alarm.dry ^ 0xFF);
-      break;
-
-    case alarm.overTemp:
-      alarm.semaphore = alarm.semaphore & (alarm.overTemp ^ 0xFF);
-      break;
-  }
-}
-
-/**
- * @brief  Sets a numbered sempahore in the alarm flag set
- * 
- * @param flag flag enumerated flag number
- * @return true if the specified flag is set
- * @return false if the specified flag is UNSET
- */
-
-bool testAlarm(uint8_t flag)
-{
-  return (alarm.semaphore & flag);
-}
-
-/**
- * @brief Displays the main graph
- * 
- * convert the temperature and humidity.reading readings into something that scales to the chart.
- * the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
- * the first few lines just wall off temperatures from under freezing and above 50.
- */
-
-void displayGraph(void)
-{
-  if (graph.updateGraphReadings == false)
+  if (flags.isSet(UPDATEREADS))
   {
     return;
   }
-  graph.updateGraphReadings = false;
+  flags.clear(UPDATEREADS);
 
   drawReticles();
 
-  if (temperature.cumulativeMovingAverage > 50)
+  if (temperature.getCMA() > 50)
   {
-    temperature.Y = (graph.Y + graph.height) - 100;
+    temperature.setY((GRAPH_Y + HEIGHT) - 100);
   }
-  else if (temperature.cumulativeMovingAverage < 0)
+  else if (temperature.getCMA() < 0)
   {
-    temperature.Y = (graph.Y + graph.height);
+    temperature.setY(GRAPH_Y + HEIGHT);
   }
   else
   {
-    temperature.Y = (graph.Y + graph.height) - (round(temperature.cumulativeMovingAverage) * 2);
+    temperature.setY((GRAPH_Y + HEIGHT) - (round(temperature.getCMA()) * 2));
   }
 
-  humidity.Y = (graph.Y + graph.height) - round(humidity.cumulativeMovingAverage);
+  humidity.setY((GRAPH_Y + HEIGHT) - round(humidity.getCMA()));
 
   //put the latest readings at the end of the pipe.
-  humidity.pipe[graph.width    - 1] = humidity.Y;
-  temperature.pipe[graph.width - 1] = temperature.Y;
+
+  humidity.setPipe(GRAPH_WIDTH - 1, humidity.getY());
+  temperature.setPipe(GRAPH_WIDTH - 1, temperature.getY());
 
   // clear the old lines
-  for (uint8_t index = 2; index < graph.width; index ++)
+  for (auto i {2}; i <GRAPH_WIDTH; ++i)
   {
-    uint16_t xPosition = 0; 
-    xPosition = index + graph.X;
-    screen.drawLine(xPosition - 1, humidity.pipe[index    - 2], xPosition, humidity.pipe[index - 1],    BLACK);
-    screen.drawLine(xPosition - 1, temperature.pipe[index - 2], xPosition, temperature.pipe[index - 1], BLACK);
+    ucoordinate_t xPosition {0}; 
+    xPosition = i + GRAPH_X;
+    screen.drawLine(xPosition - 1, humidity.getPipe(i - 2), xPosition, humidity.getPipe(i - 1), BLACK);
+    screen.drawLine(xPosition - 1, temperature.getPipe(i - 2), xPosition, temperature.getPipe(i - 1), BLACK);
   }
 
   //draw in new ones (this is supposed to reduce flashing but it's "meh")
-  for (uint8_t index = 1; index < graph.width; index ++)
+  for (auto i {1}; i <GRAPH_WIDTH; ++i)
   {
-    uint16_t xPosition = index + graph.X;
+    ucoordinate_t xPosition = i + GRAPH_X;
+    screen.drawLine(xPosition - 1, temperature.getPipe(i - 1), xPosition, temperature.getPipe(i), temperature.getTrace());
+    screen.drawLine(xPosition - 1, humidity.getPipe(i - 1),    xPosition, humidity.getPipe(i),    humidity.getTrace());
 
-    screen.drawLine(xPosition - 1, humidity.pipe[index    - 1],    xPosition, humidity.pipe[index],    humidity.trace);
-    screen.drawLine(xPosition - 1, temperature.pipe[index - 1],    xPosition, temperature.pipe[index], temperature.trace);
-    temperature.pipe[index - 1] = temperature.pipe[index];
-    humidity.pipe[index - 1]    = humidity.pipe[index];
-    drawMainAxes();
+    temperature.setPipe(i - 1, temperature.getPipe(i));
+    humidity.setPipe(i - 1,    humidity.getPipe(i));
+    chart.drawMainAxes();
   }
 }
 
-/**
- * @brief  Overdraws the graph outline in the current foreground
- * 
- */
-
-void drawMainAxes(void)
+void Graph::drawMainAxes(void)
 {
-  screen.drawFastHLine(graph.X,     graph.Y    + graph.FSD, graph.width, text.colour.defaultForeground);
-  screen.drawFastVLine(graph.X - 1, graph.Y,     graph.FSD, text.colour.defaultForeground);
-  screen.drawFastVLine(graph.X   +  graph.width, graph.Y,   graph.FSD, text.colour.defaultForeground);
+  screen.drawFastHLine(GRAPH_X, GRAPH_Y + FSD, GRAPH_WIDTH, defaultInk);
+  screen.drawFastVLine(GRAPH_X - 1, GRAPH_Y, FSD, defaultInk);
+  screen.drawFastVLine(GRAPH_X + GRAPH_WIDTH, GRAPH_Y, FSD, defaultInk);
 }
 
-/**
- * @brief  Displays the reticles UNDER the current plots
- * 
- */
-#ifdef SIMPLE_LCD
-void drawReticles(void)
+void Graph::drawReticles(void)
 {
-  
    // draws vertical blanking strokes and reticules 
-  for (uint8_t index = 1; index < graph.width; index++)    
+  for (auto i {0}; i < GRAPH_WIDTH; ++i)    
   {
-    uint16_t xPosition  = index + graph.X;
+    ucoordinate_t xPosition = i + GRAPH_X;
 
     // seven vertical divisions
-    if (index % (graph.width / 8) == 0)              
+    if (i % (GRAPH_WIDTH / 8) == 0)              
     {
-      screen.drawFastVLine(xPosition , graph.Y, graph.height, text.colour.reticleColour);
+      screen.drawFastVLine(xPosition, GRAPH_Y, HEIGHT, reticleColour);
     }
   }
 
-  for (uint8_t index = 0; index < graph.height + 20; index = index + 20)
+  for (auto i {0}; i < HEIGHT + 20; i = i + 20)
   {
-    screen.drawFastHLine(graph.X, graph.Y + index, graph.width, text.colour.reticleColour);
+    screen.drawFastHLine(GRAPH_X, GRAPH_Y + i, GRAPH_WIDTH, reticleColour);
   }
 
-#ifdef SHOW_BANDS
+  minmax_t humidity;
+  minmax_t temperature;
 
-  uint8_t humidityMax    = (graph.Y + graph.height) - (humidity.maxComfort + humidity.guard);
-  uint8_t humidityMin    = (graph.Y + graph.height) - (humidity.minComfort - humidity.guard);
-  uint8_t temperatureMax = (graph.Y + graph.height) - ((temperature.maxComfort + temperature.guard) * 2);
-  uint8_t temperatureMin = (graph.Y + graph.height) - ((temperature.minComfort - temperature.guard) * 2);
+  humidity.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_HUMID;
+  humidity.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_HUMID;
+  temperature.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_TEMP * 2;
+  temperature.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_TEMP * 2;
 
-  for (uint8_t index = 1; index < graph.width; index += 10)     
+  for (auto i {1}; i <GRAPH_WIDTH; i += 10)     
   {
-    screen.drawFastHLine(graph.X + index,    humidityMax, 3, BROWNISH);
-    screen.drawFastHLine(graph.X + index,    humidityMin, 3, BROWNISH);
-    screen.drawFastHLine(graph.X + index, temperatureMax, 3, PURPLEISH);
-    screen.drawFastHLine(graph.X + index, temperatureMin, 3, PURPLEISH);
+    auto width {3};
+    screen.drawFastHLine(GRAPH_X + i, humidity.max, width, BROWNISH);
+    screen.drawFastHLine(GRAPH_X + i, humidity.min, width, BROWNISH);
+    screen.drawFastHLine(GRAPH_X + i, temperature.min, width, PURPLEISH);
+    screen.drawFastHLine(GRAPH_X + i, temperature.max, width, PURPLEISH);
   }
-#endif
 }
-#endif //SIMPLE_LCD
 
-/**
- * @brief Puts a leading 0 in front of the "uptime" numbers
- * 
- * @param value the number of interest - always <99.
- */
-
-void printLeadingZero(uint8_t value)
+void Graph::initGraph(void)
 {
-  if (value < 10)
+  if (flags.isSet(GRAPHACTIVE))
   {
-    screen.print(F("0"));
+    return;
   }
-  screen.print(value);
+  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.paper);
+  drawGraphScaleMarks();
+  drawMainAxes();
+  drawReticles();
+  flags.set(GRAPHACTIVE);
+};
+
+void Graph::drawGraphScaleMarks(void)
+{
+  screen.setRotation(display.rotatePortraitSouth);
+  screen.setTextColor(defaultInk);
+  screen.setTextSize(TEXTSMALL);
+
+  screen.setCursor(AXIS_Y_POSITION, 5);
+
+  if (flags.isSet(USEMETRIC))
+  {
+    messages.execute(Messages::temperatureScale);
+    messages.execute(Messages::c);
+  }
+  else
+  {
+    messages.execute(Messages::temperatureScale);
+    messages.execute(Messages::f);
+  }
+  
+  screen.setCursor(AXIS_Y_POSITION, TFT_WIDTH - BASEHEIGHT);
+  messages.execute(Messages::humidityScale);
+  screen.setRotation(display.rotateDefaultSouth);
+    
+  // temp scale
+  for (auto temp{0}; temp < 60; temp = temp + 10)
+  {
+    char b[6];
+    reading_int_t value;
+    screen.setCursor(GRAPH_X - 22, (GRAPH_Y + HEIGHT - 4) - (temp * 2) );
+    (flags.isSet(USEMETRIC)) ? value = temp : value = static_cast<reading_int_t>(toFahrenheit(temp));
+    sprintf(b, "%3d", value);
+    screen.print(b);
+  }
+
+  // humidity scale
+  for (auto humidity{0}; humidity < 120; humidity = humidity + 20)
+  {
+    char b[6];
+    screen.setCursor(GRAPH_X + GRAPH_WIDTH + 3, (GRAPH_Y + HEIGHT - 4) - (humidity) );
+    sprintf(b, "%3d", humidity);
+    screen.print(b);
+  }
 }
 
-/**
- * @brief Steadman's 1994 approximation for heat in given humidity 
- * 
- * @param T Temperature in degrees C
- * @param R Relative humidity in %
- * @return float 
- * 
- * @remarks  Approximate the "Heat index" per Steadman 1994. While the dry bulb temperature
- *  may be well within safe limits for humans, the addition of humidity reading
- * prevents our bodies from effectively evaporatively cooling with the result
- * that our internal temperature rises - and the different of just a few degrees
- * C can cause fatigue, aggression and eventually heat stroke and possibly death.
- * These figures assume the person is doing mildly stressful work such as housework
- * Workers in more extreme physical labour will suffer faster and vice versa.
- * This is becoming a much more widespread problem as our climate changes.
- * 
- * Wikipedia https://en.wikipedia.org/wiki/Heat_index
- * 26–32 °C Caution: fatigue is possible with prolonged exposure and activity.
- *          Continuing activity could result in heat cramps.
- * 32–41 °C Extreme caution: heat cramps and heat exhaustion are possible.
- *          Continuing activity could result in heat stroke.
- * 41–54 °C Danger: heat cramps and heat exhaustion are likely.
- *          Heat stroke is probable with continued activity.
- * > 54 °C  Extreme danger: heat stroke is imminent.
- */
-
-float heatIndex(float T, float R)
+void Reading::takeReadings(void)
 {
- 
-  const float c1 = -8.78469475556;
-  const float c2 =  1.61139411;
-  const float c3 =  2.33854883889;
-  const float c4 = -0.14611605;
-  const float c5 = -0.012308094;
-  const float c6 = -0.0164248277778;
-  const float c7 =  0.002211732;
-  const float c8 =  0.00072546;
-  const float c9 = -0.000003582;
-  return (c1 + (c2 * T) + (c3 * R) + (c4 * T * R) + (c5 * (T * T)) + (c6 * (R * R)) + (c7 * (T * T) * R) + (c8 * T * (R * R)) + (c9 * (T * T) * (R * R)));
-}
-
-/**
- * @brief Magnus' Dew Point (condensation temperature) calculation 
- * 
- * @param T Temperature in degrees C
- * @param R Relative humidity in %
- * @return float 
- * @remarks 
- * https://en.wikipedia.org/wiki/Dew_point
- * 
- */
-
-float magnusDewpoint(float T, float R)
-{
-  // Magnus dew point constants
-  const double a = 17.62;
-  const double b = 243.12;
-  double c = (a * T) / (b + T);
-  double r = log(R / 100);
-
-  return (float) b * (r + c) / (a - (r + c));
-}
-
-/**
- * @brief Get the current RH and Temp from the DHT11/22
- * 
- */
-
-void takeReadings(void)
-{
-  UniversalDHT::Response reading = dht22.read(&humidity.reading, &temperature.reading);
-
   /*
-    check that the DHT22 didn't develop a fault or break
+    Get the current temp and humidity from the sensor.
+    Check that the DHTxx didn't develop a fault or break
     during since the last read. If it did, we're going
     to stop work and report a service fault giving the
     failure time so engineers can figure out how reliable
     these devices are in their environment.
   */
+  readings_t R;
+  UniversalDHT::Response reading = dht22.read(&R.H, &R.T);
   if (reading.error != 0)
   {
-    sensorFailed(reading);
+    alarm.sensorFailed(reading);
   }
 
-  temperature.reading = temperature.reading + temperature.correction ;
-  humidity.reading = humidity.reading + humidity.correction;
-
+  temperature.updateReading(R.T);
+  humidity.updateReading(R.H);
   isrTimings.timeToRead = 0;
 
-#ifdef DEBUG_OVERTEMP_ALARM
-  temperature.reading = DEBUG_OVERTEMP_ALARM;
-#endif
-
-#ifdef DEBUG_EXCESS_DAMP_ALARM
-  humidity.reading = DEBUG_EXCESS_DAMP_ALARM;
-#endif
-
-#ifdef DEBUG_LOW_TEMP_ALARM
-  temperature.reading = DEBUG_LOW_TEMP_ALARM;
-#endif
-
-#ifdef DEBUG_FROST_ALARM
-  temperature.reading = DEBUG_FROST_ALARM;
-#endif
-
-#ifdef DEBUG_DRY_AIR_ALARM
-  humidity.reading = DEBUG_DRY_AIR_ALARM;
-#endif
-
-
-  // cumulative moving averages are a form of mean that doesn't need to track every single value
-  // using these avoids little odd spikes from throwing the graph and smooths it out too.
-
-  humidity.cmaCounter = humidity.cmaCounter + 1;
-  humidity.cumulativeMovingAverage = humidity.cumulativeMovingAverage + 
-                                    ((humidity.reading - humidity.cumulativeMovingAverage) / 
-                                    humidity.cmaCounter);
-
-  temperature.cmaCounter = temperature.cmaCounter + 1;
-  temperature.cumulativeMovingAverage = temperature.cumulativeMovingAverage + 
-                                        ((temperature.reading - temperature.cumulativeMovingAverage) / 
-                                        temperature.cmaCounter);
-  
-  checkHumidityCondtions();
-  checkTemperatureConditions();
+  environment.checkHumidityConditions();
+  environment.checkTemperatureConditions();
 }
 
-/**
- * @brief Test the humidity is within watershed (and trigger alarms)
- * 
- */
-
-void checkHumidityCondtions(void)
+void Reading::updateReading(const reading_t &reading)
 {
-  if (humidity.cumulativeMovingAverage > humidity.dampAirWatershed)
-  {
-    if (alarm.alarmedDampAir == false)
-    {
-      setAlarmFlag(alarm.damp);
-      alarm.alarmedDampAir = true;
-    }
-  }
+  m_reading = reading + m_correction;
+  ++m_cmaCounter;
+  m_cumulativeMovingAverage = (m_cumulativeMovingAverage + 
+                              (m_reading - m_cumulativeMovingAverage) / 
+                               m_cmaCounter);
+}
 
-  if (humidity.cumulativeMovingAverage < humidity.dryAirWatershed)
-  {
-    if (alarm.alarmedDryAir == false)
-    {
-      setAlarmFlag(alarm.dry);
-      alarm.alarmedDryAir = true;
-    }
-  }
+void Reading::showReadings(void)
+{  
+  fixed.reset();
+  fixed.setFixedFont(&HOTLARGE);
+  display.ink = defaultInk;
 
-  if (humidity.cumulativeMovingAverage >= humidity.dryAirWatershed)
-  {
-    clearAlarmFlag(alarm.dry);
-    if (alarm.alarmedDryAir == true)
-    {
-      alarm.alarmedDryAir = false;
-    }
-  }
+  uint8_t yPosition = fixed.getYstep();
+
+  Serial.println("SET0");
+  fixed.moveTo(0, yPosition);
+  printReading(11, METRIC | TEMPERATURE);
+
+  fixed.reset();
+  Serial.println("SET1");
+  fixed.moveTo(0, yPosition);
+  printReading(22, METRIC | TEMPERATURE);
+
+  fixed.reset();
+  Serial.println("SET2");
+  fixed.moveTo(0, yPosition);
+  printReading(33, METRIC | TEMPERATURE);
+
+  Serial.println("SET3");
+  fixed.reset();
+  fixed.moveTo(0, yPosition);
+  printReading(44, METRIC | TEMPERATURE);
+
+  Serial.println("SET4");
+  fixed.reset();
+  fixed.moveTo(0, yPosition);
+  printReading(48, METRIC | TEMPERATURE);
+
+  //STOP
+  return; 
+
+  limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
+  limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
+
+  readings_t readings {temperature.getReading(), humidity.getReading()};
+  environment.checkHeatIndex(readings);  
+  chart.displayGraph();
+
+  fixed.setFixedFont(&HOTLARGE);
+  yPosition = fixed.getYstep();
+
+  fixed.moveTo(0, yPosition);
+
+  environment.setColour(temperature.getReading(), tLimits);
+  printReading(temperature.getReading(), 
+              (flags.isSet(USEMETRIC) ? METRIC : 0) | 
+              (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
+              TEMPERATURE);
+
+  fixed.moveTo(180, yPosition);
+
+  environment.setColour(humidity.getReading(), hLimits);
+  printReading(humidity.getReading(), METRIC);
+  display.ink = defaultInk;
+  fixed.drawGlyph('%');
+
+  // Min and Max readings.
+  environment.setColour(temperature.getHighRead(), tLimits);
+  fixed.moveTo(LOW_TEMP_X, yPosition + 20);
+
+  fixed.setFixedFont(&HOTSMALL);
+  printReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
+               (flags.isSet(USEMETRIC)) ? METRIC : 0);
   
-  if (humidity.cumulativeMovingAverage <= humidity.dampAirWatershed)
+  fixed.setFixedFont(&HOTSMALL);
+  fixed.drawGlyph('/');
+  
+  environment.setColour(temperature.getHighRead(), tLimits);
+  fixed.setFixedFont(&HOTSMALL);
+  printReading((temperature.getReading() > temperature.getHighRead()) ? temperature.getReading() : temperature.getHighRead(),
+              (flags.isSet(USEMETRIC)) ? METRIC : 0);
+  
+  environment.setColour(humidity.getHighRead(), hLimits);
+
+  fixed.moveTo(screen.width() / 2, fixed.getY());
+  fixed.setFixedFont(&HOTSMALL);
+
+  printReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
+
+  fixed.setFixedFont(&HOTSMALL);
+  fixed.drawGlyph('/');
+  
+  environment.setColour(humidity.getHighRead(), hLimits);
+  fixed.setFixedFont(&HOTSMALL);
+  printReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
+
+  humidity.setMinMax();
+  temperature.setMinMax();
+}
+
+void Reading::printReading(const reading_t &reading, const semaphore_t &flags)
+{
+  using mixed_t = struct 
   {
-    clearAlarmFlag(alarm.damp);
-    if (alarm.alarmedDryAir == true)
+    int8_t floatPart {0};
+    int8_t intPart   {0};
+  };
+  
+  reading_t r = reading;
+  if (! (flags & METRIC))
+  {
+    r = toFahrenheit(reading);
+  }
+
+  float integer {0};
+  float fract   {0};
+
+  mixed_t read;
+  fract = modff(r, &integer);
+  read.intPart   = static_cast<int>(integer);
+  read.floatPart = static_cast<int>(abs(fract * 10));
+
+  char b[12];
+  if (flags & FLOATS) 
+  {
+    sprintf(b, "%3d.%1d", read.intPart, read.floatPart);
+  }
+  else
+  {
+    sprintf(b, "%d", read.intPart);
+  }
+  fixed.printFixed(b);
+}
+
+void Environmental::setColour(const reading_t &value, const limits_t &limits)
+{
+  if (value < static_cast<reading_t>(limits.lower))
+  {
+    display.ink = LOW_LIMIT_EXCEEDED;
+    return;
+  }
+  else if (value > static_cast<reading_t>(limits.upper))
+  {
+    display.ink = HIGH_LIMIT_EXCEEDED;
+    return;
+  }
+  display.ink = defaultInk;
+  return;
+}
+
+ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
+{
+  TCNT1 = UPDATER;     // preload timer
+
+  ++isrTimings.timeToRead;
+
+  flags.flip(FLASHING); // flip the boolean for flashing items
+
+  ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
+
+  if (isrTimings.timeInSeconds == 60)
+  {
+    isrTimings.timeInSeconds = 0;
+    ++isrTimings.timeInMinutes;
+
+    if (isrTimings.timeInMinutes == 60)
     {
-      alarm.alarmedDampAir = false;
+      isrTimings.timeInMinutes = 0;
+      ++isrTimings.timeInHours;
+
+      if (isrTimings.timeInHours == 24)
+      {
+        isrTimings.timeInHours = 0;
+        ++isrTimings.timeInDays;
+
+        if (isrTimings.timeInDays == 7)
+        {
+          isrTimings.timeInWeeks = 0;
+          ++isrTimings.timeInWeeks;
+
+          if (isrTimings.timeInWeeks == 52)
+          {
+            isrTimings.timeInWeeks = 0;
+            ++isrTimings.timeInYears;
+          }
+        }
+      }
     }
   }
 }
 
-/**
- * @brief Test the temperature is within limits (and trigger alarms)
- * 
- * @remarks Note the instant we register "freezing" we set the alarm
- * this is by design, it's not a bug!
- * Similarly, the watershed is 4C and the AVERAGE needs go above that 
- * this is by design, it's not a bug!
- */
-
-
-void checkTemperatureConditions(void)
+void Environmental::checkHumidityConditions(void)
 {
+  if (humidity.getCMA() > DAMP_AIR_WATERSHED)
+  {
+      flags.set(DAMP);
+  }
+
+  if (humidity.getCMA() < DRY_AIR_WATERSHED)
+  {
+    flags.clear(DRY);
+  }
+
+  if (humidity.getCMA() >= DRY_AIR_WATERSHED)
+  {
+    flags.set(DRY);
+  }
   
-  if (temperature.reading <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
+  if (humidity.getCMA() <= DAMP_AIR_WATERSHED)
   {
-    if (alarm.alarmedLowTemp == false)
-    {
-      setAlarmFlag(alarm.frost);          // start das-blinky-flashun light
-      alarm.alarmedLowTemp = true;        // true prevents re-firing
-    }
+    flags.clear(DAMP);
   }
-
-  if (temperature.cumulativeMovingAverage > temperature.frostWatershed)
-  {
-    clearAlarmFlag(alarm.frost);
-    alarm.alarmedLowTemp = false;        // Enable re-firing
-  }
-
 }
 
-/**
- * @brief Set warning conditions if Steadman's temp is exceeded
- * 
- * @param T Temperature in C
- * @param H Relative humidity in %
- */
-
-void  checkHeatIndex(float T, float H)
+void Environmental::checkTemperatureConditions(void)
 {
-  int8_t effectiveTemperature = (int8_t) heatIndex(T, H);
-
-  // heat index routine only works reliably(ish) for temps >26 celcius and RH >= 40%
-  if ((effectiveTemperature < 26) || T < 26 || H < 40)
+  if (temperature.getReading() <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
   {
-    if (tft.warnDanger == true)
+    flags.set(FROST);          // start das-blinky-flashun light
+    flags.set(ALARMFROST);     // true prevents re-firing
+  }
+
+  if (temperature.getCMA() > FROST_WATERSHED)
+  {
+    flags.clear(FROST);          // start das-blinky-flashun light
+    flags.clear(ALARMFROST);     // true prevents re-firing
+  }
+}
+
+void Environmental::checkHeatIndex(const readings_t &readings)
+{
+  reading_int_t effectiveTemperature = static_cast<reading_int_t>(heatIndex(readings));
+
+  // heat i routine only works reliably(ish) for temps >26 celcius and RH >= 40%
+  if ((effectiveTemperature < 26) || 
+                          readings.T < 26 || 
+                          readings.H < 40)
+  {
+    if (flags.isSet(WARNDANGER))
     {
-      blankArea(0, 100, tft.width, tft.height - 110);
-      tft.warnDanger = false;      
+      screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
+      flags.clear(WARNDANGER);      
     }
     return;
   }
 
-  tft.warnDanger = true;
+  flags.set(WARNDANGER);
 
 #ifndef TOPLESS
-  blankArea(0, 100, tft.width, tft.height - 110);
+  screen.fillRect(0, 100, TFT_WIDTH, TFT_HEIGHT - 110, defaultPaper);
 #endif
 
   if ( (effectiveTemperature >= 26) && 
-       (effectiveTemperature <= temperature.caution) 
+       (effectiveTemperature <= CAUTION) 
      )
   {
-    flashText(messages.caution, centerText(messages.msg[messages.caution], text.baseWidth * text.large), tft.height / 2, text.colour.defaultForeground, text.colour.defaultBackground);
+    messages.flashText(messages.caution);
     unsafeTempWarnings(effectiveTemperature);
   }
 
-  if (effectiveTemperature >= temperature.caution && effectiveTemperature <= temperature.warning)
+  if (effectiveTemperature >= CAUTION && 
+      effectiveTemperature <= WARNING)
   {
-    flashText(messages.xcaution, centerText(messages.msg[messages.xcaution], text.baseWidth * text.large), tft.height / 2, YELLOW, text.colour.defaultBackground);
+    messages.flashText(messages.xcaution);
     unsafeTempWarnings(effectiveTemperature);
   }
 
-  if (effectiveTemperature >= temperature.warning  && effectiveTemperature <= temperature.risk)
+  if (effectiveTemperature >= WARNING  && 
+      effectiveTemperature <= RISK)
   {
-    flashText(messages.danger, centerText(messages.msg[messages.danger], text.baseWidth * text.large), tft.height / 2, RED, text.colour.defaultBackground);
+    messages.flashText(messages.danger);
     unsafeTempWarnings(effectiveTemperature);
   }
-  if (effectiveTemperature >= temperature.risk)
+  if (effectiveTemperature >= RISK)
   {
-    flashText(messages.xdanger, centerText(messages.msg[messages.xdanger], text.baseWidth * text.large), tft.height / 2, RED, YELLOW);
+    messages.flashText(messages.xdanger);
     unsafeTempWarnings(effectiveTemperature);
   }
 }
 
-/**
- * @brief Display warnings about effective working temperature
- * 
- * @param T Steadman's Effective temperature in C
- * 
- * @remarks Displays warnings in the lower half of the screen to stop or reduce 
- * activity for health and safety. 
- */
-
-void unsafeTempWarnings(float T)
+void Environmental::unsafeTempWarnings(const reading_t &T)
 {
-  screen.setTextSize(text.large);
+  screen.setTextSize(3);
 
-  if (temperature.useMetric == true)
+    messages.execute(messages.work1);
+    messages.execute(messages.work2);
+
+  if (flags.isSet(USEMETRIC))
   {
-    printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work1);
-    printMessage(text.leftMargin, text.heatIndexY + 80, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work2);
     screen.print(T);
-    screen.print(" ");
-    printMessage(messages.c);
+    screen.print(F(" C"));
   }
   else
   {
-    printMessage(text.leftMargin, text.heatIndexY + 60, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work1);
-    printMessage(text.leftMargin, text.heatIndexY + 80, text.colour.defaultForeground, text.colour.defaultBackground, text.medium, messages.work2);
-    screen.print(round(T * 1.8 + 32));
-    screen.print(" ");
-    printMessage(messages.f);
+    screen.print(round(toFahrenheit(T)));
+    screen.print(F(" F"));
   }
 }
 
-/**
- * @brief Brings everthing to a halt if the DHT sensor breaks during use
- * 
- * @param response response Returned 16 bit from the DHT libary
- * @remarks  Displays warnings in the lower half of the screen to stop or reduce 
- * activity for health and safety. 
- */
-
-void sensorFailed(UniversalDHT::Response response)
+float Environmental::heatIndex(const readings_t &readings)
 {
+  constexpr float c1 {-8.78469475556};
+  constexpr float c2 {1.61139411};
+  constexpr float c3 {2.33854883889};
+  constexpr float c4 {-0.14611605};
+  constexpr float c5 {-0.012308094};
+  constexpr float c6 {-0.0164248277778};
+  constexpr float c7 {0.002211732};
+  constexpr float c8 {0.00072546};
+  constexpr float c9 {-0.000003582};
+  return  (c1 + 
+          (c2 *  readings.T) + 
+          (c3 *  readings.H) + 
+          (c4 *  readings.T  *  readings.H)  + 
+          (c5 * (readings.T  *  readings.T)) + 
+          (c6 * (readings.H  *  readings.H)) + 
+          (c7 * (readings.T  *  readings.T)  *  readings.H)  + 
+          (c8 *  readings.T  * (readings.H   *  readings.H)) + 
+          (c9 * (readings.T  *  readings.T)  * (readings.H   * readings.H)));
+}
+
+float Environmental::magnusDewpoint(const readings_t &readings)
+{
+  // Magnus dew point constants
+  constexpr double a = 17.62;
+  constexpr double b = 243.12;
+  reading_t c = (a * readings.T) / (b + readings.T);
+  reading_t r = log(readings.H / 100);
+
+  return static_cast<reading_t>(b * (r + c) / (a - (r + c)));
+}
+
+void Alarm::annunciators(void)
+{
+  if ( flags.isSet(FROST))
+  {
+    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
+    messages.execute(FROST);
+  }
+  else
+  {
+    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
+    messages.clear(FROST);
+  }
+
+  if (flags.isSet(DAMP))
+  {
+    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
+    messages.execute(DAMP);
+  }
+  else
+  {
+    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
+    messages.clear(DAMP);
+  }
+
+  if (flags.isSet(DRY))
+  {
+    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
+    messages.execute(DRY);
+  }
+  else
+  {
+    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
+    messages.clear(DRY);
+  }
+}
+
+void Alarm::checkAlarm(void)
+{
+
+  if (flags.isClear(FROST | DAMP | DRY | OVERTEMP)) 
+  {
+    digitalWrite(ALARM_PIN, LOW);
+  }
+
+  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))
+  {
+    if (flags.isSet(FLASHING))
+    {
+      digitalWrite(ALARM_PIN, HIGH);
+    }
+    else
+    {
+      digitalWrite(ALARM_PIN, LOW);
+    }
+  }
+}
+
+void Alarm::checkButton(void)
+{
+  if (digitalRead(BUTTON_PIN) == LOW)
+  {
+    STOP
+  }
+
+  if (digitalRead(BUTTON_PIN) == HIGH)
+  {
+    if (button.timer != 0)
+    {
+ 
+      if (button.timer < SHORTPRESS) // button.shortPress)
+      {
+        flags.clear(FROST | DAMP | DRY | OVERTEMP);
+        button.timer = 0;
+        digitalWrite(ALARM_PIN, LOW);
+      }
+    }
+  }
+  else
+  {
+    if (! button.timer)
+    {
+      button.timer = 1;
+    }
+    else
+    {
+      button.timer += 1;
+    }
+  }
+
+  if (button.timer > LONGPRESS)
+  {
+    // Toggle metric/imperial
+    (flags.flip(METRIC) );
+    screen.fillRect(LOW_TEMP_X,       LOW_TEMP_Y,   72,  8,     defaultPaper);
+    screen.fillRect(LEFTMARGIN - 2, LOWHUMID_Y + 12, 20, 40, defaultPaper);
+    button.timer = 0;
+
+    temperature.showReadings();
+#ifndef TOPLESS
+    chart.drawGraphScaleMarks();
+#endif
+  }
+}
+
+void Alarm::sensorFailed(UniversalDHT::Response response)
+{
+  // He's dead Jim! He's DEAD!
+
 #ifdef SENSOR_MISSING_OR_BUSTED
+
   return;
 #endif
-  screen.fillRect(0, 0, tft.width, tft.height, text.colour.defaultBackground);
-  const char * failed =  " -Sensor Fail-";
-  const char * times =  "             Y  M  D  H";
-  const char * age =  "Sensor age: ";
-  String message;
+  screen.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
+  
+  screen.print(F(" -Sensor Fail-"));
+  screen.print(F("             Y  M  D  HH:MM:SS"));
+  screen.print(F("Sensor age: "));
 
-  printMessage(text.leftMargin, 80, RED, text.colour.defaultBackground, text.large, failed);
-  printMessage(text.leftMargin, 120, RED, text.colour.defaultBackground, text.small, times);
-  printMessage(text.leftMargin, 140, RED, text.colour.defaultBackground, text.small, age);
-
-  fail.failTime[fail.Y] = isrTimings.timeInYears;
-  fail.failTime[fail.W] = isrTimings.timeInWeeks;
-  fail.failTime[fail.D] = isrTimings.timeInWeeks;
-  fail.failTime[fail.H] = isrTimings.timeInHours;
-
-  printLeadingZero(fail.failTime[fail.Y]);
-  screen.print(F(":"));
-  printLeadingZero(fail.failTime[fail.W]);
-  screen.print(F(":"));
-  printLeadingZero(fail.failTime[fail.D]);
-  screen.print(F(":"));
-  printLeadingZero(fail.failTime[fail.H]);
+  char printable[60];
+  
+  sprintf(printable, "%2d %2d %2d  %02d:%02d:%02d", 
+                      isrTimings.timeInYears,
+                      isrTimings.timeInWeeks,
+                      isrTimings.timeInDays,
+                      isrTimings.timeInHours,
+                      isrTimings.timeInMinutes,
+                      isrTimings.timeInSeconds);
+  
+  screen.print(printable);
 
   // High 8bits are time duration (not shown)
   // Low 8bits are error code.
   // @see https://github.com/winlinvip/SimpleDHT/issues/25
 
-  screen.setCursor(text.leftMargin, 160);
+  screen.setCursor(LEFTMARGIN, 160);
   switch (response.error)
   {
     case SimpleDHTErrStartLow:
@@ -784,635 +914,303 @@ void sensorFailed(UniversalDHT::Response response)
   while (true); // loop until re-set.
 }
 
-#ifndef TOPLESS
-
-/**
- * @brief Labels the temperature graph axes according to C/F
- */
-
-void labelTemperature(void)
+glyph_t Fixed::findGlyphCode(const glyph_t &glyph)
 {
-  if (temperature.useMetric == true)
+  // This searches the Flash memory for matching glyph
+  // All this pulava is to reduce memory consumption
+  // from a bunch of glyphs we'll never use. Bitmaps use 
+  // a LOT of space we simply don't have any to waste.
+
+  const fixedgfxfont_t *gfxFont = m_pFont;
+  uint8_t glyphCount  = static_cast<uint8_t>(pgm_read_byte(&gfxFont->glyphCount));
+  
+  int i {0};
+  for (; i != glyphCount; ++i)
   {
-    printMessage(text.axisYPosition, text.leftAxisLabel, text.colour.defaultForeground, text.colour.defaultBackground, text.small, tft.rotatePortrait, messages.temperatureScale, messages.c);
-  }
-  else
-  {
-    printMessage(text.axisYPosition, text.leftAxisLabel, text.colour.defaultForeground, text.colour.defaultBackground, text.small, tft.rotatePortrait, messages.temperatureScale, messages.f);
-  }
-}
-
-/**
- * @brief Draws a rectange over an area in the current background colour
- * 
- * @param X Top corner
- * @param Y Left corner
- * @param width of area to blank
- * @param height of area to blank
- */
-
-void blankArea(uint16_t X, uint8_t Y, uint16_t width, uint8_t height)
-{
-  screen.fillRect(X, Y, width, height, text.colour.defaultBackground);
-}
-
-/**
- * @brief Blanks the chart area if it's not already active 
- * 
- */
-
-void initGraph(void)
-{
-  if (tft.graphActive == true)
-  {
-    return;
-  }
-  blankArea(0, 90, tft.width, tft.height);
-  tft.graphActive = true;
-}
-
-/**************************************************************************/
-/*!
-   @brief   
-   
-  */
-/**************************************************************************/
-
-/**
- * @brief Prepares the initial variables for the plot lines
- * @remarks This only runs once to set clear everything in case of memory junk
- * so we know not to plot these until a real one is recorded
- * No point storing real numbers when single a byte (Y-coord) will do!
- */
-
-void initGraphPoints(void)
-{
-  uint8_t index;
-
-  for (index = 0; index < graph.width; index++)
-  {
-    humidity.pipe[index]    = (graph.Y + graph.height);
-    temperature.pipe[index] = (graph.Y + graph.height);
-  }
-}
-
-/**
- * @brief Draw the graph lines and chart calibration markings
- * 
- */
-
-void drawGraphLines(void)
-{
-  labelTemperature();
-  printMessage(text.axisYPosition,
-               tft.width - text.baseHeight,
-               text.colour.defaultForeground,
-               text.colour.defaultBackground,
-               text.small,
-               tft.rotatePortrait,
-               messages.humidityScale);
-
-  for (uint8_t index = 0; index < 120; index = index + 20)
-  {
-    screen.setCursor(graph.X - 22, (graph.Y + graph.height - 4) - index);
-
-    if (temperature.useMetric == true)
+    fixedgfxglyph_t* theGlyph  = pgm_read_glyph_ptr(gfxFont, i);
+    if (glyph == pgm_read_byte(&theGlyph->ascii))
     {
-      if (index < 10)
-      {
-        screen.print(F(" "));
-      }
-      screen.print(index / 2);
-    }
-    else
-    {
-      screen.print(round((index / 2) * 1.8 + 32));
-    }
-
-    screen.setCursor(graph.X + graph.width + 5, (graph.Y + graph.height - 4) - index);
-
-    if (index < 10)
-    {
-      screen.print(F(" "));
-    }
-
-    if (index < 100)
-    {
-      screen.print(F(" "));
-    }
-    screen.print(index);
-  }
-}
-
-#endif
-
-/**
- * @brief If an alarm condition is set, this flases the LED pin
- * 
- */
-
-void checkAlarm(void)
-{
-
-  if (alarm.semaphore == 0)
-  {
-    digitalWrite(ALARM_PIN, LOW);
-  }
-
-  if (testAlarm(alarm.all) == true)
-  {
-    if (tft.flashing == true)
-    {
-      digitalWrite(ALARM_PIN, HIGH);
-    }
-    else
-    {
-      digitalWrite(ALARM_PIN, LOW);
+       return i;
     }
   }
+  return 0;
 }
 
-/**
- * @brief Polls for short AND long button pushes, acts accordingly
- * @bug Can be a bit fussy resetting the alarms.
-*/
-
-void checkButton(void)
+void Fixed::drawGlyph(const glyph_t &glyph)
 {
-  if (digitalRead(BUTTON_PIN) == HIGH)
-  {
-    if (button.timer != 0)
-    {
-      if (button.timer < button.shortPress) // button.shortPress)
-      {
-        alarm.semaphore = 0;
-        button.timer = 0;
-        digitalWrite(ALARM_PIN, LOW);
-      }
-    }
-  }
-  else
-  {
-    if (button.timer == 0)
-    {
-      button.timer = 1;
-    }
-    else
-    {
-      button.timer += 1;
-    }
-  }
+    screen.startWrite();
 
-  if (button.timer > button.longPress)
-  {
-    // Toggle metric/imperial
-    (temperature.useMetric = !temperature.useMetric);
-    screen.fillRect(text.lowTempX,       text.lowTempY,   72,  8,     text.colour.defaultBackground);
-    screen.fillRect(text.leftMargin - 2, text.lowHumidY + 12, 20, 40, text.colour.defaultBackground);
-    button.timer = 0;
+    if (bleachThis())
+    {
+        characters_t lastGlyph;
+        lastGlyph = getPrevGlyph();
+        glyph_t G = lastGlyph.glyph;
+        glyphdata_t prevGlyph;
+        drawGlyphPrep(findGlyphCode(G), &prevGlyph);
+        prevGlyph.x = lastGlyph.X;
+        prevGlyph.y = lastGlyph.Y;
+        char b [80];
+        sprintf(b,"Bleach: '%c' at: %d", G, prevGlyph.x);
+        //Serial.println(b);
 
-    showReadings();
-#ifndef TOPLESS
-    drawGraphLines();
-#endif
-  }
+        for (uint16_t i {0}; i < prevGlyph.dimensions.H; ++i) 
+        {
+            uint16_t X = prevGlyph.x + prevGlyph.xo;
+            uint16_t Y = prevGlyph.y + prevGlyph.yo + i;
+
+            for (uint16_t j {0}; j < prevGlyph.dimensions.W; ++j) 
+            {
+                if ((prevGlyph.bit & 0x07) == 0 ) 
+                {
+                    prevGlyph.bits = pgm_read_byte(&prevGlyph.bitmap[prevGlyph.offset++]);
+                }
+                if (prevGlyph.bits & 0x80) 
+                {
+                    screen.writePixel(X, Y, YELLOW);
+                }
+                ++X;
+                ++prevGlyph.bit;
+                prevGlyph.bits = prevGlyph.bits << 1;
+            }
+        }  
+    }
+
+    registerPosition(glyph);
+
+    glyphdata_t thisGlyph;
+    drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+
+    char b [80];
+    sprintf(b,"Print: '%c' at: %d, %d, height: %d", glyph, thisGlyph.x, thisGlyph.y, thisGlyph.dimensions.H );
+    Serial.println(b);
+
+    for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+    {
+        uint16_t X = thisGlyph.x + thisGlyph.xo;
+        uint16_t Y = thisGlyph.y + thisGlyph.yo + i;
+
+        for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
+        {
+            if (! (thisGlyph.bit & 0x07)) 
+            {
+                thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+            }
+            
+            if (thisGlyph.bits & 0x80) 
+            {
+                screen.writePixel(X, Y, thisGlyph.colour);
+            }
+
+            ++X;
+            ++thisGlyph.bit;
+            thisGlyph.bits = thisGlyph.bits << 1;
+        }
+    }
+    screen.endWrite();  
+    moveTo(m_X + thisGlyph.xMax, m_Y);  
 }
 
-/**
- * @brief  Display large main reading displays and the min/max values
- * 
- */
-
-void showReadings(void)
+void Fixed::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
 {
-#ifndef TOPLESS
-  displayGraph();
-#endif
+    const fixedgfxfont_t*  font  = m_pFont;
+    fixedgfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
 
-   checkHeatIndex(temperature.reading, humidity.reading);
-
-  temperature.previousRead = temperature.reading;
-  humidity.previousRead    = humidity.reading;
-
-  if (temperature.reading < temperature.lowestReading)
-  {
-    temperature.lowestReading = temperature.reading;
-  }
-
-  if (temperature.reading > temperature.highestReading)
-  {
-    temperature.highestReading = temperature.reading;
-  }
-
-  if (humidity.reading < humidity.lowestReading)
-  {
-    humidity.lowestReading = humidity.reading;
-  }
-
-  if (humidity.reading > humidity.highestReading)
-  {
-    humidity.highestReading = humidity.reading;
-  }
-
-  screen.setCursor(text.bigReadXTemp, text.BigReadY);
-  uint16_t colour = colourValue((float)temperature.reading, temperature.minComfort, temperature.maxComfort, temperature.guard);
-  printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, temperature.reading, temperature.useMetric);
-
-  screen.setCursor(text.bigReadXHumid + text.baseWidth * text.small, text.BigReadY);
-  colour = colourValue((float)humidity.reading, humidity.minComfort, humidity.maxComfort, humidity.guard);
-  printNumber(colour, text.colour.defaultBackground, text.humungous, text.medium, humidity.reading, true);
-  printMessage(text.rhpc, text.BigReadY, text.colour.defaultForeground, text.colour.defaultBackground, text.large, "%");
-
-  screen.setCursor(text.lowTempX, text.lowTempY);
-  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, temperature.lowestReading, temperature.useMetric);
-  printMessage(messages.slash);
-  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, temperature.highestReading, temperature.useMetric);
-
-  screen.setTextSize(text.small);
-  screen.setCursor(text.lowHumidX, text.lowHumidY);
-
-  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.lowestReading, true);
-  printMessage(messages.slash);
-  printNumber(text.colour.defaultForeground, text.colour.defaultBackground, text.small, text.small, humidity.highestReading, true);
+    data->bitmap = pgm_read_bitmap_ptr(font);
+    data->offset = pgm_read_word(&glyph->bitmapOffset);
+    data->dimensions.H = pgm_read_byte(&glyph->height);
+    data->dimensions.W  = pgm_read_byte(&glyph->width);
+    data->xo     = pgm_read_byte(&glyph->xOffset);
+    data->yo     = pgm_read_byte(&glyph->yOffset);
+    data->xMax   = pgm_read_byte(&glyph->xAdvance);
+    data->bits   = 0;
+    data->bit    = 0;
+    data->x      = fixed.getX();
+    data->y      = fixed.getY();
+    data->glyph  = g;
+    data->colour = display.ink;
 }
 
-/**
- * @brief returns a colour value when values fall outside a range
- * 
- * @param value  temperature or relative humidity
- * @param lowerLimit normal upper limit of the reading
- * @param upperLimit normal lower limit of the reading
- * @param guard A margin of error
- * @return uint16_t 16 bit colour value for MCU_Friend
- */
-
-uint16_t colourValue(float value, uint16_t lowerLimit, uint16_t upperLimit, uint16_t guard)
+void Fixed::printFixed(const char* buffer)
 {
-  if (value < lowerLimit - guard)
+  while (*buffer != 0)
   {
-    return LOW_LIMIT_EXCEEDED;
+    if ( static_cast<char> (*buffer) == '.')
+    {
+      setFixedFont((fixedgfxfont_t*) &HOTSMALL);
+    }
+
+    glyph_t glyph = static_cast<char>(*buffer++);
+    drawGlyph(glyph);
   }
-  else if (value > upperLimit + guard)
-  {
-    return HIGH_LIMIT_EXCEEDED;
-  }
-  return text.colour.defaultForeground;
+  setFixedFont((fixedgfxfont_t*) &HOTLARGE);
+}  
+
+void Messages::execute(const uint8_t &M)
+{
+  screen.setTextColor(defaultInk);
+  screen.print(translations[M]);
 }
 
-/**
- * @brief A little not to *nix systems
- * @remark This was developed on Linux due to the much faster compiler
-*/
+uint8_t Messages::centerText(const uint8_t &M, const uint8_t &charWidth)
+{
+  return ((TFT_WIDTH - (translations[M].length() * charWidth)) / 2);
+}
 
-void showUptime(void)
+void Messages::clear(const uint8_t &message)
+{
+  display.ink   = defaultPaper;
+  display.paper = defaultPaper;
+  execute(message);
+}
+
+void Messages::flashText(const uint8_t &M)
+
+{
+  (flags.isSet(FLASHING)) ? execute(M): execute(M);
+}
+
+void Messages::showUptime(void)
 {
   /*
     This block produces the uptime data at the base
     of the screen as a quick check that the machine
-    hasn't suffered a power loss.
+    hasn't suffered a power loss or reset.
   */
-
-  printMessage(text.leftMargin, tft.errorY, text.colour.defaultBackground, GREY, text.small, messages.uptime);
-  screen.print(F(""));
-
-  screen.print(isrTimings.timeInYears);
-  screen.print(F(" years, "));
-
-  screen.print(isrTimings.timeInWeeks);
-  screen.print(F(" Weeks, "));
-
-  screen.print(isrTimings.timeInDays);
-  screen.print(F(" Days, "));
-
-  printLeadingZero(isrTimings.timeInHours);
-  screen.print(F(" Hours"));
-
-  screen.print(F(":"));
-  printLeadingZero(isrTimings.timeInMinutes);
-
-  screen.print(F(":"));
-  printLeadingZero(isrTimings.timeInSeconds);
-
-}
-
-/**
- * @brief  Prints TWO enumberated text messages to the screen
- * 
- * @param X Absolute X value to position the cursor 
- * @param Y Absolute Y value to position the cursor
- * @param foregroundColour  text's foreground colour
- * @param backgroundColour  text's background (fill) colour
- * @param characterSize enumerated character size
- * @param rotation enumerated value for the screen orientation
- * @param text enumerated value for the first message
- * @param text2 enumerated value for message printed right after
- */
-
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t rotation, uint8_t text, uint8_t text2 )
-{
-  screen.setRotation(rotation);
-  printMessage(X, Y, foregroundColour, backgroundColour, characterSize, text);
-  printMessage(text2);
-  screen.setRotation(tft.rotateDefault);
-}
-
-/**
- * @brief Prints a a short enumerated message
- * 
- * @param X Absolute X value to position the cursor 
- * @param Y Absolute Y value to position the cursor
- * @param foregroundColour text's foreground colour
- * @param backgroundColour text's background (fill) colour
- * @param characterSize enumerated character size
- * @param rotation enumerated character size
- * @param text enumerated value for the first message
- */
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t rotation, uint8_t text)
-{
-  screen.setRotation(rotation);
-  printMessage(X, Y, foregroundColour, backgroundColour, characterSize, text);
-  screen.setRotation(tft.rotateDefault);
-}
-
-/**
- * @brief  Prints a a short message (via a pointer)
- * 
- * @param X Absolute X value to position the cursor 
- * @param Y Absolute Y value to position the cursor
- * @param foregroundColour text's foreground colour
- * @param backgroundColour text's background (fill) colour
- * @param characterSize enumerated character size
- * @param pText pointer to a block of text
- */
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, const char * pText)
-{
-  screen.setCursor(X, Y);
-  screen.setTextColor(foregroundColour, backgroundColour);
-  screen.setTextSize(characterSize);
-  printMessage(pText, foregroundColour);
-}
-
-/**
- * @brief prints a short enumerated message
- * 
- * @param X Absolute X value to position the cursor 
- * @param Y Absolute Y value to position the cursor
- * @param foregroundColour text's foreground colour
- * @param backgroundColour text's background (fill) colour
- * @param characterSize enumerated character size
- * @param text enumerated message
- */
-
-void printMessage(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t text)
-{
-  screen.setCursor(X, Y);
-  screen.setTextColor(foregroundColour, backgroundColour);
-  screen.setTextSize(characterSize);
-  printMessage(text);
-}
-
-/**
- * @brief prints a short enumerated message
- * 
- * @param foregroundColour text's foreground colour
- * @param backgroundColour text's background (fill) colour
- * @param characterSize enumerated character size
- * @param text enumerated message
- */
-
-void printMessage(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t characterSize, uint8_t text)
-{
-  screen.setTextColor(foregroundColour, backgroundColour);
-  screen.setTextSize(characterSize);
-  printMessage(text);
-}
-
-/**
- * @brief prints a short message via a pointer
- * 
- * @param pText null terminated block of text
- * @param col foreground colour of text
- */
-
-void printMessage(const char * pText, uint16_t col)
-{
-  screen.setTextColor(col, text.colour.defaultBackground);
-  screen.print(pText);
-}
-
-/**
- * @brief prints an enumerated block of text
- * 
- * @param text 
- */
-
-void printMessage(uint8_t text)
-{
-  screen.print(messages.msg[text]);
-}
-
-/**
- * @brief Displays a reading inserts "ICE" alert if < 0
- * 
- * @param foregroundColour foreground colour of text
- * @param backgroundColour background colour of text
- * @param largeCharacterSize enumerated size of the large characters 
- * @param smallCharacterSize  enumerated size of the small characters 
- * @param number printable number 
- * @param metric set to true to display number in degrees C
- * @remark This function is designed to print the "fractional"
- * part in a smaller font so more fits in the limited screen space.
- * 
- */
-
-void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number, bool metric)
-{
-  if (number < 0)
-  {
-    screen.setTextColor(foregroundColour, backgroundColour);
-    screen.setTextSize(largeCharacterSize);
-    printMessage("ICE  ", RED);
-    return;
-  }
-
-  if (metric == false)
-  {
-    number = number * 1.8 + 32;
-  }
-  printNumber(foregroundColour, backgroundColour, largeCharacterSize, smallCharacterSize, number);
-}
-
-/**
- * @brief prints a right-aligned number (+0-999)
- * 
- * @param foregroundColour text foreground colour
- * @param backgroundColour text background colour
- * @param largeCharacterSize enumerated large character size
- * @param smallCharacterSize enumerated small character size
- * @param number the value to display
- * @param useMetric allows for converstion C/F without screwing humidity
- * @remark This function is designed to print the "fractional"
- * part in a smaller font so more fits in the limited screen space.
- */
-
-void printNumber(uint16_t foregroundColour, uint16_t backgroundColour, uint8_t largeCharacterSize, uint8_t smallCharacterSize, float number)
-{
-  screen.setTextColor(foregroundColour, backgroundColour);
-  screen.setTextSize(largeCharacterSize);
-
-  if (number >= 0 && number < 100)
-  {
-    screen.print(" ");
-  }
-
-  if (number >= 0 && number < 10)
-  {
-    screen.print(" ");
-  }
-
-  double integer;
-  double fraction = modf(number, &integer);
-  screen.print(integer, 0);
-
-  modf(fraction * 10, &integer);
-  screen.setTextSize(smallCharacterSize);
-  screen.print(".");
-  screen.print(integer, 0);
-}
-
-/**
- * @brief prints a right-aligned number (+0-99)
- * 
- * @param foregroundColour text foreground colour
- * @param backgroundColour text background colour
- * @param largeCharacterSize enumerated large character size
- * @param smallCharacterSize enumerated small character size
- * @param number the value to display
- * @param lastValue the value to BLANK OUT!
- * @param X cursor X position
- * @param Y cursor Y position
- * @remark This function is designed to print the "fractional"
- * part in a smaller font so more fits in the limited screen space.
- * Specifically for the "ULTRA" LCD display this places the fraction
- */
-
-void printNumber(uint16_t X, uint16_t Y, uint16_t foregroundColour, uint16_t backgroundColour, 
-        uint8_t largeCharacterSize, uint8_t smallCharacterSize, float lastValue, float number, bool useMetric)
-{
-  screen.setTextColor(foregroundColour, backgroundColour);
-  screen.setTextSize(largeCharacterSize);
-  screen.setCursor(X,Y);
+  char msg[60];
+  screen.setTextSize(1);
   
-  if (useMetric == false)
-  {
-    number = number * 1.8 + 32;
-  }
-
-  if (number >= 100)
-  {
-      number = 99;  // range is limited to two digits (about 37.5 f). This is space constraint.
-  }
-
-  else if (number <= 0)
-  {
-      number = 0;  // current font does NOT have a negative bar!
-  }
-
-  char printable[5];
-  
-  double integer;
-  double fraction = modf(number, &integer);
-  
-  sprintf(printable, "%d", (int) integer);
-
-  if (integer < 10)
-  {
-    screen.print("0");
-  }
-
-  screen.print(printable);
-
-  modf(fraction * 10, &integer);
-  screen.setCursor(screen.getCursorX(), screen.getCursorY() - 80);
-  screen.setTextSize(smallCharacterSize);
-  sprintf(printable, "%d", (int) integer);
-  screen.print(printable);
-
-  double prevInteger;
-  double prevFraction = modf(lastValue, &integer);
+  sprintf(msg, "Uptime: %2d Years, %2d Weeks, %2d Days, %02d:%02d:%02d", 
+                      isrTimings.timeInYears,
+                      isrTimings.timeInWeeks,
+                      isrTimings.timeInDays,
+                      isrTimings.timeInHours,
+                      isrTimings.timeInMinutes,
+                      isrTimings.timeInSeconds);
+ 
+  screen.setTextColor(defaultPaper);  
+  screen.setCursor(LEFTMARGIN, TFT_ERROR_Y);
+  screen.print(msg);
 }
 
-/**
- * @brief Displays those horrible and annoying flashing messages
- * 
- * @param message enumerated message to display
- * @param X cursor position in absolute screen X coords
- * @param Y cursor position in absolute screen Y coords
- * @param foreground Foreground colour
- * @param background background colour 
- */
+/*
 
-void flashText(uint8_t message, uint8_t X, uint8_t Y, uint16_t foreground, uint16_t background)
+void Graph::draw(quadrilateral_t* quad, colours_t ink, colours_t outline = display.paper)
 {
-  if (tft.flashing == true)
-  {
-    printMessage(X, Y, foreground, background, text.large, message);
-  }
-  else
-  {
-    printMessage(X, Y, background, foreground, text.large, message);
-  }
-}
-/**
- * @brief Centers a block of text given character size
- * 
- * @param text String of characters
- * @param charWidth width of the current font
- * @return uint8_t central X offset based on the screen width
- */
+  screen.fillTriangle(quad->cords[0].X, quad->cords[0].Y,
+                      quad->cords[1].X, quad->cords[1].Y,
+                      quad->cords[2].X, quad->cords[2].Y,
+                      ink);
 
-uint8_t centerText(String text, uint8_t charWidth)
+  screen.fillTriangle(quad->cords[0].X, quad->cords[0].Y,
+                      quad->cords[3].X, quad->cords[3].Y,
+                      quad->cords[2].X, quad->cords[2].Y,
+                      ink);
+
+  screen.drawLine(quad->cords[0].X, quad->cords[0].Y, quad->cords[1].X, quad->cords[1].Y, outline);
+  screen.drawLine(quad->cords[1].X, quad->cords[1].Y, quad->cords[2].X, quad->cords[2].Y, outline);
+  screen.drawLine(quad->cords[2].X, quad->cords[2].Y, quad->cords[3].X, quad->cords[3].Y, outline);
+  screen.drawLine(quad->cords[3].X, quad->cords[3].Y, quad->cords[0].X, quad->cords[0].Y, outline);
+}
+
+void Graph::rotate(quadrilateral_t* quad, int16_t rotation)
 {
-  return ((tft.width - (text.length() * charWidth)) / 2);
-}
-
-ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
-{
-  TCNT1 = UPDATER;     // preload timer
-
-  isrTimings.timeToRead ++;
-
-  tft.flashing = !(tft.flashing); // flip the boolean for flashing items
-
-  isrTimings.timeInSeconds = isrTimings.timeInSeconds + 1;  // this is determined by the ISR calculation at the head of the sketch.
-
-  if (isrTimings.timeInSeconds == 60)
+  double sinTheta = sin(DEG_TO_RAD * rotation);
+  double cosTheta = cos(DEG_TO_RAD * rotation);
+  for (auto i{0}; i < 4; ++i)
   {
-    isrTimings.timeInSeconds = 0;
-    isrTimings.timeInMinutes++;
-
-    if (isrTimings.timeInMinutes == 60)
-    {
-      isrTimings.timeInMinutes = 0;
-      isrTimings.timeInHours++;
-
-      if (isrTimings.timeInHours == 24)
-      {
-        isrTimings.timeInHours = 0;
-        isrTimings.timeInDays++;
-
-        if (isrTimings.timeInDays == 7)
-        {
-          isrTimings.timeInWeeks = 0;
-          isrTimings.timeInWeeks++;
-
-          if (isrTimings.timeInWeeks == 52)
-          {
-            isrTimings.timeInWeeks = 0;
-            isrTimings.timeInYears++;
-          }
-        }
-      }
-    }
+    int16_t tX;
+    tX = ( (double) quad->cords[i].X * cosTheta - (double)quad->cords[i].Y * sinTheta);
+    quad->cords[i].Y  = ( (double) quad->cords[i].X * sinTheta + (double)quad->cords[i].Y * cosTheta);
+    quad->cords[i].X = tX;
   }
 }
+
+void Graph::translate(triangle_t* triangle, coordinates_t cords)
+{
+  for (auto i{0}; i < 4; ++i)
+  {
+    triangle->cords[i].X += cords.X;
+    triangle->cords[i].Y += cords.Y;
+  }
+}
+
+void Graph::translate(quadrilateral_t* polygon, coordinates_t cords)
+{
+  for (auto i{0}; i < 4; ++i)
+  {
+    polygon->cords[i].X += cords.X;
+    polygon->cords[i].Y += cords.Y;
+  }
+}
+
+void Graph::drawPointers()
+{
+  {
+    int16_t t = 33;
+    quadrilateral_t pointer;
+    pointer.cords[0] = {0,0};
+    pointer.cords[1] = {10,-10};
+    pointer.cords[2] = {0,64};
+    pointer.cords[3] = {-10,-10};
+
+    Graph::rotate(&pointer, t);
+    Graph::translate(&pointer, {160,120});
+    Graph::draw(&pointer, defaultPaper, defaultPaper);
+  }
+
+  {
+    int16_t t = 33;
+    quadrilateral_t pointer;
+    pointer.cords[0] = {0,0};
+    pointer.cords[1] = {10,-10};
+    pointer.cords[2] = {0,64};
+    pointer.cords[3] = {-10,-10};
+
+    Graph::rotate(&pointer, t);
+    Graph::translate(&pointer, {160,120});
+    Graph::draw(&pointer, BLUE, WHITE);
+  }
+
+  {
+    int16_t t = -43;
+    quadrilateral_t pointer;
+    pointer.cords[0] = {0,0};
+    pointer.cords[1] = {10,-10};
+    pointer.cords[2] = {0,64};
+    pointer.cords[3] = {-10,-10};
+
+    Graph::rotate(&pointer, t);
+    Graph::translate(&pointer, {160,120});
+    Graph::draw(&pointer, GREEN, WHITE);
+  }
+}
+
+void Graph::drawRadials()
+{
+ for (int t = 0; t<190; t+=10)
+  {
+    quadrilateral_t tick;
+    tick.cords[0] = {-80, -2};
+    tick.cords[1] = {-60, -2};
+    tick.cords[2] = {-60, 2};
+    tick.cords[3] = {-80, 2};
+
+    Graph::rotate(&tick, t);
+    Graph::translate(&tick, {160,120});
+    Graph::draw(&tick, YELLOW, YELLOW);
+  }
+
+  for (int t = 190; t<360; t+=10)
+  {
+    quadrilateral_t tick;
+    tick.cords[0] = {-80, -2};
+    tick.cords[1] = {-60, -2};
+    tick.cords[2] = {-60, 2};
+    tick.cords[3] = {-80, 2};
+
+    Graph::rotate(&tick, t);
+    Graph::translate(&tick, {160,120});
+    Graph::draw(&tick, RED, RED);
+  }
+}
+*/

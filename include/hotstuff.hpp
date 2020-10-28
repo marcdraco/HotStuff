@@ -20,370 +20,683 @@
   BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
-  THERE ARE NO BUGS IN THIS CODE, JUST FEATURES, SOME OF WHICH MAY CAUSE IT TO BEHAVE
-  ERRATICALLY. SINCE YOU GOT IT FOR FREE, FIX THEM OR DON'T COME CRYING TO US!
-  YES, IT'S WORDY AND WE'VE ESCHEWED MANY C "SHORTCUTS" TO MAKE IT EASIER FOR BEGINNERS
-
+/*
   Thanks to Steve Wood (ebay: audioSpectrumAnalysers) for the serial programmer.
   3.5" TFT shield supplied by A-Z Delivery via Amazon.  
 */
 
-#ifndef __HOTSTUFF_H
-#define __HOTSTUFF_H
+#ifndef __DRACO_HOTSTUFF_H
+#define __DRACO_HOTSTUFF_H
 
-
-/**
- * @brief use this if you have an incident like someone did...
- * @remark after Marc's sloppy soldering (and failure to heatsink
- * the DHT22 pins, it registered a bad output... (blah blah)
- * The output, however, is still (broadly) within usable limits
- * so this is used in cases like that to disable the failure screen!
- */
- 
-#define SENSOR_MISSING_OR_BUSTED  
-
-/**
- * @brief TOPLESS is for the version with i2C displays (no shield, hence topless)
- */
- 
- //#define TOPLESS                 
-
-/**
- * @brief // remove this line to have the unit read in fahrenheit
- */
-#define METRIC                   
- 
-/**
- * @brief This is for the experimental analog display
- */
-  
-//#define CLOCKWISE
-
-/**
- * @brief Enable the huge metric 7-segLCD display
- * @remark This ONLY works for metric right now due to the size
- * of the font.
- */
-  
-#define SIMPLE_LCD
-
-
-/**
- * @brief 
- * 
- * @remark Poor man's unit testing. These defines can set temperature and humidity.reading
- * well outside what the DHT22 is sending in order to check changes to code.
- * Remember it makes no sense have both high AND low temp/RH% the same time though
- * Temperature for debug purposes is in CENTIGRADE!
- * 
-*/
-
-// #define DEBUG_OVERTEMP_ALARM 45
-// #define DEBUG_EXCESS_DAMP_ALARM 90
-// #define DEBUG_DRY_AIR_ALARM 10
- #define DEBUG_FROST_ALARM -5
-
-#define SimpleDHTSuccess         0 
-#define SimpleDHTErrStartLow     1
-#define SimpleDHTErrStartHigh    2
-#define SimpleDHTErrDataLow      3
-#define SimpleDHTErrDataHigh     4
-#define SimpleDHTErrDataEOF      5
-#define SimpleDHTErrDataChecksum 6
-
-#define SHOW_BANDS           // optionally plot some dotted lines for normal values
-#define BUTTON_PIN   10      // the acknowlegement button to stop alerts for ice, damp etc.
-#define DHT22_POWER  11      // pin to power the DHT22 since the power pins are covered.
-#define DHT22_DATA   12      // The DHT 22 can be powered elsewhere leaving this free however.
-#define ALARM_PIN    13      // LED or a high-impedance buzzer
-#define GRAPH_WIDTH  240     // The absolute width of the graph where used
-#define WIDTH_SCALE  1       // divide the size of the screen based on a 320x240 matrix
-#define HEIGHT_SCALE 1       // divide the size of the screen based on a 320x240 matrix
-
-/*
-   A good selection of simple colour defines
-   from David Prentice's TFT library
-*/
-
-#define RGB(r, g, b) (((r&0xF8)<<8)|((g&0xFC)<<3)|(b>>3))
-#define BLACK     0x0000
-#define BLUE      0x001F
-#define RED       0xF800
-#define GREEN     0x07E0
-#define CYAN      0x07FF
-#define MAGENTA   0xF81F
-#define YELLOW    0xFFE0
-#define WHITE     0xFFFF
-#define LIGHTGREY RGB(200, 200, 200)
-#define GREY      RGB(128, 128, 128)
-#define DARKGREY  RGB(64, 64, 64)
-#define DARKGRAY  RGB(64, 64, 64)
-#define DEEPGREY  RGB(16, 16, 16)
-#define DEEPGRAY  RGB(16, 16, 16)
-#define TURQUOISE RGB(0, 128, 128)
-#define PINK      RGB(255, 128, 192)
-#define OLIVE     RGB(128, 128, 0)
-#define PURPLE    RGB(128, 0, 128)
-#define AZURE     RGB(0, 128, 255)
-#define ORANGE    RGB(255,128,64)
-#define BROWNISH  RGB(0x2e,0x2d,0x0)
-#define PURPLEISH RGB(0x2f,0x00,0x2d)
-
-#define LOW_LIMIT_EXCEEDED BLUE
-#define HIGH_LIMIT_EXCEEDED RED
-
-/*
-   Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful!
-   Consult the ISR below for further notes Timer 1 to fire every 4 seconds
-   Adjust this if your board has a different speed!
-
-   x = 65535 - (16Mhz * 4/1024)
-   therefore x = 3035.
-   https://oscarliang.com/arduino-timer-and-interrupt-tutorial/
-*/
-
-#define UPDATER 49910  // one second timer. 
-
-
-// use this if you have an incident like someone did...
-#define SENSOR_MISSING_OR_BUSTED  
-
- // You have a dirty mind! This for the i2C version!
- //#define TOPLESS                
+#include <Arduino.h>
+#include "types.hpp"
 
 // remove this line to have the unit read in fahrenheit
-#define METRIC                   
+// #define USE_METRIC                   
  
-// This is for the experimental analog display
-//#define CLOCKWISE
+// Many (but maybe not all) non-AVR board installs define macros
+// for compatibility with existing PROGMEM-reading AVR code.
+// Do our own checks and defines here for good measure...
 
-uint16_t err = 0;
+#ifndef pgm_read_byte
+#define pgm_read_byte(addr) (*(const unsigned char*)(addr))
+#endif
+#ifndef pgm_read_word
+#define pgm_read_word(addr) (*(const unsigned short *)(addr))
+#endif
+#ifndef pgm_read_dword
+#define pgm_read_dword(addr) (*(const unsigned long *)(addr))
+#endif
 
-struct 
+// Pointers are a peculiar case...typically 16-bit on AVR boards,
+// 32 bits elsewhere.  Try to accommodate both...
+
+#if !defined(__INT_MAX__) || (__INT_MAX__ > 0xFFFF)
+#define pgm_read_pointer(addr) ((void *)pgm_read_dword(addr))
+#else
+#define pgm_read_pointer(addr) ((void *)pgm_read_word(addr))
+#endif
+
+inline fixedgfxglyph_t* pgm_read_glyph_ptr(const fixedgfxfont_t*gfxFont, uint8_t c) 
 {
-  enum messages {c, f, percent, slash, damp, dry, 
-  frost, uptime, temperature, humidity, temperatureScale, 
-  humidityScale, work1, work2, caution, xcaution, danger, xdanger};
+#ifdef __AVR__
+  return &(((fixedgfxglyph_t *)pgm_read_pointer(&gfxFont->glyph))[c]);
+#else
+  // expression in __AVR__ section may generate "dereferencing type-punned
+  // pointer will break strict-aliasing rules" warning In fact, on other
+  // platforms (such as STM32) there is no need to do this pointer magic as
+  // program memory may be read in a usual way So expression may be simplified
+  return gfxFont->glyph + c;
+#endif //__AVR__
+}
 
-  const char * msg[18] = {
-    "C", "F", "%", "/", 
-    "DAMP", "DRY", "FROST", "Uptime: ", 
-    "Air Temp:", "Humidity:", "Temperature in ", 
-    "Relative Humidity", "High temp & humidity!", "Temp Equivalent: ", 
-    "Caution", "Extreme Caution", "DANGER", "-DANGER TO LIFE-"};
-} messages;
+inline uint8_t* pgm_read_bitmap_ptr(const fixedgfxfont_t* gfxFont) {
+#ifdef __AVR__
+  return (uint8_t*) pgm_read_pointer(&gfxFont->bitmap);
+#else
+  // expression in __AVR__ section generates "dereferencing type-punned pointer
+  // will break strict-aliasing rules" warning In fact, on other platforms (such
+  // as STM32) there is no need to do this pointer magic as program memory may
+  // be read in a usual way So expression may be simplified
+  return gfxFont->bitmap;
+#endif //__AVR__
+}
 
-struct {
-  volatile uint8_t timeInSeconds = 0;
-  volatile uint8_t timeInMinutes = 0;
-  volatile uint8_t timeInHours   = 0;
-  volatile uint8_t timeInDays    = 0;
-  volatile uint8_t timeInWeeks   = 0;
-  volatile uint8_t timeInYears   = 0;
-  volatile uint8_t timeToRead    = 0;
-} isrTimings;
+#ifndef min
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
 
-struct {
-  const uint8_t errorY     = 230  / HEIGHT_SCALE;
-  const uint16_t width     = 320  / WIDTH_SCALE; 
-  const uint8_t height     = 240  / HEIGHT_SCALE;
-  uint8_t graphX           = 0;      // the current plot position
-  uint8_t lastTemperatureY = 0;
-  uint8_t lastHumidityY    = 0;
-  bool flashing            = false;
-  bool warnDanger          = false;
-  bool graphActive         = true;
-  enum {
-    rotatePortrait = 0, 
-    rotateDefault = 1};     // Use 0 and 1 for or 2 and 3 depending on how you want your screen displayed
-} tft;
+  
+/**
+ * @brief The "super large" LCD display
+ * 
+ */
+void showLCDReads();
 
-/*
-  Bit of tricky programming for beginners, these "flags" are set as bits in a single byte.
-  When any one is set, that means the device is in an "alarm" condition. Hence all the alarms
-  can be tested in one go but set/cleared without affecting any of the others. Flags are
-  called semaphores here - they're synonymous.
+class Flags 
+{
+  private:
+    semaphore_t semaphore;
 
-  This gives us an easy way to set a bunch of conditions that might switch on and
-  off at any time but the alarm beacon isn't cancelled by a single one going green.
-  Note that the enumeration is a binary sequence: 1, 2, 4, 8, 16, 32 etc.
-  16 or even 32 bits are possible but that would be exceptional in such limited space.
+  public:
+    void clear(const semaphore_t &flag)
+    {
+      semaphore &= (flag ^ 0xFFFF);
+    }
 
-  This takes slightly longer than a simple true/false bool so we uses those where practical
-*/
-struct {
-  enum     
+    void set(const semaphore_t &flag)
+    {
+      semaphore |= flag;
+    }
+
+    bool isSet(const semaphore_t &flag)
+    {
+      return (semaphore & flag);
+    }
+
+    bool isClear(const semaphore_t &flag)
+    {
+      return !(semaphore & flag);
+    }
+
+    void flip(const semaphore_t &flag)
+    {
+      semaphore ^= flag;
+    }
+};
+
+class Fixed
+{
+    struct characters_t
+    { 
+      int16_t X;  
+      uint8_t Y;   // Note ONE byte only for the Y to save precious RAM.  
+      char glyph;  // default "fixed" cell count this uses 120 bytes!
+    };
+
+  static const int MAXCELLS {30};
+
+  private:
+    int16_t m_X {0};
+    uint8_t m_Y {0};
+    uint8_t m_xStep {0};
+    uint8_t m_yStep {0};     
+
+    const fixedgfxfont_t* m_pFont;
+    int8_t m_cell {0};  // cell is a printed charcacter position
+    characters_t* m_newCursors = new characters_t[MAXCELLS]();
+    characters_t* m_oldCursors = new characters_t[MAXCELLS]();
+
+  public:
+
+    Fixed() {};
+
+    Fixed(fixedgfxfont_t* font) 
+    {
+      m_pFont = font;
+    };
+
+    ~Fixed()
+    {
+      // never called but included to stop auto-code checkers whinging.
+      delete m_newCursors;
+      delete m_oldCursors;
+    }
+
+    void registerPosition(const glyph_t &glyph)
+    {
+      m_newCursors[m_cell].glyph = glyph;
+      m_newCursors[m_cell].X = m_X;
+      m_newCursors[m_cell].Y = m_Y;
+      ++m_cell;
+      char b[90];
+      sprintf(b, "Registered: '%c' at X: %d, Count: %d", glyph, m_X, m_cell);
+      Serial.println(b);
+    }
+  
+    bool bleachThis()
+    {
+      return ( (m_newCursors[m_cell].glyph == m_oldCursors[m_cell].glyph) && 
+               (m_newCursors[m_cell].X == m_oldCursors[m_cell].X ) &&
+               (m_newCursors[m_cell].Y == m_oldCursors[m_cell].Y ));
+    }
+
+    characters_t getPrevGlyph()
+    {
+      return {m_oldCursors[m_cell].X, m_oldCursors[m_cell].Y, m_oldCursors[m_cell].glyph};        
+    }
+
+    int16_t getX()
+    {
+      return m_X;
+    }
+
+    int16_t getY()
+    {
+      return m_Y;
+    }
+
+    void moveTo(const int16_t &X, const int16_t &Y)
+    {
+      m_X = X;
+      m_Y = Y;
+    }
+
+    void reset()
+    {
+      for (auto i{0}; i <  MAXCELLS; ++i)
+      {
+        m_oldCursors[i] = m_newCursors[i];
+      }
+      m_cell = 0;
+    }
+
+    int8_t getCount()
+    {
+      return m_cell;
+    }
+    
+    int8_t getYstep()
+    {
+      return m_yStep;
+    }
+
+    void drawGlyph(const glyph_t &glyph);
+
+    void printFixed(const char* buffer);
+
+    void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
+
+    glyph_t findGlyphCode(const glyph_t &glyph);
+
+    void calcFontStep(uint8_t* width, uint8_t* height)
+    {
+      getGlyphDimensions('%', width, height);
+
+      for (auto i{0}; i < 10; ++i)
+      {
+        dimensions_t size {0,0};
+
+        if (size.W > *width)
+        {
+          *width = size.W;
+        } 
+
+        if (size.H > *height)
+        {
+          *height = size.H;
+        }
+      }
+    }
+
+    void getGlyphDimensions(const glyph_t &glyph, uint8_t* W, uint8_t* H)
+    {
+      glyphdata_t G;
+      glyph_t code = findGlyphCode(glyph);
+
+      drawGlyphPrep(code, &G);
+
+      *W = G.dimensions.W;
+      *H = G.dimensions.H;
+    }
+
+    void setFixedFont(const fixedgfxfont_t* pNewSize)
+    {
+      m_pFont = pNewSize;
+      calcFontStep(&m_xStep, &m_yStep);
+    }
+};
+
+class Graph
+{
+  public:
+
+  Graph() {};
+
+  void drawPointers();
+
+  void draw(const triangle_t* polygon, const colours_t &ink, const colours_t &outline);
+  void draw(const quadrilateral_t* polygon, const colours_t &ink, const  colours_t &outline);
+
+  void translate(const triangle_t* polygon, const coordinates_t &cords);
+  void translate(const quadrilateral_t* polygon, const coordinates_t &cords);
+
+  void rotate(const triangle_t* polygon, const angle_t &theta);
+  void rotate(const quadrilateral_t* polygon, const angle_t &theta);
+
+  /**
+   * @brief Displays the main graph
+   * 
+   * convert the temperature and humidity.reading readings into something that scales to the chart.
+   * the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
+   * the first few lines just wall off temperatures from under freezing and above 50.
+   */
+
+  void displayGraph();
+
+  /**
+   * @brief  Overdraws the graph outline in the current foreground
+   * 
+   */  
+  void drawMainAxes();
+
+  void drawGraphScaleMarks();
+
+  /**
+   * @brief Draw the graph lines and chart calibration markings
+   * 
+   */  
+  void drawReticles();
+
+  /**
+   * @brief Blanks the chart area if it's not already active 
+   * 
+   */
+  void initGraph();
+
+  /**
+   * @brief draws circular plots for the analogue version
+   * 
+   */
+  void drawRadials();
+};
+
+class Messages
+{
+  public:
+
+  enum
   {
-    frost    = 1, 
-    damp     = 2, 
-    dry      = 4, 
-    overTemp = 8, 
-    all =    0xFF
+    c, f, percent, slash, damp, dry, 
+    frost, temperatureScale, humidityScale, work1, 
+    work2, caution, xcaution, danger, xdanger
   };
 
-  uint8_t  semaphore       = 0;
-  bool     silenced        = false;
-  bool     alarmedDryAir   = false;
-  bool     alarmedDampAir  = false;
-  bool     alarmedLowTemp  = false;
-  bool     alarmedHighTemp = false; 
-  bool     highRisk        = false;
-} alarm;
+  String translations[xdanger +1];
 
-// a couple of variables to determine the button multi-functions.
-struct {
-  bool          pressed    = false;
-  uint8_t       timer      = 0;
-  uint8_t       lastTimer  = 0;
-  const uint8_t shortPress = 2;
-  const uint8_t longPress  = 10;
+  char* pText;
 
-} button;
-
-// The failure record array gets sensor age after a "catastrophic" failure
-struct {
-  bool sensorFailure = false;
-  enum {Y = 0, W, D, H, M};
-  uint8_t failTime[5] = {0, 0, 0, 0, 0};
-} fail;
-
-/**
- * @brief 
- * The following constants set up various values to calculate the graphing functions and should
- * be fairly self-explanatory. As set here, the chart covers temperatures from 0 to 50C
- * and RH (humidity.reading) across the whole range. The DHT22 is good for -40 to 80C but this
- * device is for humans at work or elderly so is set for those temperature ranges.
- * Compare the DHT22 information sheet for complete specifications.
-*/
-
-struct
-{
-  struct
+  Messages() 
   {
-#ifdef SIMPLE_LCD
-    const uint16_t defaultBackground = BLACK;
-    const uint16_t defaultForeground = WHITE;
-    const uint16_t reticleColour     = DEEPGREY;
-#else
-    const uint16_t defaultBackground = BLACK;
-    const uint16_t defaultForeground = CYAN;
-    const uint16_t reticleColour     = DEEPGREY;
-#endif
-  } colour;
+    pText = nullptr;
+    translations[c]        = F("c");
+    translations[f]        = F("f");
+    translations[percent]  = F("%");
+    translations[caution]  = F("Extreme CAUTION");
+    translations[slash]    = F("/");
+    translations[damp]     = F("DAMP");
+    translations[dry]      = F("DRY");
+    translations[frost]    = F("FROST");
+    translations[temperatureScale] = F("Temperature in ");
+    translations[humidityScale] = F("Relative Humidity");
+    translations[work1]    = F("High temp & humidity!");
+    translations[work2]    = F("Temp Equivalent: ");
+    translations[caution]  = F("CAUTION");
+    translations[xcaution] = F("");
+    translations[danger]   = F("DANGER");
+    translations[xdanger]  = F("-DANGER TO LIFE-");
+  };
 
-  const uint8_t  bigReadXTemp    = 10  / WIDTH_SCALE;
-  const uint8_t  bigReadXHumid   = 140 / WIDTH_SCALE;
-  const uint16_t degreeX         = 280 / WIDTH_SCALE;
-  const uint16_t degreeSymbolX   = 280 / WIDTH_SCALE;
-  const uint8_t  dryWarnX        = 180  / WIDTH_SCALE;
-  const uint8_t  dampWarnX       = 228  / WIDTH_SCALE;
-  const uint8_t  frostWarnX      = 42  / WIDTH_SCALE;
-  const uint8_t  lowHumidX       = 176 / WIDTH_SCALE;
-  const uint8_t  lowTempX        = 42  / WIDTH_SCALE;
-  const uint8_t  leftMargin      = 20  / WIDTH_SCALE;
-  const uint8_t  leftAxisLabel   = 5   / WIDTH_SCALE;
-  const uint16_t rhpc            = 295 / WIDTH_SCALE;
-  const uint16_t scaleX          = 295 / WIDTH_SCALE;
+  /**
+   * @brief Print a short enumerated message
+   * 
+   * @param M Message number
+   */
+
+  void execute(const uint8_t &M);
+
+  /**
+   * @brief Print a buffer of text prepared by sprintf
+   * 
+   * @param pText char* to the buffer
+   */
+
+  void execute(const char* pText);
+
+  /**
+   * @brief Overwrite a predefined message in background
+   * 
+   * @param M enumerated message
+   */
+
+  void clear(const uint8_t &M);
   
-  const uint16_t axisYPosition   = 30  / HEIGHT_SCALE;
-  const uint8_t  degreeSymbolY   = 8   / HEIGHT_SCALE;
-  const uint8_t  BigReadY        = 5  / HEIGHT_SCALE;
-  const uint8_t  degreeY         = 8   / HEIGHT_SCALE;
-  const uint8_t  dryWarnY        = 80  / HEIGHT_SCALE;
-  const uint8_t  frostWarnY      = 80  / HEIGHT_SCALE;
-  const uint8_t  temperatureY    = 74  / HEIGHT_SCALE;
-  const uint8_t  humidityY       = 74  / HEIGHT_SCALE;
-  const uint8_t  heatIndexY      = 110 / HEIGHT_SCALE;
-  const uint8_t  lowTempY        = 60  / HEIGHT_SCALE;
-  const uint8_t  lowHumidY       = 60  / HEIGHT_SCALE;
-  const uint8_t  dampWarnY       = 80  / HEIGHT_SCALE;
-  const uint8_t  uptimeTimeY     = 228 / HEIGHT_SCALE;
-  const uint8_t  baseHeight      = 8;
-  const uint8_t  baseWidth       = 6;
-  enum {small  = 1,                       // 6 x 8 
-        medium = 2,                       // 12 x 16
-        large  = 3,                       // 18 x 24
-        huge   = 4,                       // 24 x 32
-        enormous = 5,                     // 30 x 40
-        humungous = 6                     // 36 x 48
-       };
-} text;
+  /**
+   * @brief Get a pointed to an enumerated message block
+   * 
+   * @param M enumerated message
+   * @return const char* to message string (NOT a string object!)
+   */
 
-struct {
-  const uint16_t tRadialX    = 160  / WIDTH_SCALE;
-  const uint16_t tRadialY    = 120 / HEIGHT_SCALE;
-  const uint16_t hRadial     = +1160 / HEIGHT_SCALE;
-  const uint16_t innerRadius = 40 / WIDTH_SCALE;
-  const uint16_t outerRadius = 70 / WIDTH_SCALE;
+  const char* getString(const uint8_t &M);
 
-} radials;
+  /**
+   * @brief Centers a block of text given character size
+   * 
+   * @param text String of characters
+   * @param charWidth width of the current font
+   * @return uint8_t central X offset based on the screen width
+   */
+  uint8_t centerText(const uint8_t &M, const uint8_t &charWidth);
 
-struct
+  /**
+     * @brief Horrible flashing test
+     * 
+     * @param M pre-defined message
+     */
+      
+  void flashText(const uint8_t &M);
+
+  void printNumber(const colours_t &ink, const uint8_t &characterSize, const uint8_t &number, const semaphore_t &flags);
+  
+  void rightAlign(const float &floaty, const char* buffer, const uint8_t &formatWidth, const uint16_t &integralWidth);
+  /**
+  * @brief A little nod to *nix systems
+  * @remark This was developed on Linux due to the much faster compiler
+  */
+  void showUptime();
+};
+
+class Alarm
 {
-  const uint8_t FSD    = 100  / HEIGHT_SCALE; 
-  const uint8_t X      = 41   / WIDTH_SCALE;
-  const uint8_t Y      = 110  / HEIGHT_SCALE;
-  const uint8_t width  = 240  / WIDTH_SCALE;
-  const uint8_t height = 100  / HEIGHT_SCALE;
-  const uint16_t reticleColour = DEEPGREY;
-  bool updateGraphReadings = true;
-} graph;
 
-struct
+  public:
+
+  using cursor = struct 
+  {
+    uint16_t X;
+    uint16_t Y;
+  };
+
+  /**
+   * @brief If an alarm condition is set, this flashes the LED pin
+   * 
+   */
+  void checkAlarm();
+  
+  void annunciators();
+
+  /**
+  * @brief Polls for short AND long button pushes, acts accordingly
+  * @bug Can be a bit fussy resetting the alarms.
+  */
+  void checkButton();
+
+  /**
+   * @brief Brings everthing to a halt if the DHT sensor breaks during use
+   * 
+   * @param response response Returned 16 bit from the DHT libary
+   * @remarks  Displays warnings in the lower half of the screen to stop or reduce 
+   * activity for health and safety. 
+   */
+  void sensorFailed(UniversalDHT::Response);
+
+};
+
+class Environmental
 {
-  const uint8_t  minComfort            = 45;      // the minium humidity.reading considered "normal" < 40% RH can trigger dry skin, etc.
-  const uint8_t  maxComfort            = 55;      // the maxium humidity.reading considered "normal" > 60% RH, moulds and other pests get going.
-  const uint8_t  guard                 = 5;       // the guard zone values +- the normal min/max start to set up more alerts
-  const uint16_t trace                 = AZURE;   // humidity graph line
-  float          lowestReading         = 101;
-  float          highestReading        = 0;
-  float          reading               = 0;
-  float          previousRead          = -1;
-  uint16_t       cmaCounter            = 0;
-  float          cumulativeMovingAverage = 50;
-  float          mean                  = 0;
-  uint8_t        readingY              = 0;
-  uint8_t        Y                     = 0;
-  uint8_t pipe[GRAPH_WIDTH];
-  const float correction               = 0;     // % correction if the RH is off
-  const float    dampAirWatershed      = 60;
-  const float    dryAirWatershed       = 40;
-} humidity;
+  public:
+  /**
+   * @brief Test the humidity is within watershed (and trigger alarms)
+   * 
+   */
+  void checkHumidityConditions();
 
-struct
+  /**
+   * @brief Test the temperature is within watershed (and trigger alarms)
+   * 
+   */
+  void checkTemperatureConditions();
+
+  /**
+   * @brief Set warning conditions if Steadman's temp is exceeded
+   * 
+   * @param T Temperature in C
+   * @param H Relative humidity in %
+   */
+  void checkHeatIndex(const readings_t &readings);
+
+  /**
+   * @brief Display warnings about effective working temperature
+   * 
+   * @param T Steadman's Effective temperature in C
+   * 
+   * @remarks Displays warnings in the lower half of the screen to stop or reduce 
+   * activity for health and safety. 
+   */
+
+  void unsafeTempWarnings(const float &);
+  
+   /**
+   * @brief Steadman's 1994 approximation for heat in given humidity 
+   * 
+   * @param T Temperature in degrees C
+   * @param R Relative humidity in %
+   * @return float 
+   * 
+   * @remarks  Approximate the "Heat index" per Steadman 1994. While the dry bulb temperature
+   *  may be well within safe limits for humans, the addition of humidity reading
+   * prevents our bodies from effectively evaporatively cooling with the result
+   * that our internal temperature rises - and the different of just a few degrees
+   * C can cause fatigue, aggression and eventually heat stroke and possibly death.
+   * These figures assume the person is doing mildly stressful work such as housework
+   * Workers in more extreme physical labour will suffer faster and vice versa.
+   * This is becoming a much more widespread problem as our climate changes.
+   * 
+   * Wikipedia https://en.wikipedia.org/wiki/Heat_index
+   * 26–32 °C CAUTION: fatigue is possible with prolonged exposure and activity.
+   *          Continuing activity could result in heat cramps.
+   * 32–41 °C Extreme caution: heat cramps and heat exhaustion are possible.
+   *          Continuing activity could result in heat stroke.
+   * 41–54 °C Danger: heat cramps and heat exhaustion are likely.
+   *          Heat stroke is probable with continued activity.
+   * > 54 °C  Extreme danger: heat stroke is imminent.
+   */
+
+  float heatIndex(const readings_t &);
+  /**
+ * @brief Magnus' Dew Point (condensation temperature) calculation 
+ * 
+ * @param T Temperature in degrees C
+ * @param R Relative humidity in %
+ * @return float 
+ * @remarks 
+ * https://en.wikipedia.org/wiki/Dew_point
+ * 
+ */
+  float magnusDewpoint(const readings_t &);
+
+  void setColour(const reading_t &value, const limits_t &limits);
+};
+
+class Reading
 {
-  uint16_t trace                = YELLOW;   // temperature graph line
-  const uint8_t caution         = 32;       // Three watermarks (32,41,54)
-  const uint8_t warning         = 41;       // per Steadman "safe" for working temperatures
-  const uint8_t risk            = 54;       // Above 54c is very bad
-  const uint8_t minComfort      = 20;      // the minium temperature considered "normal"
-  const uint8_t maxComfort      = 22;      // the maxium temperature considered "normal"
-  const uint8_t guard           = 5;       // the guard zone values +- the comfort min/max start to set up more alerts
-  float highestReading          = 0;
-  float lowestReading           = 99;
-  float previousRead            = 0.0;
-  float reading                 = -1;
-  uint16_t cmaCounter           = 0;
-  float cumulativeMovingAverage = 25;
-  float mean                    = 0;
-  uint8_t readingY              = 0;
-  uint8_t Y                     = 0;
-  uint8_t pipe[GRAPH_WIDTH];
-  const float correction        = 0;    // centigrade correction if the temp is off
-  int validRead                 = 0;
-  const float frostWatershed    = 4.0;   // ice can appear/persist around this temp
-#ifdef METRIC
-  bool     useMetric            = true;
-#else
-  bool     useMetric            = false;
-#endif
-} temperature;
+  using coordinates_t    = struct 
+  {
+    int16_t X {0}; 
+    int16_t Y {0};
+  };
 
-#ifdef SIMPLE_LCD
-#include <FreeSevenSegNumFontPlusPlus.h>
-#endif
+  reading_t m_lowRead ;
+  reading_t m_highRead;
+  reading_t m_reading;
+  reading_t m_mean;
+  reading_t m_cumulativeMovingAverage {0};
+  reading_t m_correction;
+  uint16_t m_cmaCounter;
+  coordinates_t m_position;
+  colours_t m_trace;           // graph line colour
+  uint8_t* m_pipe;
 
-MCUFRIEND_kbv screen;
-UniversalDHT dht22(DHT22_DATA);
+  public:
+  
+  Reading()
+  {
+    // cumulative moving averages are a form of mean that doesn't need to track every single value
+    // using these avoids little odd spikes from throwing the graph and smooths it out too.
+    m_cmaCounter = 0;
+	
+    // If we run out of memory here, we've got bigger problems!
+    m_pipe = new uint8_t[GRAPH_WIDTH];
+
+    for (auto i {0}; i < GRAPH_WIDTH; ++i)
+    {
+      m_pipe[i] = (GRAPH_Y + HEIGHT);
+    }
+  }
+  
+  ~Reading() 
+  {
+    // this should ever be called, but it's good
+    // practise to do this even if it's not.
+    delete [] m_pipe;
+  }
+
+  void setPipe(const uint16_t &i, const uint8_t &value)
+  {
+    m_pipe[i] = value;
+  } 
+
+  uint8_t getPipe(const uint16_t &i)
+  {
+    return m_pipe[i];
+  }
+
+  colours_t getTrace()
+  {
+    return m_trace;
+  }
+
+  void setTrace(const colours_t &C)
+  {
+    m_trace = C;
+  }
+
+  reading_t getHighRead()
+  {
+    return m_highRead;
+  }
+
+  reading_t getLowRead()
+  {
+    return m_lowRead;
+  }
+
+  void setLowRead(const reading_t &R)
+  {
+    m_lowRead = R;
+  }
+
+  void setHighRead(const reading_t &R)
+  {
+    m_highRead = R;
+  }
+
+  void setReading(const reading_t &R)
+  {
+    m_reading = R;
+  }
+
+  reading_t getReading()
+  {
+    return m_reading;
+  }
+
+  void setMinMax()
+  {
+    if (m_reading < m_lowRead)
+    {
+      m_lowRead = m_reading;
+    }
+
+    if (m_reading > m_highRead)
+    {
+      m_highRead = m_reading;
+    }
+  }
+
+  reading_t getCMA()
+  {
+    return m_cumulativeMovingAverage;
+  }
+
+  void resetCMA()
+  {
+    m_cmaCounter = 0;
+    m_cumulativeMovingAverage = 0;
+  }
+
+  void setX(const int16_t &X)
+  {
+    m_position.X = X;
+  }
+
+  void setY(const int16_t &Y)
+  {
+    m_position.Y = Y;
+  }
+
+  int16_t getX()
+  {
+    return m_position.X;
+  }
+
+  int16_t getY()
+  {
+    return m_position.Y;
+  }
+
+  void updateReading(const reading_t &reading);
+
+  /**
+   * @brief Get the current RH and Temp from the DHT11/22
+   * 
+   */
+
+  void takeReadings();
+
+  /**
+   * @brief Post the large humidity and temperature readings
+   * 
+   */
+  
+  void showReadings();
+
+  /**
+   * @brief Calls printReading with the current X,Y positions
+   * 
+   * @param newReading The current reading
+   * @param oldReading The last reading
+   * @param metric If this reading needs conversion to imperial (option)
+   * @param metric set true when working on Celcius
+   * @param showFloats shows the floating point part (metric temp only)
+   * @param showTemp set to true when working on a metric temp
+   * 
+   */
+  
+  void printReading(const reading_t &newReading, const semaphore_t &flags);
+
+};
 #endif

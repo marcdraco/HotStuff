@@ -30,7 +30,6 @@
 
 #define VALUE_TIMEOUT 10000 // 10ms
 
-
 class UniversalDHT {
 
 public:
@@ -65,7 +64,8 @@ private:
   int pin;
   Response sample(RawReading *reading);
 public:
-  UniversalDHT(uint8_t pin);
+  explicit UniversalDHT(uint8_t);
+
   Response read(float* temperature, float* humidity);
 };
 

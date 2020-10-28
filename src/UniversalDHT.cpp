@@ -43,7 +43,7 @@ UniversalDHT::UniversalDHT(uint8_t pin)
 bool waitWhileValue(uint8_t pin, uint8_t value) 
 {
   uint32_t time_start = micros();
-  uint32_t time = 0;
+  int32_t time = 0;
 
   while (digitalRead(pin) == value) {
     delayMicroseconds(6);
