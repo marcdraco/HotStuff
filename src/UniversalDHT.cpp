@@ -42,10 +42,10 @@ UniversalDHT::UniversalDHT(uint8_t pin)
 
 bool waitWhileValue(uint8_t pin, uint8_t value) 
 {
-  uint32_t time_start = micros();
-  int32_t time = 0;
 
   while (digitalRead(pin) == value) {
+    uint32_t time_start = micros();
+    int32_t time = 0;
     delayMicroseconds(6);
     time = micros() - time_start;
     if ((time < 0) || (time > VALUE_TIMEOUT)) 
@@ -78,7 +78,7 @@ UniversalDHT::Response parseDHT22(uint16_t rawTemperature, uint16_t rawHumidity,
 
   if (ptemperature) 
   {
-    *ptemperature = (float)((rawTemperature & 0x8000 ? -1 : 1) * (rawTemperature & 0x7FFF)) / 10.0;
+    *ptemperature = (float)(((rawTemperature & 0x8000) ? -1 : 1) * (rawTemperature & 0x7FFF)) / 10.0;
   }
   if (phumidity) 
   {
@@ -172,7 +172,6 @@ UniversalDHT::Response UniversalDHT::sample(RawReading *reading)
   }
 
 
-  uint8_t *ptr = (uint8_t *)reading;
   // DHTxx data transmission:
   //    1. 1bit start, PULL LOW 50us
   //    2. PULL HIGH:
@@ -180,6 +179,7 @@ UniversalDHT::Response UniversalDHT::sample(RawReading *reading)
   //         - 70us, bit(1)
   for (uint8_t uint8_t_idx = 0; uint8_t_idx < sizeof(RawReading); uint8_t_idx ++) 
   {
+    uint8_t *ptr;
     ptr = (uint8_t *)reading + uint8_t_idx;
     *ptr = 0;
     for (int8_t bit_idx = 7; bit_idx >= 0; bit_idx --) 

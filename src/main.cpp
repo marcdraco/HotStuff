@@ -301,21 +301,21 @@ void Graph::drawReticles(void)
     screen.drawFastHLine(GRAPH_X, GRAPH_Y + i, GRAPH_WIDTH, reticleColour);
   }
 
-  minmax_t humidity;
-  minmax_t temperature;
+  minmax_t humids;
+  minmax_t temps;
 
-  humidity.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_HUMID;
-  humidity.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_HUMID;
-  temperature.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_TEMP * 2;
-  temperature.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_TEMP * 2;
+  humids.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_HUMID;
+  humids.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_HUMID;
+  temps.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_TEMP * 2;
+  temps.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_TEMP * 2;
 
   for (auto i {1}; i <GRAPH_WIDTH; i += 10)     
   {
     auto width {3};
-    screen.drawFastHLine(GRAPH_X + i, humidity.max, width, BROWNISH);
-    screen.drawFastHLine(GRAPH_X + i, humidity.min, width, BROWNISH);
-    screen.drawFastHLine(GRAPH_X + i, temperature.min, width, PURPLEISH);
-    screen.drawFastHLine(GRAPH_X + i, temperature.max, width, PURPLEISH);
+    screen.drawFastHLine(GRAPH_X + i, humids.max, width, BROWNISH);
+    screen.drawFastHLine(GRAPH_X + i, humids.min, width, BROWNISH);
+    screen.drawFastHLine(GRAPH_X + i, temps.min, width, PURPLEISH);
+    screen.drawFastHLine(GRAPH_X + i, temps.max, width, PURPLEISH);
   }
 }
 
@@ -357,23 +357,23 @@ void Graph::drawGraphScaleMarks(void)
     screen.setRotation(screen.rotateDefaultSouth);
 
     // temp scale
-    for (auto temp{0}; temp < 60; temp = temp + 10)
+    for (auto i{0}; i < 60; i = i + 10)
     {
         char b[6];
         reading_int_t value;
-        screen.setCursor(GRAPH_X - 22, (GRAPH_Y + FSD) - (temp * 2) );
+        screen.setCursor(GRAPH_X - 22, (GRAPH_Y + FSD) - (i * 2) );
 
-        (flags.isSet(USEMETRIC)) ? value = temp : value = static_cast<reading_int_t>(toFahrenheit(temp));
+        (flags.isSet(USEMETRIC)) ? value = i : value = static_cast<reading_int_t>(toFahrenheit(i));
         sprintf(b, "%3d", value);
         screen.print(b);
     }
         
     // humidity scale
-    for (auto humidity{0}; humidity < 120; humidity = humidity + 20)
+    for (auto i{0}; i < 120; i = i + 20)
     {
         char b[6];
-        screen.setCursor(GRAPH_X + GRAPH_WIDTH + 3, (GRAPH_Y + FSD - 4) - (humidity) );
-        sprintf(b, "%3d", humidity);
+        screen.setCursor(GRAPH_X + GRAPH_WIDTH + 3, (GRAPH_Y + FSD - 4) - i );
+        sprintf(b, "%3d", i);
         screen.print(b);
     }
 }
@@ -416,8 +416,7 @@ void Reading::showReadings(void)
 {
     fixed.setFixedFont(&HOTLARGE);
     screen.setInk(defaultInk);
-    uint8_t yPosition = fixed.getYstep();
-
+    
     limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
     limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
 
@@ -426,7 +425,7 @@ void Reading::showReadings(void)
     chart.displayGraph();
 
     fixed.setFixedFont(&HOTLARGE);
-    yPosition = fixed.getYstep();
+    uint8_t yPosition = fixed.getYstep();
 
     fixed.moveTo(0, yPosition);
 
@@ -625,13 +624,9 @@ void Environmental::checkHeatIndex(const readings_t &readings)
 
   flags.set(WARNDANGER);
 
-#ifndef TOPLESS
   screen.fillRect(0, 100, TFT_WIDTH, TFT_HEIGHT - 110, defaultPaper);
-#endif
 
-  if ( (effectiveTemperature >= 26) && 
-       (effectiveTemperature <= CAUTION) 
-     )
+  if (effectiveTemperature <= CAUTION)
   {
     messages.flashText(messages.caution);
     unsafeTempWarnings(effectiveTemperature);
@@ -1073,7 +1068,8 @@ void Messages::clear(const uint8_t &message)
 void Messages::flashText(const uint8_t &M)
 
 {
-  (flags.isSet(FLASHING)) ? execute(M): execute(M);
+  execute(M);
+  flags.flip(FLASHING);
 }
 
 void Messages::showUptime(void)

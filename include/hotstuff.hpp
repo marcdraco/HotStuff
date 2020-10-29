@@ -94,6 +94,11 @@ class Flags
     semaphore_t semaphore;
 
   public:
+
+  Flags()
+  {
+    semaphore = 0;
+  }
     void clear(const semaphore_t &flag)
     {
       semaphore &= (flag ^ 0xFFFF);
@@ -137,7 +142,7 @@ class Fixed
     uint8_t m_xStep {0};
     uint8_t m_yStep {0};     
 
-    const fixedgfxfont_t* m_pFont;
+    const fixedgfxfont_t* m_pFont {nullptr};
     characters_t* m_newCursors {nullptr};
     characters_t* m_oldCursors {nullptr};
     
@@ -326,7 +331,7 @@ class Messages
     work2, caution, xcaution, danger, xdanger
   };
 
-  String translations[xdanger];
+  String translations[xdanger+1];
 
   char* pText;
 
@@ -415,15 +420,15 @@ class Alarm
 {
 
   private:
-  using cursor = struct 
-  {
-    uint16_t X;
-    uint16_t Y;
-  };
 
   uint16_t m_timer;
 
   public:
+
+  Alarm()
+  {
+    m_timer = 0;
+  }
 
   /**
    * @brief If an alarm condition is set, this flashes the LED pin
@@ -539,11 +544,11 @@ class Reading
     reading_t m_highRead;
     reading_t m_reading;
     reading_t m_mean;
-    reading_t m_cumulativeMovingAverage {0};
+    reading_t m_cumulativeMovingAverage;
     reading_t m_correction;
     uint16_t m_cmaCounter;
     coordinates_t m_position;
-    colours_t m_trace;           // graph line colour
+    colours_t m_trace;          // graph line colour
     uint8_t* m_pipe;
 
     public:
@@ -554,6 +559,17 @@ class Reading
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
       m_cmaCounter = 0;
     
+      m_lowRead = 0;
+      m_highRead = 0;
+      m_reading = 0;
+      m_mean = 0;
+      m_cumulativeMovingAverage = 0;
+      m_correction = 0;
+      m_cmaCounter = 0;
+      m_position.X = 0;
+      m_position.Y = 0;
+      m_trace = 0;           // graph line colour
+      
       // If we run out of memory here, we've got bigger problems!
       m_pipe = new uint8_t[GRAPH_WIDTH];
 
