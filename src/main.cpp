@@ -262,7 +262,7 @@ void Graph::displayGraph(void)
         screen.drawLine(xPosition - 1, temperature.getPipe(i - 2), xPosition, temperature.getPipe(i - 1), BLACK);
     }
 
-    //draw in new ones (this is supposed to reduce flashing but it's "meh")
+    //draw in new ones 
     for (auto i {1}; i <GRAPH_WIDTH; ++i)
     {
         ucoordinate_t xPosition = i + GRAPH_X;

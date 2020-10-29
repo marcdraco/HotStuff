@@ -574,7 +574,7 @@ class Reading
       m_pipe = new uint8_t[GRAPH_WIDTH];
 
       for (auto i {0}; i < GRAPH_WIDTH; ++i)
-      {
+      {        
         m_pipe[i] = (GRAPH_Y + FSD);
       }
   }
