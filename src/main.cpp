@@ -253,26 +253,23 @@ void Graph::displayGraph(void)
     humidity.setPipe(GRAPH_WIDTH - 1, humidity.getY());
     temperature.setPipe(GRAPH_WIDTH - 1, temperature.getY());
 
-    // clear the old lines
-    for (auto i {2}; i <GRAPH_WIDTH; ++i)
+    for (auto i {0}; i < GRAPH_WIDTH -1; ++i)
     {
-        ucoordinate_t xPosition {0}; 
-        xPosition = i + GRAPH_X;
-        screen.drawLine(xPosition - 1, humidity.getPipe(i - 2), xPosition, humidity.getPipe(i - 1), BLACK);
-        screen.drawLine(xPosition - 1, temperature.getPipe(i - 2), xPosition, temperature.getPipe(i - 1), BLACK);
-    }
-
-    //draw in new ones 
-    for (auto i {1}; i <GRAPH_WIDTH; ++i)
-    {
+        colours_t T = temperature.getTrace();
+        colours_t H = humidity.getTrace();
         ucoordinate_t xPosition = i + GRAPH_X;
-        screen.drawLine(xPosition - 1, temperature.getPipe(i - 1), xPosition, temperature.getPipe(i), temperature.getTrace());
-        screen.drawLine(xPosition - 1, humidity.getPipe(i - 1),    xPosition, humidity.getPipe(i),    humidity.getTrace());
+        if (i > 0)
+        {
+        screen.drawRect(xPosition, temperature.getPipe(i-1), 2, 2, defaultPaper);
+        screen.drawRect(xPosition, humidity.getPipe(i-1), 2, 2, defaultPaper);
+        }
+        screen.drawRect(xPosition, temperature.getPipe(i), 2, 2, T);
+        screen.drawRect(xPosition, humidity.getPipe(i), 2, 2, H);
 
-        temperature.setPipe(i - 1, temperature.getPipe(i));
-        humidity.setPipe(i - 1,    humidity.getPipe(i));
-        chart.drawMainAxes();
     }
+    chart.drawMainAxes();
+    temperature.slidePipe();
+    humidity.slidePipe();
 }
 
 void Graph::drawMainAxes(void)
@@ -416,11 +413,17 @@ void Reading::showReadings(void)
 {
     fixed.setFixedFont(&HOTLARGE);
     screen.setInk(defaultInk);
+
+    static int s_stop = 0;
+    static float s_off = 9.0;
+    s_off += .7;
+
+    temperature.setReading(s_off); 
     
     limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
     limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
 
-    readings_t readings {temperature.getReading(), humidity.getReading()};
+    readings_t readings {temperature.getReading(), humidity.getReading()}; 
     environment.checkHeatIndex(readings);  
     chart.displayGraph();
 
@@ -434,6 +437,8 @@ void Reading::showReadings(void)
                 (flags.isSet(USEMETRIC) ? METRIC : 0) | 
                 (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
                 TEMPERATURE);
+
+    fixed.reset(); return;
 
     fixed.moveTo(180, yPosition);
 
@@ -901,63 +906,26 @@ glyph_t Fixed::findGlyphCode(const glyph_t &glyph)
 
 void Fixed::drawGlyph(const glyph_t &glyph)
 {
-//    Serial.println((int16_t) m_oldCursors[m_cell].glyph == (int16_t) m_newCursors[m_cell].glyph);
-    Serial.println((int16_t) m_oldCursors[m_cell].X);
-
-    if (  (m_newCursors[m_cell].glyph == m_oldCursors[m_cell].glyph) && 
-          (m_newCursors[m_cell].X == m_oldCursors[m_cell].X ) &&
-          (m_newCursors[m_cell].Y == m_oldCursors[m_cell].Y ))
-    {
-
-        //Serial.println(m_oldCursors[m_cell].glyph);
-        glyphdata_t thisGlyph;
-        drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
-        registerPosition(glyph);
-        moveTo(m_X + thisGlyph.xMax, m_Y);
-        return;  
-    }
-
-/*
-    %symbol (maybe others) can impinge on NARROWER characters in
-    some circumstaces. Need to mute the "X" position blanking.
-    quick and dirty way is to "repeat" the print process!
-    without the preblanking but that will flicker
-*/
-
     screen.startWrite();
-    {
-        characters_t lastGlyph;
-        lastGlyph = getPrevGlyph();
-        glyph_t G = lastGlyph.glyph;
-        glyphdata_t prevGlyph;
-        drawGlyphPrep(findGlyphCode(G), &prevGlyph);
-        prevGlyph.x = lastGlyph.X;
-        prevGlyph.y = lastGlyph.Y;
 
-        for (uint16_t i {0}; i < prevGlyph.dimensions.H; ++i) 
-        {
-            uint16_t X = prevGlyph.x + prevGlyph.xo;
-            uint16_t Y = prevGlyph.y + prevGlyph.yo + i;
-
-            for (uint16_t j {0}; j < prevGlyph.dimensions.W; ++j) 
-            {
-                if ((prevGlyph.bit & 0x07) == 0 ) 
-                {
-                    prevGlyph.bits = pgm_read_byte(&prevGlyph.bitmap[prevGlyph.offset++]);
-                }
-                if (prevGlyph.bits & 0x80) 
-                {
-                    screen.writePixel(X, Y, defaultPaper);
-                }
-                ++X;
-                ++prevGlyph.bit;
-                prevGlyph.bits = prevGlyph.bits << 1;
-            }
-        }  
-    }
-
+    oh_dr_bleaching_t bleach;
     glyphdata_t thisGlyph;
+    drawGlyphPrep(findGlyphCode(m_oldCursors[m_cell].glyph), &thisGlyph);      
+    bleach.X = m_oldCursors[m_cell].X;
+    bleach.Y = m_oldCursors[m_cell].Y + thisGlyph.yo;
+    bleach.W = thisGlyph.dimensions.W;
+    bleach.H = thisGlyph.dimensions.H;
+
     drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+    
+    //if (print.X < bleach.X || print.W < bleach.W || print.H < bleach.H || print.W < bleach.W)
+    {
+      screen.fillRect(bleach.X, bleach.Y, bleach.W, bleach.H, defaultPaper);
+    }
+    
+    drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+
+
     for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
     {
         uint16_t X = thisGlyph.x + thisGlyph.xo;
@@ -972,16 +940,20 @@ void Fixed::drawGlyph(const glyph_t &glyph)
             
             if (thisGlyph.bits & 0x80) 
             {
-                screen.writePixel(X, Y, thisGlyph.colour);
+              screen.writePixel(X, Y, BLUE);
             }
-
+            else
+            {
+              screen.writePixel(X, Y, defaultPaper);
+            }
             ++X;
             ++thisGlyph.bit;
             thisGlyph.bits = thisGlyph.bits << 1;
         }
     }
-    screen.endWrite();  
-    registerPosition(glyph);
+    screen.endWrite();
+
+    registerPosition(glyph, m_X);
     moveTo(m_X + thisGlyph.xMax, m_Y);  
 }
 

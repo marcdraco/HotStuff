@@ -37,7 +37,7 @@
 // the number of glyphs to ONLY what's absolutely necessary for
 // the display. 
 
-#include "fonts/digital7-42.h"
+#include "fonts/builtTilting-42.h"
 #define HOTLARGE HotStuff42
 
 #include "fonts/anonymousPro-6.h"

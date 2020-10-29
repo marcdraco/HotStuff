@@ -33,6 +33,7 @@
 #include <Arduino.h>
 #include "types.hpp"
 
+
 // remove this line to have the unit read in fahrenheit
 #define USE_METRIC                   
  
@@ -128,12 +129,21 @@ class Flags
 class Fixed
 {
   private:
-    struct characters_t
+    struct cells_t
     { 
       int16_t X;  
       uint8_t Y;   // Note ONE byte only for the Y to save precious RAM.  
       char glyph;  // default "fixed" cell count this uses 120 bytes!
     };
+
+    struct oh_dr_bleaching_t  // if you laugh at this, you're probably British
+    {
+      ucoordinate_t X;
+      ucoordinate_t Y;
+      ucoordinate_t W;
+      ucoordinate_t H;
+    };
+    
 
   static const int MAXCELLS {30};
 
@@ -143,8 +153,8 @@ class Fixed
     uint8_t m_yStep {0};     
 
     const fixedgfxfont_t* m_pFont {nullptr};
-    characters_t* m_newCursors {nullptr};
-    characters_t* m_oldCursors {nullptr};
+    cells_t* m_newCursors {nullptr};
+    cells_t* m_oldCursors {nullptr};
     
     int8_t m_cell {0};  // cell is a printed charcacter position
 
@@ -152,8 +162,8 @@ class Fixed
 
     Fixed() 
     {
-        m_newCursors = new characters_t[MAXCELLS]();
-        m_oldCursors = new characters_t[MAXCELLS]();
+        m_newCursors = new cells_t[MAXCELLS]();
+        m_oldCursors = new cells_t[MAXCELLS]();
         for (auto i{0}; i < MAXCELLS; ++i) 
         {
           m_oldCursors[i].X = -255;
@@ -172,15 +182,18 @@ class Fixed
       delete[] m_oldCursors;
     }
 
-    void registerPosition(const glyph_t &glyph)
+    void registerPosition(const glyph_t &glyph, const int16_t &X)
     {
       m_newCursors[m_cell].glyph = glyph;
-      m_newCursors[m_cell].X = m_X;
+      m_newCursors[m_cell].X = X;
       m_newCursors[m_cell].Y = m_Y;
       ++m_cell;
+      char b[80];
+      sprintf(b,"REGISTER: '%c': %d", glyph, X);
+      Serial.println(b);
     }
   
-    characters_t getPrevGlyph()
+    cells_t getPrevCellData()
     {
       return {m_oldCursors[m_cell].X, m_oldCursors[m_cell].Y, m_oldCursors[m_cell].glyph};        
     }
@@ -546,7 +559,7 @@ class Reading
     reading_t m_mean;
     reading_t m_cumulativeMovingAverage;
     reading_t m_correction;
-    uint16_t m_cmaCounter;
+    double m_cmaCounter;
     coordinates_t m_position;
     colours_t m_trace;          // graph line colour
     uint8_t* m_pipe;
@@ -557,7 +570,7 @@ class Reading
     {
       // cumulative moving averages are a form of mean that doesn't need to track every single value
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
-      m_cmaCounter = 0;
+      m_cmaCounter = 0.0;
     
       m_lowRead = 0;
       m_highRead = 0;
@@ -595,7 +608,16 @@ class Reading
   {
     return m_pipe[i];
   }
-
+  
+  void slidePipe()
+  {
+    for (auto i{1}; i < GRAPH_WIDTH; ++i)
+    {
+      m_pipe[i-1] = m_pipe[i];
+    }
+    
+  }
+  
   colours_t getTrace()
   {
     return m_trace;
@@ -652,12 +674,6 @@ class Reading
   reading_t getCMA()
   {
     return m_cumulativeMovingAverage;
-  }
-
-  void resetCMA()
-  {
-    m_cmaCounter = 0;
-    m_cumulativeMovingAverage = 0;
   }
 
   void setX(const int16_t &X)
