@@ -125,7 +125,7 @@ constexpr int OUTER_RADIUS   {70  / WIDTH_SCALE};
 constexpr int FSD            {100 / HEIGHT_SCALE};
 constexpr int GRAPH_X        {41  / WIDTH_SCALE};
 constexpr int GRAPH_Y        {110 / HEIGHT_SCALE};
-constexpr int GRAPH_WIDTH    {240 / WIDTH_SCALE};     
+constexpr int GRAPH_WIDTH    {20 / WIDTH_SCALE};     
 constexpr int TFT_ERROR_Y    {230 / HEIGHT_SCALE};
 constexpr int TFT_WIDTH      {320 / WIDTH_SCALE};
 constexpr int TFT_HEIGHT     {240 / HEIGHT_SCALE};

@@ -166,6 +166,9 @@ void setup()
   humidity.setLowRead(read.H);
   humidity.setHighRead(read.H);
   humidity.updateReading(read.H);
+  fixed.init();
+
+  Serial.println("\n\n***** New run *****");
 }
 
 void loop()
@@ -413,7 +416,6 @@ void Reading::showReadings(void)
 {
     fixed.setFixedFont(&HOTLARGE);
     screen.setInk(defaultInk);
-
     static int s_stop = 0;
     static float s_off = 9.0;
     s_off += .7;
@@ -438,7 +440,7 @@ void Reading::showReadings(void)
                 (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
                 TEMPERATURE);
 
-    fixed.reset(); return;
+    //fixed.reset(); return;
 
     fixed.moveTo(180, yPosition);
 
@@ -906,26 +908,51 @@ glyph_t Fixed::findGlyphCode(const glyph_t &glyph)
 
 void Fixed::drawGlyph(const glyph_t &glyph)
 {
-    screen.startWrite();
+  screen.startWrite();
+  // remove the old glyph 
+  glyphdata_t thisGlyph;
+  glyphdata_t lastGlyph;
+  drawGlyphPrep(findGlyphCode(m_oldGlyphs[m_cell].glyph), &thisGlyph);
+  drawGlyphPrep(findGlyphCode(m_newGlyphs[m_cell-1].glyph), &lastGlyph);
 
-    oh_dr_bleaching_t bleach;
+  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+  {
+      uint16_t X = m_oldGlyphs[m_cell].X + thisGlyph.xo;
+      uint16_t Y = m_oldGlyphs[m_cell].Y + thisGlyph.yo + i;
+
+      int bleachBits {0};    // X position of pixel we're printing
+      int dr_bleaching {0};  // demarks the right edge of the glyph to the left
+
+      if (m_cell > 0)
+      {
+        int width = m_newGlyphs[m_cell-1].W;  // glyph to the left
+        int nX = m_newGlyphs[m_cell-1].X;     // x position, NEW glyph to the left
+        int oX = m_oldGlyphs[m_cell].X;       // x position glyph to be bleached
+
+        dr_bleaching = (nX + width - oX)-thisGlyph.xo - lastGlyph.xo;      }
+
+      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
+      {
+          if (! (thisGlyph.bit & 0x07)) 
+          {
+            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+          }
+          
+          if (thisGlyph.bits & 0x80 && bleachBits > dr_bleaching) 
+          {
+            screen.writePixel(X, Y, defaultPaper);
+          }
+          ++bleachBits;
+          ++X;
+          ++thisGlyph.bit;
+          thisGlyph.bits = thisGlyph.bits << 1;
+      }
+  }
+
+  { // draw the NEW glyph 
     glyphdata_t thisGlyph;
-    drawGlyphPrep(findGlyphCode(m_oldCursors[m_cell].glyph), &thisGlyph);      
-    bleach.X = m_oldCursors[m_cell].X;
-    bleach.Y = m_oldCursors[m_cell].Y + thisGlyph.yo;
-    bleach.W = thisGlyph.dimensions.W;
-    bleach.H = thisGlyph.dimensions.H;
-
+    //if (glyph == '0') STOP;
     drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
-    
-    //if (print.X < bleach.X || print.W < bleach.W || print.H < bleach.H || print.W < bleach.W)
-    {
-      screen.fillRect(bleach.X, bleach.Y, bleach.W, bleach.H, defaultPaper);
-    }
-    
-    drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
-
-
     for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
     {
         uint16_t X = thisGlyph.x + thisGlyph.xo;
@@ -940,21 +967,22 @@ void Fixed::drawGlyph(const glyph_t &glyph)
             
             if (thisGlyph.bits & 0x80) 
             {
-              screen.writePixel(X, Y, BLUE);
+              screen.writePixel(X, Y, defaultInk);
             }
             else
             {
-              screen.writePixel(X, Y, defaultPaper);
+              screen.writePixel(X, Y, defaultPaper);              
             }
             ++X;
             ++thisGlyph.bit;
             thisGlyph.bits = thisGlyph.bits << 1;
         }
     }
-    screen.endWrite();
-
-    registerPosition(glyph, m_X);
-    moveTo(m_X + thisGlyph.xMax, m_Y);  
+    registerPosition(glyph, thisGlyph.xMax);
+    moveTo(m_X + thisGlyph.xMax, m_Y);
+  } 
+  screen.endWrite();
+  ++m_cell;
 }
 
 void Fixed::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
@@ -1009,12 +1037,32 @@ void Fixed::setFixedFont(const fixedgfxfont_t* pNewSize)
     m_yStep = pNewSize->yAdvance;     
 }
 
+void Fixed::init()
+{
+  for (auto i{0}; i <  MAXCELLS; ++i)
+  {
+      m_oldGlyphs[i].X = 0;
+      m_oldGlyphs[i].Y = 0;
+      m_oldGlyphs[i].W = 0;
+      m_oldGlyphs[i].glyph = 0;
+      m_newGlyphs[i].X = 0;
+      m_newGlyphs[i].Y = 0;
+      m_newGlyphs[i].W = -1;
+      m_newGlyphs[i].glyph = 0;
+  }
+}
 void Fixed::reset()
 {
     for (auto i{0}; i <  MAXCELLS; ++i)
     {
-       m_oldCursors[i] = m_newCursors[i];
-       m_newCursors[i].X = -255;
+       m_oldGlyphs[i].X = m_newGlyphs[i].X;
+       m_oldGlyphs[i].Y = m_newGlyphs[i].Y;
+       m_oldGlyphs[i].W = m_newGlyphs[i].W;
+       m_oldGlyphs[i].glyph = m_newGlyphs[i].glyph;
+       m_newGlyphs[i].X = 0;
+       m_newGlyphs[i].Y = 0;
+       m_newGlyphs[i].W = -1;
+       m_newGlyphs[i].glyph = 0;
     }
     m_cell = 0;
 }

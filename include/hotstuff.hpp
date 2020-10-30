@@ -131,9 +131,10 @@ class Fixed
   private:
     struct cells_t
     { 
-      int16_t X;  
-      uint8_t Y;   // Note ONE byte only for the Y to save precious RAM.  
-      char glyph;  // default "fixed" cell count this uses 120 bytes!
+      int16_t X;   // X position
+      uint8_t Y;   // Y position
+      char glyph;  // Glyph (ASCII code)
+      uint8_t W;   // Width of glyph (sizes can change any time!)
     };
 
     struct oh_dr_bleaching_t  // if you laugh at this, you're probably British
@@ -153,8 +154,8 @@ class Fixed
     uint8_t m_yStep {0};     
 
     const fixedgfxfont_t* m_pFont {nullptr};
-    cells_t* m_newCursors {nullptr};
-    cells_t* m_oldCursors {nullptr};
+    cells_t* m_newGlyphs {nullptr};
+    cells_t* m_oldGlyphs {nullptr};
     
     int8_t m_cell {0};  // cell is a printed charcacter position
 
@@ -162,12 +163,8 @@ class Fixed
 
     Fixed() 
     {
-        m_newCursors = new cells_t[MAXCELLS]();
-        m_oldCursors = new cells_t[MAXCELLS]();
-        for (auto i{0}; i < MAXCELLS; ++i) 
-        {
-          m_oldCursors[i].X = -255;
-        }
+        m_newGlyphs = new cells_t[MAXCELLS]();
+        m_oldGlyphs = new cells_t[MAXCELLS]();
     };
 
     Fixed(fixedgfxfont_t* font) 
@@ -178,24 +175,23 @@ class Fixed
     ~Fixed()
     {
       // never called but included to stop auto-code checkers whinging.
-      delete[] m_newCursors;
-      delete[] m_oldCursors;
+      delete[] m_newGlyphs;
+      delete[] m_oldGlyphs;
     }
 
-    void registerPosition(const glyph_t &glyph, const int16_t &X)
+    void init();
+
+    void registerPosition(const glyph_t &glyph, const int8_t width)
     {
-      m_newCursors[m_cell].glyph = glyph;
-      m_newCursors[m_cell].X = X;
-      m_newCursors[m_cell].Y = m_Y;
-      ++m_cell;
-      char b[80];
-      sprintf(b,"REGISTER: '%c': %d", glyph, X);
-      Serial.println(b);
+      m_newGlyphs[m_cell].glyph = glyph;
+      m_newGlyphs[m_cell].W = width;
+      m_newGlyphs[m_cell].X = m_X;
+      m_newGlyphs[m_cell].Y = m_Y;
     }
   
     cells_t getPrevCellData()
     {
-      return {m_oldCursors[m_cell].X, m_oldCursors[m_cell].Y, m_oldCursors[m_cell].glyph};        
+      return {m_oldGlyphs[m_cell].X, m_oldGlyphs[m_cell].Y, m_oldGlyphs[m_cell].glyph};        
     }
 
     int16_t getX()
