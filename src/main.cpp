@@ -509,7 +509,7 @@ void Reading::printReading(const reading_t &reading, const semaphore_t &flags)
   {
     sprintf(b, "%d", read.intPart);
   }
-  fonts.printFont(b);
+  fonts.print(b, true);
 }
 
 void Environmental::setColour(const reading_t &value, const limits_t &limits)
@@ -906,49 +906,46 @@ void Fonts::drawGlyph(const glyph_t &glyph)
   screen.startWrite();
   // remove the old glyph 
   glyphdata_t thisGlyph;
-  drawGlyphPrep(findGlyphCode(m_oldGlyphs[m_cell].glyph), &thisGlyph);
   glyphdata_t lastGlyph;
+  drawGlyphPrep(findGlyphCode(m_oldGlyphs[m_cell].glyph), &thisGlyph);
   drawGlyphPrep(findGlyphCode(m_newGlyphs[m_cell-1].glyph), &lastGlyph);
- 
-  int bleachBits {0};    // X position of pixel we're printing
-  int dr_bleaching {0};  // demarks the right edge of the glyph to the left
 
-  if (m_cell > 0)
+  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
   {
-    int width    = m_newGlyphs[m_cell-1].W;  // glyph to the left
-    int nX       = m_newGlyphs[m_cell-1].X;  // x position, NEW glyph to the left
-    int oX       = m_oldGlyphs[m_cell].X;    // x position glyph to be bleached
-    dr_bleaching = nX + width - oX - thisGlyph.xo - lastGlyph.xo;      
-  }
+      uint16_t X = m_oldGlyphs[m_cell].X + thisGlyph.xo;
+      uint16_t Y = m_oldGlyphs[m_cell].Y + thisGlyph.yo + i;
 
-  //if  (!((m_oldGlyphs[m_cell].X = m_newGlyphs[m_cell].X) && (m_oldGlyphs[m_cell].Y = m_newGlyphs[m_cell].Y) && (m_oldGlyphs[m_cell].glyph = m_newGlyphs[m_cell].glyph)))
-  {
-    // remove the old glyph (surgically)
-    for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
-    {
-        uint16_t X = m_oldGlyphs[m_cell].X + thisGlyph.xo;
-        uint16_t Y = m_oldGlyphs[m_cell].Y + thisGlyph.yo + i;
-        for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
-        {
-            if (! (thisGlyph.bit & 0x07)) 
-            {
-              thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
-            }     
-            if (thisGlyph.bits & 0x80 && bleachBits > dr_bleaching) 
-            {
-              screen.writePixel(X, Y, defaultPaper);
-            }
-            ++bleachBits;
-            ++X;
-            ++thisGlyph.bit;
-            thisGlyph.bits = thisGlyph.bits << 1;
-        }
-    }
-  }
+      int bleachBits {0};    // X position of pixel we're printing
+      int dr_bleaching {0};  // demarks the right edge of the glyph to the left
 
+      if (m_cell > 0)
+      {
+        int width = m_newGlyphs[m_cell-1].W;  // glyph to the left
+        int nX = m_newGlyphs[m_cell-1].X;     // x position, NEW glyph to the left
+        int oX = m_oldGlyphs[m_cell].X;       // x position glyph to be bleached
+
+        dr_bleaching = (nX + width - oX)-thisGlyph.xo - lastGlyph.xo;      }
+
+      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
+      {
+          if (! (thisGlyph.bit & 0x07)) 
+          {
+            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+          }
+          
+          if (thisGlyph.bits & 0x80 && bleachBits > dr_bleaching) 
+          {
+            screen.writePixel(X, Y, defaultPaper);
+          }
+          ++bleachBits;
+          ++X;
+          ++thisGlyph.bit;
+          thisGlyph.bits = thisGlyph.bits << 1;
+      }
+  }
+  
   { // draw the NEW glyph 
     glyphdata_t thisGlyph;
-    //if (glyph == '0') STOP;
     drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
     for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
     {
@@ -982,6 +979,45 @@ void Fonts::drawGlyph(const glyph_t &glyph)
   ++m_cell;
 }
 
+void Fonts::drawGlyph(const glyph_t &glyph, const colours_t &ink, const colours_t &paper)
+{
+  screen.startWrite();
+
+  glyphdata_t thisGlyph;
+  drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+  thisGlyph.x = screen.getCursorX();
+  thisGlyph.y = screen.getCursorY();
+
+  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+  {
+      uint16_t X = thisGlyph.x + thisGlyph.xo;
+      uint16_t Y = thisGlyph.y + thisGlyph.yo + i;
+
+      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
+      {
+          if (! (thisGlyph.bit & 0x07)) 
+          {
+              thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+          }
+          
+          if (thisGlyph.bits & 0x80) 
+          {
+            screen.writePixel(X, Y, ink);
+          }
+          else
+          {
+            screen.writePixel(X, Y, paper);              
+          }
+          ++X;
+          ++thisGlyph.bit;
+          thisGlyph.bits = thisGlyph.bits << 1;
+      }
+  }
+  moveTo(m_X + thisGlyph.xMax, m_Y);
+
+  screen.endWrite();
+}
+
 void Fonts::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
 {
     const gfxfont_t*  font  = m_pFont;
@@ -1002,11 +1038,12 @@ void Fonts::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
     data->colour = screen.getInk();
 }
 
-void Fonts::printFont(const char* buffer)
+
+void Fonts::print(const char* buffer, const bool switchFloats = false)
 {
   while (*buffer != 0)
   {
-    if ( static_cast<char> (*buffer) == '.')
+    if ( static_cast<char> (*buffer) == '.' && switchFloats)
     {
       setFont((gfxfont_t*) &HOTSMALL);
     }

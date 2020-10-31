@@ -224,7 +224,9 @@ class Fonts
 
     void drawGlyph(const glyph_t &glyph);
 
-    void printFont(const char* buffer);
+    void drawGlyph(const glyph_t &glyph, const colours_t &ink, const colours_t &paper);
+
+    void print(const char* buffer, const bool switchFloats);
 
     void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
 
