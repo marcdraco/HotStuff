@@ -1510,7 +1510,7 @@ const uint8_t HotStuff96Bitmaps[] PROGMEM = {
 
 // Glyph, Offset to bitmap, Width, Height, xAdvance, xOffset, yOffset
 
-const fixedgfxglyph_t HotStuff96Glyphs[] PROGMEM = {
+const gfxglyph_t HotStuff96Glyphs[] PROGMEM = {
   {48,     0,  78, 123,  94,    8, -120 },   // 0x00 '0' 
   {49,  1200,  81, 119,  94,    8, -118 },   // 0x01 '1' 
   {50,  2405,  80, 121,  94,    8, -120 },   // 0x02 '2' 
@@ -1530,10 +1530,10 @@ const fixedgfxglyph_t HotStuff96Glyphs[] PROGMEM = {
   {46, 17960,  27,  27,  94,   33,  -26 }   // 0x10 '.' 
 };
 
-const fixedgfxfont_t HotStuff96 PROGMEM = 
+const gfxfont_t HotStuff96 PROGMEM = 
 {
   (uint8_t  *)HotStuff96Bitmaps, //< Glyph bitmaps, concatenated 
-  (fixedgfxglyph_t *)HotStuff96Glyphs, //< Glyph array
+  (gfxglyph_t *)HotStuff96Glyphs, //< Glyph array
   17,// total glyphs in the string
   123,  // newline distance (y axis)
      0,  // minimum X - left most

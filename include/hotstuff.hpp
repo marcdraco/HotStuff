@@ -60,10 +60,10 @@
 #define pgm_read_pointer(addr) ((void *)pgm_read_word(addr))
 #endif
 
-inline fixedgfxglyph_t* pgm_read_glyph_ptr(const fixedgfxfont_t*gfxFont, uint8_t c) 
+inline gfxglyph_t* pgm_read_glyph_ptr(const gfxfont_t*gfxFont, uint8_t c) 
 {
 #ifdef __AVR__
-  return &(((fixedgfxglyph_t *)pgm_read_pointer(&gfxFont->glyph))[c]);
+  return &(((gfxglyph_t *)pgm_read_pointer(&gfxFont->glyph))[c]);
 #else
   // expression in __AVR__ section may generate "dereferencing type-punned
   // pointer will break strict-aliasing rules" warning In fact, on other
@@ -73,7 +73,7 @@ inline fixedgfxglyph_t* pgm_read_glyph_ptr(const fixedgfxfont_t*gfxFont, uint8_t
 #endif //__AVR__
 }
 
-inline uint8_t* pgm_read_bitmap_ptr(const fixedgfxfont_t* gfxFont) {
+inline uint8_t* pgm_read_bitmap_ptr(const gfxfont_t* gfxFont) {
 #ifdef __AVR__
   return (uint8_t*) pgm_read_pointer(&gfxFont->bitmap);
 #else
@@ -126,7 +126,7 @@ class Flags
     }
 };
 
-class Fixed
+class Fonts
 {
   private:
     struct cells_t
@@ -153,7 +153,7 @@ class Fixed
     uint8_t m_xStep {0};
     uint8_t m_yStep {0};     
 
-    const fixedgfxfont_t* m_pFont {nullptr};
+    const gfxfont_t* m_pFont {nullptr};
     cells_t* m_newGlyphs {nullptr};
     cells_t* m_oldGlyphs {nullptr};
     
@@ -161,18 +161,18 @@ class Fixed
 
   public:
 
-    Fixed() 
+    Fonts() 
     {
         m_newGlyphs = new cells_t[MAXCELLS]();
         m_oldGlyphs = new cells_t[MAXCELLS]();
     };
 
-    Fixed(fixedgfxfont_t* font) 
+    Fonts(gfxfont_t* font) 
     {
       m_pFont = font;
     };
 
-    ~Fixed()
+    ~Fonts()
     {
       // never called but included to stop auto-code checkers whinging.
       delete[] m_newGlyphs;
@@ -224,7 +224,7 @@ class Fixed
 
     void drawGlyph(const glyph_t &glyph);
 
-    void printFixed(const char* buffer);
+    void printFont(const char* buffer);
 
     void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
 
@@ -232,7 +232,7 @@ class Fixed
     
     dimensions_t getGlyphDimensions(const glyph_t &glyph);
 
-    void setFixedFont(const fixedgfxfont_t* pNewSize);
+    void setFont(const gfxfont_t* pNewSize);
 };
 
 class Display : public MCUFRIEND_kbv

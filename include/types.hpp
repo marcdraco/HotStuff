@@ -156,7 +156,7 @@ typedef struct
     uint8_t  xAdvance;      ///< Distance to advance cursor (x axis)
     int8_t   xOffset;       ///< X dist from cursor pos to UL corner
     int8_t   yOffset;       ///< Y dist from cursor pos to UL corner
-} fixedgfxglyph_t;
+} gfxglyph_t;
 
 /*
 * Extended font data (based on Adafruit libarary)
@@ -165,13 +165,13 @@ typedef struct
 typedef struct FixedFontsNS
 {
     uint8_t* bitmap;       ///< Glyph bitmaps, concatenated
-    fixedgfxglyph_t* glyph;///< Glyph array
+    gfxglyph_t* glyph;///< Glyph array
     uint8_t glyphCount;    ///< Actual number of defined glyphs
     int8_t yAdvance;       ///< Newline distance (y axis)
     int8_t xMin;           ///< Leftmost  
     int8_t xMax;           ///< Rightmost
     int8_t yMin;           ///< Bottom Y
     int8_t yMax;           ///< Upper Y
-} fixedgfxfont_t ;
+} gfxfont_t ;
 
 #endif

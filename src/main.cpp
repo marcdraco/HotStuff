@@ -95,7 +95,7 @@ Alarm alarm;
 Reading humidity;
 Reading temperature;
 Messages messages;
-Fixed fixed;
+Fonts fonts;
 Environmental environment;
 Flags flags;
 
@@ -125,7 +125,7 @@ void setup()
   humidity.setTrace(AZURE);    // humidity graph line
   temperature.setTrace(YELLOW);   // temperature graph line
 
-  fixed.setFixedFont(static_cast<const fixedgfxfont_t *>(&HOTLARGE));
+  fonts.setFont(static_cast<const gfxfont_t *>(&HOTLARGE));
   humidity.setX(160);
   humidity.setY(10);
   temperature.setY(10);
@@ -166,7 +166,7 @@ void setup()
   humidity.setLowRead(read.H);
   humidity.setHighRead(read.H);
   humidity.updateReading(read.H);
-  fixed.init();
+  fonts.init();
 
   Serial.println("\n\n***** New run *****");
 }
@@ -414,13 +414,8 @@ void Reading::updateReading(const reading_t &reading)
 
 void Reading::showReadings(void)
 {
-    fixed.setFixedFont(&HOTLARGE);
+    fonts.setFont(&HOTLARGE);
     screen.setInk(defaultInk);
-    static int s_stop = 0;
-    static float s_off = 9.0;
-    s_off += .7;
-
-    temperature.setReading(s_off); 
     
     limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
     limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
@@ -429,10 +424,10 @@ void Reading::showReadings(void)
     environment.checkHeatIndex(readings);  
     chart.displayGraph();
 
-    fixed.setFixedFont(&HOTLARGE);
-    uint8_t yPosition = fixed.getYstep();
+    fonts.setFont(&HOTLARGE);
+    uint8_t yPosition = fonts.getYstep();
 
-    fixed.moveTo(0, yPosition);
+    fonts.moveTo(0, yPosition);
 
     environment.setColour(temperature.getReading(), tLimits);
     printReading(temperature.getReading(), 
@@ -440,47 +435,47 @@ void Reading::showReadings(void)
                 (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
                 TEMPERATURE);
 
-    //fixed.reset(); return;
+    //fonts.reset(); return;
 
-    fixed.moveTo(180, yPosition);
+    fonts.moveTo(180, yPosition);
 
     environment.setColour(humidity.getReading(), hLimits);
     printReading(humidity.getReading(), METRIC);
     screen.setInk(defaultInk);
-    fixed.drawGlyph('%');
+    fonts.drawGlyph('%');
     // Min and Max readings.
     environment.setColour(temperature.getHighRead(), tLimits);
-    fixed.moveTo(LOW_TEMP_X, yPosition + 20);
+    fonts.moveTo(LOW_TEMP_X, yPosition + 20);
 
-    fixed.setFixedFont(&HOTSMALL);
+    fonts.setFont(&HOTSMALL);
     printReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
                 (flags.isSet(USEMETRIC)) ? METRIC : 0);
 
-    fixed.setFixedFont(&HOTSMALL);
-    fixed.drawGlyph('/');
+    fonts.setFont(&HOTSMALL);
+    fonts.drawGlyph('/');
 
     environment.setColour(temperature.getHighRead(), tLimits);
-    fixed.setFixedFont(&HOTSMALL);
+    fonts.setFont(&HOTSMALL);
     printReading((temperature.getReading() > temperature.getHighRead()) ? temperature.getReading() : temperature.getHighRead(),
                 (flags.isSet(USEMETRIC)) ? METRIC : 0);
 
     environment.setColour(humidity.getHighRead(), hLimits);
 
-    fixed.moveTo(screen.width / 2, fixed.getY());
-    fixed.setFixedFont(&HOTSMALL);
+    fonts.moveTo(screen.width / 2, fonts.getY());
+    fonts.setFont(&HOTSMALL);
 
     printReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
 
-    fixed.setFixedFont(&HOTSMALL);
-    fixed.drawGlyph('/');
+    fonts.setFont(&HOTSMALL);
+    fonts.drawGlyph('/');
 
     environment.setColour(humidity.getHighRead(), hLimits);
-    fixed.setFixedFont(&HOTSMALL);
+    fonts.setFont(&HOTSMALL);
     printReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
 
     humidity.setMinMax();
     temperature.setMinMax();
-    fixed.reset();
+    fonts.reset();
 }
 
 void Reading::printReading(const reading_t &reading, const semaphore_t &flags)
@@ -514,7 +509,7 @@ void Reading::printReading(const reading_t &reading, const semaphore_t &flags)
   {
     sprintf(b, "%d", read.intPart);
   }
-  fixed.printFixed(b);
+  fonts.printFont(b);
 }
 
 void Environmental::setColour(const reading_t &value, const limits_t &limits)
@@ -884,20 +879,20 @@ void Alarm::sensorFailed(UniversalDHT::Response response)
   while (true); // loop until re-set.
 }
 
-glyph_t Fixed::findGlyphCode(const glyph_t &glyph)
+glyph_t Fonts::findGlyphCode(const glyph_t &glyph)
 {
   // This searches the Flash memory for matching glyph
   // All this pulava is to reduce memory consumption
   // from a bunch of glyphs we'll never use. Bitmaps use 
   // a LOT of space we simply don't have any to waste.
 
-  const fixedgfxfont_t *gfxFont = m_pFont;
+  const gfxfont_t *gfxFont = m_pFont;
   uint8_t glyphCount  = static_cast<uint8_t>(pgm_read_byte(&gfxFont->glyphCount));
   
   int i {0};
   for (; i != glyphCount; ++i)
   {
-    fixedgfxglyph_t* theGlyph  = pgm_read_glyph_ptr(gfxFont, i);
+    gfxglyph_t* theGlyph  = pgm_read_glyph_ptr(gfxFont, i);
     if (glyph == pgm_read_byte(&theGlyph->ascii))
     {
        return i;
@@ -906,47 +901,49 @@ glyph_t Fixed::findGlyphCode(const glyph_t &glyph)
   return 0;
 }
 
-void Fixed::drawGlyph(const glyph_t &glyph)
+void Fonts::drawGlyph(const glyph_t &glyph)
 {
   screen.startWrite();
   // remove the old glyph 
   glyphdata_t thisGlyph;
-  glyphdata_t lastGlyph;
   drawGlyphPrep(findGlyphCode(m_oldGlyphs[m_cell].glyph), &thisGlyph);
+  glyphdata_t lastGlyph;
   drawGlyphPrep(findGlyphCode(m_newGlyphs[m_cell-1].glyph), &lastGlyph);
+ 
+  int bleachBits {0};    // X position of pixel we're printing
+  int dr_bleaching {0};  // demarks the right edge of the glyph to the left
 
-  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+  if (m_cell > 0)
   {
-      uint16_t X = m_oldGlyphs[m_cell].X + thisGlyph.xo;
-      uint16_t Y = m_oldGlyphs[m_cell].Y + thisGlyph.yo + i;
+    int width    = m_newGlyphs[m_cell-1].W;  // glyph to the left
+    int nX       = m_newGlyphs[m_cell-1].X;  // x position, NEW glyph to the left
+    int oX       = m_oldGlyphs[m_cell].X;    // x position glyph to be bleached
+    dr_bleaching = nX + width - oX - thisGlyph.xo - lastGlyph.xo;      
+  }
 
-      int bleachBits {0};    // X position of pixel we're printing
-      int dr_bleaching {0};  // demarks the right edge of the glyph to the left
-
-      if (m_cell > 0)
-      {
-        int width = m_newGlyphs[m_cell-1].W;  // glyph to the left
-        int nX = m_newGlyphs[m_cell-1].X;     // x position, NEW glyph to the left
-        int oX = m_oldGlyphs[m_cell].X;       // x position glyph to be bleached
-
-        dr_bleaching = (nX + width - oX)-thisGlyph.xo - lastGlyph.xo;      }
-
-      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
-      {
-          if (! (thisGlyph.bit & 0x07)) 
-          {
-            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
-          }
-          
-          if (thisGlyph.bits & 0x80 && bleachBits > dr_bleaching) 
-          {
-            screen.writePixel(X, Y, defaultPaper);
-          }
-          ++bleachBits;
-          ++X;
-          ++thisGlyph.bit;
-          thisGlyph.bits = thisGlyph.bits << 1;
-      }
+  //if  (!((m_oldGlyphs[m_cell].X = m_newGlyphs[m_cell].X) && (m_oldGlyphs[m_cell].Y = m_newGlyphs[m_cell].Y) && (m_oldGlyphs[m_cell].glyph = m_newGlyphs[m_cell].glyph)))
+  {
+    // remove the old glyph (surgically)
+    for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+    {
+        uint16_t X = m_oldGlyphs[m_cell].X + thisGlyph.xo;
+        uint16_t Y = m_oldGlyphs[m_cell].Y + thisGlyph.yo + i;
+        for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
+        {
+            if (! (thisGlyph.bit & 0x07)) 
+            {
+              thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+            }     
+            if (thisGlyph.bits & 0x80 && bleachBits > dr_bleaching) 
+            {
+              screen.writePixel(X, Y, defaultPaper);
+            }
+            ++bleachBits;
+            ++X;
+            ++thisGlyph.bit;
+            thisGlyph.bits = thisGlyph.bits << 1;
+        }
+    }
   }
 
   { // draw the NEW glyph 
@@ -985,10 +982,10 @@ void Fixed::drawGlyph(const glyph_t &glyph)
   ++m_cell;
 }
 
-void Fixed::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
+void Fonts::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
 {
-    const fixedgfxfont_t*  font  = m_pFont;
-    fixedgfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
+    const gfxfont_t*  font  = m_pFont;
+    gfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
 
     data->bitmap = pgm_read_bitmap_ptr(font);
     data->offset = pgm_read_word(&glyph->bitmapOffset);
@@ -999,28 +996,28 @@ void Fixed::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
     data->xMax   = pgm_read_byte(&glyph->xAdvance);
     data->bits   = 0;
     data->bit    = 0;
-    data->x      = fixed.getX();
-    data->y      = fixed.getY();
+    data->x      = fonts.getX();
+    data->y      = fonts.getY();
     data->glyph  = g;
     data->colour = screen.getInk();
 }
 
-void Fixed::printFixed(const char* buffer)
+void Fonts::printFont(const char* buffer)
 {
   while (*buffer != 0)
   {
     if ( static_cast<char> (*buffer) == '.')
     {
-      setFixedFont((fixedgfxfont_t*) &HOTSMALL);
+      setFont((gfxfont_t*) &HOTSMALL);
     }
 
     glyph_t glyph = static_cast<char>(*buffer++);
     drawGlyph(glyph);
   }
-  setFixedFont((fixedgfxfont_t*) &HOTLARGE);
+  setFont((gfxfont_t*) &HOTLARGE);
 }  
 
-dimensions_t Fixed::getGlyphDimensions(const glyph_t &glyph)
+dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
 {
     glyphdata_t G;
     glyph_t code = findGlyphCode(glyph);
@@ -1030,14 +1027,14 @@ dimensions_t Fixed::getGlyphDimensions(const glyph_t &glyph)
     return {G.dimensions.W, G.dimensions.W};
 }
 
-void Fixed::setFixedFont(const fixedgfxfont_t* pNewSize)
+void Fonts::setFont(const gfxfont_t* pNewSize)
 {
     m_pFont = pNewSize;
     m_xStep = pNewSize->xMax;
     m_yStep = pNewSize->yAdvance;     
 }
 
-void Fixed::init()
+void Fonts::init()
 {
   for (auto i{0}; i <  MAXCELLS; ++i)
   {
@@ -1051,7 +1048,8 @@ void Fixed::init()
       m_newGlyphs[i].glyph = 0;
   }
 }
-void Fixed::reset()
+
+void Fonts::reset()
 {
     for (auto i{0}; i <  MAXCELLS; ++i)
     {
