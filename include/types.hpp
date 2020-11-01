@@ -93,7 +93,7 @@ using glyphdata_t = struct
   int16_t       x;
   int16_t       y;
   glyph_t       glyph;
-  coordinate_t  xMax;
+  coordinate_t  xAdvance;
 };
 
 using hieroglyphs_t = struct 
@@ -165,12 +165,12 @@ typedef struct
 typedef struct FixedFontsNS
 {
     uint8_t* bitmap;       ///< Glyph bitmaps, concatenated
-    gfxglyph_t* glyph;///< Glyph array
+    gfxglyph_t* glyph;     ///< Glyph array
     uint8_t glyphCount;    ///< Actual number of defined glyphs
     int8_t yAdvance;       ///< Newline distance (y axis)
     int8_t xMin;           ///< Leftmost  
-    int8_t xMax;           ///< Rightmost
     int8_t yMin;           ///< Bottom Y
+    int8_t xAdvance;       ///< Rightmost
     int8_t yMax;           ///< Upper Y
 } gfxfont_t ;
 

@@ -92,8 +92,8 @@ Display screen;
 UniversalDHT dht22(DHT22_DATA);
 Graph chart;
 Alarm alarm;
-Reading humidity;
-Reading temperature;
+Reading humidity(4);
+Reading temperature(7);
 Messages messages;
 Fonts fonts;
 Environmental environment;
@@ -130,6 +130,9 @@ void setup()
   humidity.setY(10);
   temperature.setY(10);
 
+  screen.print(3);
+
+
 #ifdef USE_METRIC
   flags.set(USEMETRIC);
 #endif
@@ -143,12 +146,15 @@ void setup()
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
 
-  screen.setRotation(screen.rotateDefaultSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
+  screen.setRotation(screen.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  chart.initGraph();
-  screen.fillRect(0, UPTIME_Y, TFT_WIDTH, TEXTSMALL * BASEHEIGHT + 2, GREY); //just that little Uptime display, a nod to *nix.
   
+  chart.initGraph();
+  fonts.setFont(&HOTSMALL);
+  screen.fillRect(0, TFT_HEIGHT - 12, TFT_WIDTH, 12, GREY); //just that little Uptime display, a nod to *nix.
+  
+
   pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
   pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
   pinMode(ALARM_PIN, OUTPUT);         // This is usually pin 13 (the board LED)
@@ -156,7 +162,6 @@ void setup()
   digitalWrite(DHT22_POWER, HIGH);    // and saves wiring from the ICSP ports on UNO with a TFT shield
   pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
-  //delay(2500);
   readings_t read;
   dht22.read(&read.H, &read.T);
 
@@ -166,7 +171,6 @@ void setup()
   humidity.setLowRead(read.H);
   humidity.setHighRead(read.H);
   humidity.updateReading(read.H);
-  fonts.init();
 
   Serial.println("\n\n***** New run *****");
 }
@@ -190,41 +194,14 @@ void loop()
   while (isrTimings.timeToRead < 3)
   {
     alarm.checkAlarm();
-    alarm.annunciators();
+    //alarm.annunciators();
     alarm.checkButton();
   }
   messages.showUptime();
 }
 
 void showLCDReads(void)
-{
-
-  // BUG THIS FUNCTION DOES NOT WORK!!!
-
-  static float prevTemp  = -100;
-  static float prevHumid = -100;
- 
-  screen.setRotation(screen.rotatePortraitSouth);
-  if (prevTemp != temperature.getCMA())
-  {
-    messages.printNumber(defaultInk,
-                      FONT1, 
-                      static_cast<int>(temperature.getCMA()),
-                      (flags.isSet(USEMETRIC)) ? METRIC : 0);
-
-    prevTemp = temperature.getCMA();
-  }
-
-  if (prevHumid != humidity.getCMA())
-  {
-    messages.printNumber(defaultInk, 
-                      FONT1, 
-                      static_cast<int>(humidity.getCMA()),
-                      METRIC);
-
-    prevHumid = humidity.getCMA();
-  }
-}
+{}
 
 void Graph::displayGraph(void)
 {
@@ -334,11 +311,10 @@ void Graph::initGraph(void)
 
 void Graph::drawGraphScaleMarks(void)
 {
-    screen.setRotation(screen.rotatePortraitSouth);
+    fonts.setRotation(3);
+    fonts.setFont(&HOTSMALL);
     screen.setTextColor(defaultInk);
-    screen.setTextSize(TEXTSMALL);
-
-    screen.setCursor(AXIS_Y_POSITION, 5);
+    screen.setCursor(AXIS_Y_POSITION, 25);
 
     if (flags.isSet(USEMETRIC))
     {
@@ -351,30 +327,32 @@ void Graph::drawGraphScaleMarks(void)
         messages.execute(Messages::f);
     }
 
-    screen.setCursor(AXIS_Y_POSITION, TFT_WIDTH - BASEHEIGHT);
-    messages.execute(Messages::humidityScale);
+    screen.setCursor(AXIS_Y_POSITION, 310);
 
-    screen.setRotation(screen.rotateDefaultSouth);
+    messages.execute(Messages::humidityScale);
+    fonts.setRotation(0);
 
     // temp scale
     for (auto i{0}; i < 60; i = i + 10)
     {
+        fonts.setFont(&HOTSMALL);
         char b[6];
         reading_int_t value;
         screen.setCursor(GRAPH_X - 22, (GRAPH_Y + FSD) - (i * 2) );
 
         (flags.isSet(USEMETRIC)) ? value = i : value = static_cast<reading_int_t>(toFahrenheit(i));
         sprintf(b, "%3d", value);
-        screen.print(b);
+        fonts.print(b);
     }
         
     // humidity scale
     for (auto i{0}; i < 120; i = i + 20)
     {
+        fonts.setFont(&HOTSMALL);
         char b[6];
         screen.setCursor(GRAPH_X + GRAPH_WIDTH + 3, (GRAPH_Y + FSD - 4) - i );
         sprintf(b, "%3d", i);
-        screen.print(b);
+        fonts.print(b);
     }
 }
 
@@ -416,6 +394,11 @@ void Reading::showReadings(void)
 {
     fonts.setFont(&HOTLARGE);
     screen.setInk(defaultInk);
+
+    static float s_bogus = 1.5;
+    s_bogus += 0.3;
+
+    temperature.setReading(s_bogus);
     
     limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
     limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
@@ -425,38 +408,44 @@ void Reading::showReadings(void)
     chart.displayGraph();
 
     fonts.setFont(&HOTLARGE);
-    uint8_t yPosition = fonts.getYstep();
+    screen.setCursor(0, fonts.getYstep());
 
-    fonts.moveTo(0, yPosition);
-
-    environment.setColour(temperature.getReading(), tLimits);
-    printReading(temperature.getReading(), 
+    prepReading(temperature.getReading(), 
+                temperature.getStrAddr(),
                 (flags.isSet(USEMETRIC) ? METRIC : 0) | 
                 (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
                 TEMPERATURE);
 
-    //fonts.reset(); return;
+    fonts.print(temperature.getStrAddr(), (flags.isSet(USEMETRIC) ? FLOATS : 0));
 
-    fonts.moveTo(180, yPosition);
+    screen.setCursor(180, fonts.getYstep());
 
-    environment.setColour(humidity.getReading(), hLimits);
-    printReading(humidity.getReading(), METRIC);
-    screen.setInk(defaultInk);
-    fonts.drawGlyph('%');
-    // Min and Max readings.
-    environment.setColour(temperature.getHighRead(), tLimits);
-    fonts.moveTo(LOW_TEMP_X, yPosition + 20);
+    prepReading(humidity.getReading(), humidity.getStrAddr(), METRIC);
+    fonts.print(humidity.getStrAddr(), 0);
+    temperature.copyBuffer();
+    humidity.copyBuffer();
 
     fonts.setFont(&HOTSMALL);
-    printReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
+    screen.setCursor(LOW_TEMP_X, fonts.getYstep() + 20);
+
+
+    return;
+
+    // Min and Max readings.
+    environment.setColour(temperature.getHighRead(), tLimits);
+    screen.setCursor(LOW_TEMP_X, fonts.getYstep() + 20);
+
+
+  /*
+    fonts.setFont(&HOTSMALL);
+    prepReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
                 (flags.isSet(USEMETRIC)) ? METRIC : 0);
 
     fonts.setFont(&HOTSMALL);
-    fonts.drawGlyph('/');
 
     environment.setColour(temperature.getHighRead(), tLimits);
     fonts.setFont(&HOTSMALL);
-    printReading((temperature.getReading() > temperature.getHighRead()) ? temperature.getReading() : temperature.getHighRead(),
+    prepReading((temperature.getReading() > temperature.getHighRead()) ? temperature.getReading() : temperature.getHighRead(),
                 (flags.isSet(USEMETRIC)) ? METRIC : 0);
 
     environment.setColour(humidity.getHighRead(), hLimits);
@@ -464,21 +453,20 @@ void Reading::showReadings(void)
     fonts.moveTo(screen.width / 2, fonts.getY());
     fonts.setFont(&HOTSMALL);
 
-    printReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
+    prepReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
 
     fonts.setFont(&HOTSMALL);
-    fonts.drawGlyph('/');
 
     environment.setColour(humidity.getHighRead(), hLimits);
     fonts.setFont(&HOTSMALL);
-    printReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
+    prepReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
 
     humidity.setMinMax();
     temperature.setMinMax();
-    fonts.reset();
+    */
 }
 
-void Reading::printReading(const reading_t &reading, const semaphore_t &flags)
+void Reading::prepReading(const reading_t &reading, char* buffer, const semaphore_t &flags)
 {
   using mixed_t = struct 
   {
@@ -500,16 +488,22 @@ void Reading::printReading(const reading_t &reading, const semaphore_t &flags)
   read.intPart   = static_cast<int>(integer);
   read.floatPart = static_cast<int>(abs(fract * 10));
 
-  char b[12];
   if (flags & FLOATS) 
   {
-    sprintf(b, "%3d.%1d", read.intPart, read.floatPart);
+    sprintf(buffer, "%3d.%1d", read.intPart, read.floatPart);
   }
   else
   {
-    sprintf(b, "%d", read.intPart);
+    if (flags & TEMPERATURE)
+    {
+      sprintf(buffer, "%d", read.intPart);
+    }
+    else
+    {
+      sprintf(buffer, "%d%c", read.intPart, '%');
+    }
+    
   }
-  fonts.print(b, true);
 }
 
 void Environmental::setColour(const reading_t &value, const limits_t &limits)
@@ -664,12 +658,12 @@ void Environmental::unsafeTempWarnings(const reading_t &T)
   if (flags.isSet(USEMETRIC))
   {
     screen.print(T);
-    screen.print(F(" C"));
+    fonts.print(F(" C"));
   }
   else
   {
     screen.print(round(toFahrenheit(T)));
-    screen.print(F(" F"));
+    fonts.print(F(" F"));
   }
 }
 
@@ -901,30 +895,119 @@ glyph_t Fonts::findGlyphCode(const glyph_t &glyph)
   return 0;
 }
 
+void Fonts::print(const __FlashStringHelper *flashString)
+{
+  PGM_P p = reinterpret_cast<PGM_P>(flashString);
+  while (glyph_t glyph = pgm_read_byte(p++))
+  {
+    drawGlyph(glyph);
+  }
+}
+
+void Fonts::print(char* b)
+{
+  int i{0};
+  while (b[i])
+  {
+    drawGlyph(b[i]);
+    ++i;
+  }
+}
+
+void Fonts::print(char* b, const bool &switchFloats)
+{
+  int i{0};
+  while (b[i])
+  {
+    if ( static_cast<char> (b[i]) == '.' && switchFloats)
+    {
+      setFont(&HOTSMALL);
+    }
+    drawGlyph(b[i]);
+    ++i;
+  }
+    
+  {
+    int bleachBits {0};    // X position of pixel we're printing
+    int dr_bleaching {0};  // demarks the right edge of the glyph to the left
+  }
+  setFont((gfxfont_t*) &HOTLARGE);
+}
+
+void Fonts::print(char* b1, char* b2, const bool &switchFloats)
+{
+    int i{0};
+    do 
+    {
+      drawGlyph(b1[i]);
+      ++i;
+    } 
+    while (b1[i]);
+
+  {
+    int bleachBits {0};    // X position of pixel we're printing
+    int dr_bleaching {0};  // demarks the right edge of the glyph to the left
+  }
+}
+
+void Fonts::print(const String &string)
+{
+  for (uint8_t i{0}; i < string.length(); i++)
+  {
+      drawGlyph(string.charAt(i));
+  }
+}
+
 void Fonts::drawGlyph(const glyph_t &glyph)
 {
+  m_X = screen.getCursorX();
+  m_Y = screen.getCursorY();
+
   screen.startWrite();
-  // remove the old glyph 
   glyphdata_t thisGlyph;
-  glyphdata_t lastGlyph;
-  drawGlyphPrep(findGlyphCode(m_oldGlyphs[m_cell].glyph), &thisGlyph);
-  drawGlyphPrep(findGlyphCode(m_newGlyphs[m_cell-1].glyph), &lastGlyph);
+  drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
 
   for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
   {
-      uint16_t X = m_oldGlyphs[m_cell].X + thisGlyph.xo;
-      uint16_t Y = m_oldGlyphs[m_cell].Y + thisGlyph.yo + i;
+      uint16_t X = m_X + thisGlyph.xo;
+      uint16_t Y = m_Y + thisGlyph.yo + i;
 
-      int bleachBits {0};    // X position of pixel we're printing
-      int dr_bleaching {0};  // demarks the right edge of the glyph to the left
-
-      if (m_cell > 0)
+      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
       {
-        int width = m_newGlyphs[m_cell-1].W;  // glyph to the left
-        int nX = m_newGlyphs[m_cell-1].X;     // x position, NEW glyph to the left
-        int oX = m_oldGlyphs[m_cell].X;       // x position glyph to be bleached
+          if (! (thisGlyph.bit & 0x07)) 
+          {
+            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+          }
+          
+          if (thisGlyph.bits & 0x80) 
+          {
+            printPixel(X, Y, m_ink);
+          }
+          else
+          {
+            printPixel(X, Y, m_paper);
+          }
+          ++X;
+          ++thisGlyph.bit;
+          thisGlyph.bits = thisGlyph.bits << 1;
+      }
+  }
+  m_X = m_X + thisGlyph.xAdvance;
+  screen.setCursor(m_X, m_Y);
+  screen.endWrite();
+}
 
-        dr_bleaching = (nX + width - oX)-thisGlyph.xo - lastGlyph.xo;      }
+void Fonts::bleachGlyph(const glyph_t &glyph)
+{  
+  screen.startWrite();
+  glyphdata_t thisGlyph;
+  int bleachBits {0};    // X position of pixel we're printing
+  int dr_bleaching {0};  // demarks the right edge of the glyph to the left
+
+  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+  {
+      uint16_t X = m_X + thisGlyph.xo;
+      uint16_t Y = m_Y + thisGlyph.yo + i;
 
       for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
       {
@@ -935,7 +1018,11 @@ void Fonts::drawGlyph(const glyph_t &glyph)
           
           if (thisGlyph.bits & 0x80 && bleachBits > dr_bleaching) 
           {
-            screen.writePixel(X, Y, defaultPaper);
+            screen.writePixel(X, Y, YELLOW);
+          }
+          else
+          {
+            //screen.writePixel(X, Y, BLUE);
           }
           ++bleachBits;
           ++X;
@@ -943,78 +1030,6 @@ void Fonts::drawGlyph(const glyph_t &glyph)
           thisGlyph.bits = thisGlyph.bits << 1;
       }
   }
-  
-  { // draw the NEW glyph 
-    glyphdata_t thisGlyph;
-    drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
-    for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
-    {
-        uint16_t X = thisGlyph.x + thisGlyph.xo;
-        uint16_t Y = thisGlyph.y + thisGlyph.yo + i;
-
-        for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
-        {
-            if (! (thisGlyph.bit & 0x07)) 
-            {
-                thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
-            }
-            
-            if (thisGlyph.bits & 0x80) 
-            {
-              screen.writePixel(X, Y, defaultInk);
-            }
-            else
-            {
-              screen.writePixel(X, Y, defaultPaper);              
-            }
-            ++X;
-            ++thisGlyph.bit;
-            thisGlyph.bits = thisGlyph.bits << 1;
-        }
-    }
-    registerPosition(glyph, thisGlyph.xMax);
-    moveTo(m_X + thisGlyph.xMax, m_Y);
-  } 
-  screen.endWrite();
-  ++m_cell;
-}
-
-void Fonts::drawGlyph(const glyph_t &glyph, const colours_t &ink, const colours_t &paper)
-{
-  screen.startWrite();
-
-  glyphdata_t thisGlyph;
-  drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
-  thisGlyph.x = screen.getCursorX();
-  thisGlyph.y = screen.getCursorY();
-
-  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
-  {
-      uint16_t X = thisGlyph.x + thisGlyph.xo;
-      uint16_t Y = thisGlyph.y + thisGlyph.yo + i;
-
-      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
-      {
-          if (! (thisGlyph.bit & 0x07)) 
-          {
-              thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
-          }
-          
-          if (thisGlyph.bits & 0x80) 
-          {
-            screen.writePixel(X, Y, ink);
-          }
-          else
-          {
-            screen.writePixel(X, Y, paper);              
-          }
-          ++X;
-          ++thisGlyph.bit;
-          thisGlyph.bits = thisGlyph.bits << 1;
-      }
-  }
-  moveTo(m_X + thisGlyph.xMax, m_Y);
-
   screen.endWrite();
 }
 
@@ -1023,36 +1038,20 @@ void Fonts::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
     const gfxfont_t*  font  = m_pFont;
     gfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
 
-    data->bitmap = pgm_read_bitmap_ptr(font);
-    data->offset = pgm_read_word(&glyph->bitmapOffset);
+    data->bitmap       = pgm_read_bitmap_ptr(font);
+    data->offset       = pgm_read_word(&glyph->bitmapOffset);
     data->dimensions.H = pgm_read_byte(&glyph->height);
-    data->dimensions.W  = pgm_read_byte(&glyph->width);
-    data->xo     = pgm_read_byte(&glyph->xOffset);
-    data->yo     = pgm_read_byte(&glyph->yOffset);
-    data->xMax   = pgm_read_byte(&glyph->xAdvance);
-    data->bits   = 0;
-    data->bit    = 0;
-    data->x      = fonts.getX();
-    data->y      = fonts.getY();
-    data->glyph  = g;
-    data->colour = screen.getInk();
+    data->dimensions.W = pgm_read_byte(&glyph->width);
+    data->xo           = pgm_read_byte(&glyph->xOffset);
+    data->yo           = pgm_read_byte(&glyph->yOffset);
+    data->xAdvance     = pgm_read_byte(&glyph->xAdvance);
+    data->bits         = 0;
+    data->bit          = 0;
+    data->x            = fonts.getX();
+    data->y            = fonts.getY();
+    data->glyph        = g;
+    data->colour       = screen.getInk();
 }
-
-
-void Fonts::print(const char* buffer, const bool switchFloats = false)
-{
-  while (*buffer != 0)
-  {
-    if ( static_cast<char> (*buffer) == '.' && switchFloats)
-    {
-      setFont((gfxfont_t*) &HOTSMALL);
-    }
-
-    glyph_t glyph = static_cast<char>(*buffer++);
-    drawGlyph(glyph);
-  }
-  setFont((gfxfont_t*) &HOTLARGE);
-}  
 
 dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
 {
@@ -1067,45 +1066,48 @@ dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
 void Fonts::setFont(const gfxfont_t* pNewSize)
 {
     m_pFont = pNewSize;
-    m_xStep = pNewSize->xMax;
-    m_yStep = pNewSize->yAdvance;     
 }
 
-void Fonts::init()
+void Fonts::setTextColor(const colours_t &ink, const colours_t &paper)
 {
-  for (auto i{0}; i <  MAXCELLS; ++i)
+  m_ink = ink;
+  m_paper = paper;
+}
+
+void Fonts::printPixel(coordinate_t X, coordinate_t Y, colours_t ink)
+{
+  coordinate_t t;
+  switch (m_rotation) 
   {
-      m_oldGlyphs[i].X = 0;
-      m_oldGlyphs[i].Y = 0;
-      m_oldGlyphs[i].W = 0;
-      m_oldGlyphs[i].glyph = 0;
-      m_newGlyphs[i].X = 0;
-      m_newGlyphs[i].Y = 0;
-      m_newGlyphs[i].W = -1;
-      m_newGlyphs[i].glyph = 0;
+    case 1:
+      t = X;
+      X = TFT_WIDTH - 1 - Y;
+      Y = t;
+      break;
+    case 2:
+      X = TFT_WIDTH - 1 - X;
+      Y = TFT_HEIGHT - 1 - Y;
+      break;
+    case 3:
+      t = X;
+      X = Y;
+      Y = TFT_HEIGHT - 1 - t;
+      break;
   }
+  screen.writePixel(X, Y, ink);
 }
 
-void Fonts::reset()
+void Messages::execute(const char* buffer)
 {
-    for (auto i{0}; i <  MAXCELLS; ++i)
-    {
-       m_oldGlyphs[i].X = m_newGlyphs[i].X;
-       m_oldGlyphs[i].Y = m_newGlyphs[i].Y;
-       m_oldGlyphs[i].W = m_newGlyphs[i].W;
-       m_oldGlyphs[i].glyph = m_newGlyphs[i].glyph;
-       m_newGlyphs[i].X = 0;
-       m_newGlyphs[i].Y = 0;
-       m_newGlyphs[i].W = -1;
-       m_newGlyphs[i].glyph = 0;
-    }
-    m_cell = 0;
+  fonts.setTextColor(defaultInk, defaultPaper);
+  fonts.print((char *)(buffer));
 }
 
 void Messages::execute(const uint8_t &M)
 {
-  screen.setTextColor(defaultInk);
-  screen.print(translations[M]);
+  fonts.setTextColor(defaultInk, defaultPaper);
+  String text = translations[M];
+  fonts.print(text);
 }
 
 uint8_t Messages::centerText(const uint8_t &M, const uint8_t &charWidth)
@@ -1134,20 +1136,23 @@ void Messages::showUptime(void)
     of the screen as a quick check that the machine
     hasn't suffered a power loss or reset.
   */
-  char msg[60];
-  screen.setTextSize(1);
-  
-  sprintf(msg, "Uptime: %2d Years, %2d Weeks, %2d Days, %02d:%02d:%02d", 
-                      isrTimings.timeInYears,
+  char* msg = new char[40];
+
+  sprintf(msg, "Uptime: %2d Weeks, %2d Days, %02d:%02d:%02d", 
                       isrTimings.timeInWeeks,
                       isrTimings.timeInDays,
                       isrTimings.timeInHours,
                       isrTimings.timeInMinutes,
                       isrTimings.timeInSeconds);
  
-  screen.setTextColor(defaultPaper);  
-  screen.setCursor(LEFTMARGIN, TFT_ERROR_Y);
-  screen.print(msg);
+  fonts.setTextColor(defaultPaper, GREY);  
+  fonts.setFont(&HOTSMALL);
+
+  uint8_t margin = (TFT_WIDTH- (strlen(msg) * fonts.getXstep())) / 2;
+  screen.setCursor(margin, TFT_HEIGHT - 3);
+  fonts.print(msg);
+  fonts.setTextColor(defaultInk, defaultPaper);  
+  delete[] msg;
 }
 
 void Graph::draw(const quadrilateral_t* quad, const colours_t &ink, const colours_t &outline)

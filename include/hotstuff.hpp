@@ -129,71 +129,42 @@ class Flags
 class Fonts
 {
   private:
-    struct cells_t
-    { 
-      int16_t X;   // X position
-      uint8_t Y;   // Y position
-      char glyph;  // Glyph (ASCII code)
-      uint8_t W;   // Width of glyph (sizes can change any time!)
-    };
-
-    struct oh_dr_bleaching_t  // if you laugh at this, you're probably British
-    {
-      ucoordinate_t X;
-      ucoordinate_t Y;
-      ucoordinate_t W;
-      ucoordinate_t H;
-    };
     
-
-  static const int MAXCELLS {30};
-
-    int16_t m_X {0};
-    uint8_t m_Y {0};
-    uint8_t m_xStep {0};
-    uint8_t m_yStep {0};     
+    uint16_t m_X {0};
+    uint16_t m_Y {0};
+    colours_t m_ink;
+    colours_t m_paper;
+    uint8_t m_rotation;
 
     const gfxfont_t* m_pFont {nullptr};
-    cells_t* m_newGlyphs {nullptr};
-    cells_t* m_oldGlyphs {nullptr};
     
-    int8_t m_cell {0};  // cell is a printed charcacter position
-
   public:
 
     Fonts() 
     {
-        m_newGlyphs = new cells_t[MAXCELLS]();
-        m_oldGlyphs = new cells_t[MAXCELLS]();
-    };
+      m_paper = defaultPaper;
+      m_ink   = defaultInk;
+    }
 
     Fonts(gfxfont_t* font) 
     {
       m_pFont = font;
     };
 
-    ~Fonts()
-    {
-      // never called but included to stop auto-code checkers whinging.
-      delete[] m_newGlyphs;
-      delete[] m_oldGlyphs;
-    }
+    ~Fonts() {}
 
     void init();
 
-    void registerPosition(const glyph_t &glyph, const int8_t width)
+    void setRotation(const uint8_t &R)
     {
-      m_newGlyphs[m_cell].glyph = glyph;
-      m_newGlyphs[m_cell].W = width;
-      m_newGlyphs[m_cell].X = m_X;
-      m_newGlyphs[m_cell].Y = m_Y;
-    }
-  
-    cells_t getPrevCellData()
-    {
-      return {m_oldGlyphs[m_cell].X, m_oldGlyphs[m_cell].Y, m_oldGlyphs[m_cell].glyph};        
+      m_rotation = R;
     }
 
+    uint8_t getRotation(const uint8_t &R)
+    {
+      return m_rotation;
+    }
+    
     int16_t getX()
     {
       return m_X;
@@ -204,29 +175,19 @@ class Fonts
       return m_Y;
     }
 
-    void moveTo(const int16_t &X, const int16_t &Y)
+    uint8_t getYstep()
     {
-      m_X = X;
-      m_Y = Y;
+      const gfxfont_t* font  = m_pFont;
+      return pgm_read_byte(&font->yAdvance);
     }
 
-    void reset();
-
-    int8_t getCount()
+    uint8_t getXstep()
     {
-      return m_cell;
-    }
-    
-    int8_t getYstep()
-    {
-      return m_yStep;
+      const gfxfont_t* font  = m_pFont;
+      return pgm_read_byte(&font->xAdvance);
     }
 
     void drawGlyph(const glyph_t &glyph);
-
-    void drawGlyph(const glyph_t &glyph, const colours_t &ink, const colours_t &paper);
-
-    void print(const char* buffer, const bool switchFloats);
 
     void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
 
@@ -235,6 +196,24 @@ class Fonts
     dimensions_t getGlyphDimensions(const glyph_t &glyph);
 
     void setFont(const gfxfont_t* pNewSize);
+
+    void bleachGlyph(const glyph_t &glyph);
+
+    void print(const char* b);
+
+    void print(const String &string);
+
+    void print(const __FlashStringHelper *flashString);
+
+    void print(char* b);
+
+    void print(char* b1, const bool &switchFloats);
+
+    void print(char* b1, char* b2, const bool &switchFloats);
+
+    void setTextColor(const colours_t &ink, const colours_t &paper);  
+
+    void printPixel(coordinate_t X, coordinate_t Y, colours_t ink);
 };
 
 class Display : public MCUFRIEND_kbv
@@ -270,9 +249,9 @@ class Display : public MCUFRIEND_kbv
   enum  
   {
     rotatePortraitNorth, 
-    rotateDefaultNorth,
+    rotateLandscapeNorth,
     rotatePortraitSouth, 
-    rotateDefaultSouth
+    rotateLandscapeSouth
   };
 
 };
@@ -337,7 +316,7 @@ class Messages
 
   enum
   {
-    c = 0, f, percent, slash, damp, dry, 
+    c, f, damp, dry, 
     frost, temperatureScale, humidityScale, work1, 
     work2, caution, xcaution, danger, xdanger
   };
@@ -351,9 +330,7 @@ class Messages
     pText = nullptr;
     translations[c]        = F("c");
     translations[f]        = F("f");
-    translations[percent]  = F("%");
     translations[caution]  = F("Extreme CAUTION");
-    translations[slash]    = F("/");
     translations[damp]     = F("DAMP");
     translations[dry]      = F("DRY");
     translations[frost]    = F("FROST");
@@ -561,15 +538,16 @@ class Reading
     coordinates_t m_position;
     colours_t m_trace;          // graph line colour
     uint8_t* m_pipe;
+    char* m_newString;
+    char* m_oldString;
 
     public:
     
-    Reading()
+    Reading(const int &stringSize)
     {
       // cumulative moving averages are a form of mean that doesn't need to track every single value
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
       m_cmaCounter = 0.0;
-    
       m_lowRead = 0;
       m_highRead = 0;
       m_reading = 0;
@@ -588,6 +566,17 @@ class Reading
       {        
         m_pipe[i] = (GRAPH_Y + FSD);
       }
+      m_oldString = new char[stringSize + 1];   // short string for previous reading 
+      m_newString = new char[stringSize + 1];   // short string for current reading
+
+      int i {0};
+      for (; i < stringSize-1; ++i)
+      {
+        m_oldString[i] = ' ';
+        m_newString[i] = ' ';
+      }
+      m_oldString[i] = 0;
+      m_newString[i] = 0;
   }
   
   ~Reading() 
@@ -595,6 +584,22 @@ class Reading
     // this should ever be called, but it's good
     // practise to do this even if it's not.
     delete [] m_pipe;
+  }
+
+  char* getStrAddr()
+  {
+    return m_newString;
+  }
+
+  void copyBuffer()
+  {
+    int i{0};
+    do 
+    {
+      m_oldString[i] = m_newString[i];
+      ++i;
+    } 
+    while (m_newString[i]);
   }
 
   void setPipe(const uint16_t &i, const uint8_t &value)
@@ -711,7 +716,7 @@ class Reading
   void showReadings();
 
   /**
-   * @brief Calls printReading with the current X,Y positions
+   * @brief Calls prepReading with the current X,Y positions
    * 
    * @param newReading The current reading
    * @param oldReading The last reading
@@ -721,8 +726,7 @@ class Reading
    * @param showTemp set to true when working on a metric temp
    * 
    */
-  
-  void printReading(const reading_t &newReading, const semaphore_t &flags);
+    void prepReading(const reading_t &reading, char* buffer, const semaphore_t &flags);
 
 };
 #endif
