@@ -99,7 +99,7 @@ Fonts fonts;
 Environmental environment;
 Flags flags;
 
-void SerialBar(char * b)
+void SerialBar(char *b)
 {
   for (int n = 0; n < 25; n++)
   {
@@ -430,12 +430,19 @@ void Reading::showReadings(void)
     fonts.setFont(&HOTLARGE);
     screen.setInk(defaultInk);
 
-    SerialBar(" START ");
-
-    char b1[20] = "1.2";
-    char b2[20] = "8.1";
+    SerialBar((char *)" START ");
+    {
+    char b1[20] = "18.1";
+    char b2[20] = "18.2";
 
     fonts.print(100, 100, b1, b2, 0);
+    }
+    {
+    char b1[20] = "28.1";
+    char b2[20] = "12.1";
+
+    fonts.print(200, 200, b1, b2, 0);
+    }
     STOP
 
     static float s_bogus = 1.5;
@@ -984,12 +991,16 @@ void Fonts::print(char* b, const bool &switchFloats)
 void Fonts::print(const int &X, const int &Y, char* oldBuff, char* newBuff, const bool &switchFloats)
 {
     
+    {
+      char b[80];
+      sprintf(b, "OLD: %s and NEW: %s", oldBuff, newBuff);
+      Serial.println(b);
+    }  
+    
     
     screen.setCursor(X,Y);
     const int oldGlyph = 0;
     const int newGlyph = 1;
-
-
 
     dr_bleaching_t knockout[2]{0, 0, X, 0, 0, false, 0, 0, X, 0, 0, false};
     int i{0};
@@ -1003,90 +1014,92 @@ void Fonts::print(const int &X, const int &Y, char* oldBuff, char* newBuff, cons
       // While there's a character to overwrite, record it's full occulsion width
       // This is tallied in knockout.oX and knockout.nX respectively
 
-
+      if ((newBuff[i] == oldBuff[i]) &&  knockout[oldGlyph].cursorX ==  knockout[newGlyph].cursorX)
       {
-        char b[80];
-        sprintf(b, "Unprinting: %c from %d, %d", oldBuff[i], screen.getCursorX(), screen.getCursorY());
-        Serial.println(b);
-      }  
+        knockout[oldGlyph].cursorX += glyphs[oldGlyph].xAdvance;
+        knockout[newGlyph].cursorX += glyphs[oldGlyph].xAdvance;
 
-      if (! knockout[oldGlyph].done)
+        screen.setCursor(knockout[oldGlyph].cursorX, Y + 200);
+        fonts.setInk(YELLOW);
+        drawGlyph(oldBuff[i]);
+        ++i;
+        continue;
+      }
+      else 
       {
-        knockout[oldGlyph].oXmin = knockout[oldGlyph].Xmin;
-        knockout[oldGlyph].oXmax = knockout[oldGlyph].Xmax;
-
-        knockout[oldGlyph].Xmin = knockout[oldGlyph].cursorX;
-        knockout[oldGlyph].Xmax = knockout[oldGlyph].cursorX + glyphs[oldGlyph].xAdvance;
         {
           char b[80];
-          sprintf(b, "Old Knockout: %c  ->  %d - %d (oXmin: %d, oXmax: %d)", oldBuff[i], knockout[oldGlyph].cursorX, knockout[oldGlyph].Xmax, knockout[oldGlyph].oXmin, knockout[oldGlyph].oXmax);
+          sprintf(b, "Unprinting: %c from %d, %d", oldBuff[i], screen.getCursorX(), screen.getCursorY());
           Serial.println(b);
-        }
-      }
+        }  
 
-      {
-        char b[80];
-        sprintf(b, "Printing: %c from %d, %d", oldBuff[i], screen.getCursorX(), screen.getCursorY());
-        //Serial.println(b);
-      }  
-
-      if (i == 0)
-      {
-        if (newBuff[i] != oldBuff[i])
+        if (! knockout[oldGlyph].done)
         {
-          screen.setCursor(knockout[oldGlyph].cursorX, Y - 50);
-          fonts.setInk(BLUE);
-          drawGlyph(oldBuff[i]);
-        }
-      }      
-      else if (! knockout[newGlyph].done)
-      {
-        knockout[newGlyph].oXmin = knockout[newGlyph].Xmin;
-        knockout[newGlyph].oXmax = knockout[newGlyph].Xmax;
+          knockout[oldGlyph].oXmin = knockout[oldGlyph].Xmin;
+          knockout[oldGlyph].oXmax = knockout[oldGlyph].Xmax;
 
-        knockout[newGlyph].Xmin = knockout[newGlyph].cursorX;
-        knockout[newGlyph].Xmax = knockout[newGlyph].cursorX + glyphs[newGlyph].xAdvance;
+          knockout[oldGlyph].Xmin = knockout[oldGlyph].cursorX;
+          knockout[oldGlyph].Xmax = knockout[oldGlyph].cursorX + glyphs[oldGlyph].xAdvance;
+          {
+            char b[80];
+            sprintf(b, "Old Knockout: %c  ->  %d - %d (oXmin: %d, oXmax: %d)", oldBuff[i], knockout[oldGlyph].cursorX, knockout[oldGlyph].Xmax, knockout[oldGlyph].oXmin, knockout[oldGlyph].oXmax);
+            Serial.println(b);
+          }
+        }
+
         {
           char b[80];
-          sprintf(b, "New Knockout: %c  ->  %d - %d (oXmin: %d, oXmax: %d)", newBuff[i], knockout[newGlyph].cursorX, knockout[newGlyph].Xmax, knockout[newGlyph].oXmin, knockout[newGlyph].oXmax);
-          Serial.println(b);
+          sprintf(b, "Printing: %c from %d, %d", oldBuff[i], screen.getCursorX(), screen.getCursorY());
+        }  
+
+        if (! knockout[newGlyph].done)
+        {
+          knockout[newGlyph].oXmin = knockout[newGlyph].Xmin;
+          knockout[newGlyph].oXmax = knockout[newGlyph].Xmax;
+
+          knockout[newGlyph].Xmin = knockout[newGlyph].cursorX;
+          knockout[newGlyph].Xmax = knockout[newGlyph].cursorX + glyphs[newGlyph].xAdvance;
+          {
+            char b[80];
+            sprintf(b, "New Knockout: %c  ->  %d - %d (oXmin: %d, oXmax: %d)", newBuff[i], knockout[newGlyph].cursorX, knockout[newGlyph].Xmax, knockout[newGlyph].oXmin, knockout[newGlyph].oXmax);
+            Serial.println(b);
+          }
         }
-      }
 
-      screen.setCursor(knockout[oldGlyph].cursorX, Y - 50);
-
-      if (! knockout[oldGlyph].done)
-      {
-        
         screen.setCursor(knockout[oldGlyph].cursorX, Y - 50);
 
-        knockout[oldGlyph].cursorX += glyphs[oldGlyph].xAdvance;
-
-        if (knockout[newGlyph].oXmax > knockout[oldGlyph].oXmax)
+        if (! knockout[oldGlyph].done)
         {
-          fonts.setInk(YELLOW);
-          drawGlyph(oldBuff[i]);
+          
+          screen.setCursor(knockout[oldGlyph].cursorX, Y - 50);
+          knockout[oldGlyph].cursorX += glyphs[oldGlyph].xAdvance;
+
+          if (knockout[newGlyph].oXmax > knockout[oldGlyph].oXmax)
+          {
+            fonts.setInk(YELLOW);
+            drawGlyph(oldBuff[i]);
+          }
+          
+          if (knockout[newGlyph].oXmax > knockout[oldGlyph].oXmax)
+          {
+            fonts.setInk(RED);
+            drawGlyph(oldBuff[i]);
+          } 
+
+          if (knockout[newGlyph].oXmin > knockout[oldGlyph].cursorX)
+          {
+            fonts.setInk(GREEN);
+            drawGlyph(oldBuff[i]);       
+          } 
         }
-        
-        if (knockout[newGlyph].oXmax > knockout[oldGlyph].oXmax)
+
+        screen.setCursor(knockout[newGlyph].cursorX, Y);
+        fonts.setInk(defaultInk);
+
+        if (! knockout[newGlyph].done)
         {
-          fonts.setInk(RED);
-          drawGlyph(oldBuff[i]);
-        } 
-
-        if (knockout[newGlyph].oXmin > knockout[oldGlyph].cursorX)
-        {
-          fonts.setInk(GREEN);
-          drawGlyph(oldBuff[i]);       
-        } 
-      }
-
-      screen.setCursor(knockout[newGlyph].cursorX, Y);
-      fonts.setInk(defaultInk);
-
-      if (! knockout[newGlyph].done)
-      {
-        knockout[newGlyph].cursorX += drawGlyph(newBuff[i]);
+          knockout[newGlyph].cursorX += drawGlyph(newBuff[i]);
+        }
       }
 
       ++i;
@@ -1102,7 +1115,9 @@ void Fonts::print(const int &X, const int &Y, char* oldBuff, char* newBuff, cons
       }
       Serial.println();
    } 
-    while (oldBuff[i]);
+    while (oldBuff[i] || newBuff[i]);
+
+    SerialBar((char *)" END ");
 }
 
 void Fonts::print(const String &string)
