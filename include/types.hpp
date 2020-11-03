@@ -102,6 +102,17 @@ using hieroglyphs_t = struct
   glyph_t glyphics[];
 };
 
+using dr_bleaching_t = struct
+{
+  int16_t Xmin;       // Leftmost X position of this glyph
+  int16_t Xmax;       // Rightmost X position of this glyph
+  int16_t cursorX;    // "cursor" position moved regardless of if glyph is printed
+  int16_t oXmin;   // As Xmin for previous loop
+  int16_t oXmax;   // As Xmax for previous loop
+  bool done;
+
+};
+
 struct 
 {
   volatile isrtiming_t timeInSeconds {0};
@@ -167,10 +178,10 @@ typedef struct FixedFontsNS
     uint8_t* bitmap;       ///< Glyph bitmaps, concatenated
     gfxglyph_t* glyph;     ///< Glyph array
     uint8_t glyphCount;    ///< Actual number of defined glyphs
-    int8_t yAdvance;       ///< Newline distance (y axis)
+    int8_t newline;       ///< Newline distance (y axis)
     int8_t xMin;           ///< Leftmost  
     int8_t yMin;           ///< Bottom Y
-    int8_t xAdvance;       ///< Rightmost
+    int8_t xMax;       ///< Rightmost
     int8_t yMax;           ///< Upper Y
 } gfxfont_t ;
 

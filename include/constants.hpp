@@ -123,13 +123,11 @@ constexpr int HRADIAL        {160 / HEIGHT_SCALE};
 constexpr int INNER_RADIUS   {40  / WIDTH_SCALE};
 constexpr int OUTER_RADIUS   {70  / WIDTH_SCALE};
 constexpr int FSD            {100 / HEIGHT_SCALE};
-constexpr int GRAPH_X        {41  / WIDTH_SCALE};
-constexpr int GRAPH_Y        {110 / HEIGHT_SCALE};
-constexpr int GRAPH_WIDTH    {240 / WIDTH_SCALE};     
 constexpr int TFT_ERROR_Y    {234 / HEIGHT_SCALE};
 constexpr int TFT_WIDTH      {320 / WIDTH_SCALE};
 constexpr int TFT_HEIGHT     {240 / HEIGHT_SCALE};
 constexpr int HEIGHT         {100 / HEIGHT_SCALE};
+constexpr int GRAPH_Y        {110 / HEIGHT_SCALE};
 
 constexpr int CAUTION        {32};     // Three watermarks (32,41,54)
 constexpr int WARNING        {41};     // per Steadman "safe" for working temperatures

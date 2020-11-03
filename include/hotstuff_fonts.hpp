@@ -37,10 +37,10 @@
 // the number of glyphs to ONLY what's absolutely necessary for
 // the display. 
 
-#include "fonts/novaSquare-24.h"
-#define HOTLARGE HotStuff24
+#include "fonts/novaSquare-30.h"
+#define HOTLARGE HotStuff30
 
-#include "fonts/courierPrimeRegular-6.h"
+#include "fonts/notoSansReg-6.h"
 #define HOTSMALL HotStuff6
 
 #define HOTFIXED HotStuff8

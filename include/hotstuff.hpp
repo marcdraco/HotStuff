@@ -155,6 +155,16 @@ class Fonts
 
     void init();
 
+    void setInk(colours_t ink)
+    {
+      m_ink = ink;
+    }
+
+    void setPaper(colours_t paper)
+    {
+      m_paper = paper;
+    }
+
     void setRotation(const uint8_t &R)
     {
       m_rotation = R;
@@ -178,16 +188,16 @@ class Fonts
     uint8_t getYstep()
     {
       const gfxfont_t* font  = m_pFont;
-      return pgm_read_byte(&font->yAdvance);
+      return pgm_read_byte(&font->newline);
     }
 
     uint8_t getXstep()
     {
       const gfxfont_t* font  = m_pFont;
-      return pgm_read_byte(&font->xAdvance);
+      return pgm_read_byte(&font->xMax);
     }
 
-    void drawGlyph(const glyph_t &glyph);
+    uint8_t drawGlyph(const glyph_t &glyph);
 
     void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
 
@@ -209,7 +219,7 @@ class Fonts
 
     void print(char* b1, const bool &switchFloats);
 
-    void print(char* b1, char* b2, const bool &switchFloats);
+    void print(const int &X, const int &Y, char* b1, char* b2, const bool &switchFloats);
 
     void setTextColor(const colours_t &ink, const colours_t &paper);  
 
@@ -258,6 +268,11 @@ class Display : public MCUFRIEND_kbv
 
 class Graph : public Display
 {
+
+  private:
+    
+    int m_graphWidth {0};
+
   public:
 
   Graph() {};
@@ -308,6 +323,21 @@ class Graph : public Display
    * 
    */
   void drawRadials();
+
+  void setGraphWidth(int W)
+  {
+    m_graphWidth = W;
+  }
+
+  int getGraphWidth()
+  {
+    return m_graphWidth;
+  }
+
+  int getGraphX()
+  {
+    return (TFT_WIDTH - m_graphWidth) / 2;
+  }
 };
 
 class Messages
@@ -528,18 +558,18 @@ class Reading
       int16_t Y {0};
     };
 
+    coordinates_t m_position;
     reading_t m_lowRead;
     reading_t m_highRead;
     reading_t m_reading;
     reading_t m_mean;
     reading_t m_cumulativeMovingAverage;
     reading_t m_correction;
-    double m_cmaCounter;
-    coordinates_t m_position;
+    double    m_cmaCounter;
     colours_t m_trace;          // graph line colour
-    uint8_t* m_pipe;
-    char* m_newString;
-    char* m_oldString;
+    uint8_t*  m_pipe;
+    char*     m_newString;
+    char*     m_oldString;
 
     public:
     
@@ -560,9 +590,9 @@ class Reading
       m_trace = 0;           // graph line colour
       
       // If we run out of memory here, we've got bigger problems!
-      m_pipe = new uint8_t[GRAPH_WIDTH];
+      m_pipe = new uint8_t[TFT_HEIGHT];
 
-      for (auto i {0}; i < GRAPH_WIDTH; ++i)
+      for (auto i {0}; i < TFT_HEIGHT; ++i)
       {        
         m_pipe[i] = (GRAPH_Y + FSD);
       }
@@ -586,11 +616,16 @@ class Reading
     delete [] m_pipe;
   }
 
-  char* getStrAddr()
+  char* getNewStrAddr()
   {
     return m_newString;
   }
 
+  char* getOldStrAddr()
+  {
+    return m_oldString;
+  }
+  
   void copyBuffer()
   {
     int i{0};
@@ -614,7 +649,7 @@ class Reading
   
   void slidePipe()
   {
-    for (auto i{1}; i < GRAPH_WIDTH; ++i)
+    for (auto i{1}; i < TFT_HEIGHT; ++i)
     {
       m_pipe[i-1] = m_pipe[i];
     }

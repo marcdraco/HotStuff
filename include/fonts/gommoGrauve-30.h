@@ -400,7 +400,7 @@ const gfxfont_t HotStuff30 PROGMEM =
   (uint8_t  *)HotStuff30Bitmaps, //< Glyph bitmaps, concatenated 
   (gfxglyph_t *)HotStuff30Glyphs, //< Glyph array
   17,// total glyphs in the string
-  59,  // newline distance (y axis)
+  60,  // newline distance (y axis)
     -1,  // minimum X - left most
     -1,  // minimum Y - bottom most (descenders can drive this negative)
     42,  // maximum X - right most
