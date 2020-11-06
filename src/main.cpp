@@ -98,7 +98,7 @@ Messages messages;
 Fonts fonts;
 Environmental environment;
 Flags flags;
-
+/*
 void SerialBar(char *b)
 {
   for (int n = 0; n < 25; n++)
@@ -114,12 +114,12 @@ void SerialBar(char *b)
   }
   Serial.println("");
 }
+*/
 
 void pause()
 {
   if (digitalRead(BUTTON_PIN) == HIGH)
   {
-    Serial.println("Push the button");
     while (digitalRead(BUTTON_PIN) == HIGH)
     {
 
@@ -130,7 +130,7 @@ void pause()
 
 void setup()
 {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   uint16_t ID{screen.readID()};
 
   if (ID == 0xD3D3)
@@ -193,18 +193,6 @@ void loop()
 
   temperature.showReadings();  
   humidity.showReadings();  
-
-  {
-    char b[40];
-    sprintf(b, "T: %d", (int) temperature.getCMA());
-    Serial.println(b);
-  }
-
-  {
-    char b[40];
-    sprintf(b, "H: %d", (int) humidity.getCMA());
-    Serial.println(b);
-  }
 
   if (isrTimings.timeInSeconds == 0) // this ticks every minute
   {
@@ -430,21 +418,6 @@ void Reading::showReadings(void)
     fonts.setFont(&HOTLARGE);
     screen.setInk(defaultInk);
 
-    SerialBar((char *)" START ");
-    {
-    char b1[20] = "18.1";
-    char b2[20] = "18.2";
-
-    fonts.print(100, 100, b1, b2, 0);
-    }
-    {
-    char b1[20] = "28.1";
-    char b2[20] = "12.1";
-
-    fonts.print(200, 200, b1, b2, 0);
-    }
-    STOP
-
     static float s_bogus = 1.5;
     s_bogus += 0.3;
     temperature.setReading(s_bogus);
@@ -496,10 +469,8 @@ return;
 
     fonts.setFont(&HOTSMALL);
 
-    environment.setColour(temperature.getHighRead(), tLimits);
-    fonts.setFont(&HOTSMALL);
-    prepReading((temperature.getReading() > temperature.getHighRead()) ? temperature.getReading() : temperature.getHighRead(),
-                (flags.isSet(USEMETRIC)) ? METRIC : 0);
+    environment";
+      char b2[20] = "12.1 (flags.isSet(USEMETRIC)) ? METRIC : 0);
 
     environment.setColour(humidity.getHighRead(), hLimits);
 
@@ -556,12 +527,6 @@ void Reading::prepReading(const reading_t &reading, char* buffer, const semaphor
       sprintf(buffer, "%d%c", read.intPart, '%');
     }
   }
-
-   {
-      char b[40];
-      sprintf(b, "ENTER: '%s'", buffer);
-      Serial.println(b);
-    }
 }
 
 void Environmental::setColour(const reading_t &value, const limits_t &limits)
@@ -990,134 +955,68 @@ void Fonts::print(char* b, const bool &switchFloats)
 
 void Fonts::print(const int &X, const int &Y, char* oldBuff, char* newBuff, const bool &switchFloats)
 {
-    
-    {
-      char b[80];
-      sprintf(b, "OLD: %s and NEW: %s", oldBuff, newBuff);
-      Serial.println(b);
-    }  
-    
-    
+    screen.fillRect(0,0,100,50,RED);    
     screen.setCursor(X,Y);
-    const int oldGlyph = 0;
-    const int newGlyph = 1;
+    int cursorX = X;
 
-    dr_bleaching_t knockout[2]{0, 0, X, 0, 0, false, 0, 0, X, 0, 0, false};
+    int size = FONT_BUFF_HEIGHT * FONT_BUFF_WIDTH;
+
+    char* buffer = new char[size] {};
+    for (int i{0}; i < size; i++)
+    {
+      buffer[i] = 0;
+    }
+
+    if (! buffer)
+    {
+      screen.fillRect(0,0,100,50,RED);    
+    }
+    else
+    { 
+      screen.fillRect(0,0,100,50,GREEN);   
+      showBuffer(50, 100, buffer); 
+      delete [] buffer;
+    }
+    
     int i{0};
-
     do 
     {
-      glyphdata_t glyphs[2];
-      drawGlyphPrep(findGlyphCode(oldBuff[i]), &glyphs[oldGlyph]);
-      drawGlyphPrep(findGlyphCode(newBuff[i]), &glyphs[newGlyph]);
-
-      // While there's a character to overwrite, record it's full occulsion width
-      // This is tallied in knockout.oX and knockout.nX respectively
-
-      if ((newBuff[i] == oldBuff[i]) &&  knockout[oldGlyph].cursorX ==  knockout[newGlyph].cursorX)
-      {
-        knockout[oldGlyph].cursorX += glyphs[oldGlyph].xAdvance;
-        knockout[newGlyph].cursorX += glyphs[oldGlyph].xAdvance;
-
-        screen.setCursor(knockout[oldGlyph].cursorX, Y + 200);
-        fonts.setInk(YELLOW);
-        drawGlyph(oldBuff[i]);
-        ++i;
-        continue;
-      }
-      else 
-      {
-        {
-          char b[80];
-          sprintf(b, "Unprinting: %c from %d, %d", oldBuff[i], screen.getCursorX(), screen.getCursorY());
-          Serial.println(b);
-        }  
-
-        if (! knockout[oldGlyph].done)
-        {
-          knockout[oldGlyph].oXmin = knockout[oldGlyph].Xmin;
-          knockout[oldGlyph].oXmax = knockout[oldGlyph].Xmax;
-
-          knockout[oldGlyph].Xmin = knockout[oldGlyph].cursorX;
-          knockout[oldGlyph].Xmax = knockout[oldGlyph].cursorX + glyphs[oldGlyph].xAdvance;
-          {
-            char b[80];
-            sprintf(b, "Old Knockout: %c  ->  %d - %d (oXmin: %d, oXmax: %d)", oldBuff[i], knockout[oldGlyph].cursorX, knockout[oldGlyph].Xmax, knockout[oldGlyph].oXmin, knockout[oldGlyph].oXmax);
-            Serial.println(b);
-          }
-        }
-
-        {
-          char b[80];
-          sprintf(b, "Printing: %c from %d, %d", oldBuff[i], screen.getCursorX(), screen.getCursorY());
-        }  
-
-        if (! knockout[newGlyph].done)
-        {
-          knockout[newGlyph].oXmin = knockout[newGlyph].Xmin;
-          knockout[newGlyph].oXmax = knockout[newGlyph].Xmax;
-
-          knockout[newGlyph].Xmin = knockout[newGlyph].cursorX;
-          knockout[newGlyph].Xmax = knockout[newGlyph].cursorX + glyphs[newGlyph].xAdvance;
-          {
-            char b[80];
-            sprintf(b, "New Knockout: %c  ->  %d - %d (oXmin: %d, oXmax: %d)", newBuff[i], knockout[newGlyph].cursorX, knockout[newGlyph].Xmax, knockout[newGlyph].oXmin, knockout[newGlyph].oXmax);
-            Serial.println(b);
-          }
-        }
-
-        screen.setCursor(knockout[oldGlyph].cursorX, Y - 50);
-
-        if (! knockout[oldGlyph].done)
-        {
-          
-          screen.setCursor(knockout[oldGlyph].cursorX, Y - 50);
-          knockout[oldGlyph].cursorX += glyphs[oldGlyph].xAdvance;
-
-          if (knockout[newGlyph].oXmax > knockout[oldGlyph].oXmax)
-          {
-            fonts.setInk(YELLOW);
-            drawGlyph(oldBuff[i]);
-          }
-          
-          if (knockout[newGlyph].oXmax > knockout[oldGlyph].oXmax)
-          {
-            fonts.setInk(RED);
-            drawGlyph(oldBuff[i]);
-          } 
-
-          if (knockout[newGlyph].oXmin > knockout[oldGlyph].cursorX)
-          {
-            fonts.setInk(GREEN);
-            drawGlyph(oldBuff[i]);       
-          } 
-        }
-
-        screen.setCursor(knockout[newGlyph].cursorX, Y);
-        fonts.setInk(defaultInk);
-
-        if (! knockout[newGlyph].done)
-        {
-          knockout[newGlyph].cursorX += drawGlyph(newBuff[i]);
-        }
-      }
-
+      glyphdata_t glyph;
+      drawGlyphPrep(findGlyphCode(oldBuff[i]), &glyph);
+      fonts.setInk(YELLOW);
+      cursorX += drawGlyph(oldBuff[i]);
+      screen.setCursor(cursorX, Y);
       ++i;
+    } 
+    while (oldBuff[i]);
+}
 
-      if (! oldBuff[i])
-      {
-        knockout[oldGlyph].done = true;
-      }
-      
-      if (! newBuff[i])
-      {
-        knockout[newGlyph].done = true;
-      }
-      Serial.println();
-   } 
-    while (oldBuff[i] || newBuff[i]);
+void Fonts::bufferPixel(const int &X, const int &Y, const char* buffer)
+{
+  char byteAddress = (Y * FONT_BUFF_HEIGHT) + X;
+  int bit =  (int) 1 << (7 - (X % 8));
+}
 
-    SerialBar((char *)" END ");
+void Fonts::showBuffer(const int &X, const int &Y, const char* buffer)
+{
+  for (int y{0}; y < FONT_BUFF_HEIGHT; ++y)
+  {
+    for (int x{0}; x < FONT_BUFF_WIDTH; ++x)
+    {
+      int16_t byteAddress = (y * FONT_BUFF_HEIGHT) + x;
+      int8_t pixelAddress = byteAddress % 8;
+      int8_t bit = 1 << pixelAddress;
+
+      if (buffer[byteAddress] & bit)
+      {
+        screen.drawPixel(x + X, y + Y, BLUE);
+      }
+      else
+      {
+        screen.drawPixel(x + X, y + Y, RED);
+      }
+    }
+  }
 }
 
 void Fonts::print(const String &string)
@@ -1166,42 +1065,6 @@ uint8_t Fonts::drawGlyph(const glyph_t &glyph)
   screen.setCursor(m_X, m_Y);
   screen.endWrite();
   return thisGlyph.xAdvance;
-}
-
-void Fonts::bleachGlyph(const glyph_t &glyph)
-{  
-  screen.startWrite();
-  glyphdata_t thisGlyph;
-  int bleachBits {0};    // X position of pixel we're printing
-  int dr_bleaching {0};  // demarks the right edge of the glyph to the left
-
-  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
-  {
-      uint16_t X = m_X + thisGlyph.xo;
-      uint16_t Y = m_Y + thisGlyph.yo + i;
-
-      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
-      {
-          if (! (thisGlyph.bit & 0x07)) 
-          {
-            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
-          }
-          
-          if (thisGlyph.bits & 0x80 && bleachBits > dr_bleaching) 
-          {
-            screen.writePixel(X, Y, YELLOW);
-          }
-          else
-          {
-            //screen.writePixel(X, Y, BLUE);
-          }
-          ++bleachBits;
-          ++X;
-          ++thisGlyph.bit;
-          thisGlyph.bits = thisGlyph.bits << 1;
-      }
-  }
-  screen.endWrite();
 }
 
 void Fonts::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)

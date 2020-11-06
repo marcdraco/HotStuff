@@ -186,7 +186,8 @@ class Fonts
     }
 
     uint8_t getYstep()
-    {
+ 
+   {
       const gfxfont_t* font  = m_pFont;
       return pgm_read_byte(&font->newline);
     }
@@ -224,6 +225,10 @@ class Fonts
     void setTextColor(const colours_t &ink, const colours_t &paper);  
 
     void printPixel(coordinate_t X, coordinate_t Y, colours_t ink);
+
+    void bufferPixel(const int &X, const int &Y, const char* buffer);
+
+    void showBuffer(const int &X, const int &Y, const char* buffer);
 };
 
 class Display : public MCUFRIEND_kbv
@@ -271,7 +276,7 @@ class Graph : public Display
 
   private:
     
-    int m_graphWidth {0};
+    int m_graphWidth {};
 
   public:
 
@@ -439,7 +444,7 @@ class Alarm
 
   private:
 
-  uint16_t m_timer;
+  uint16_t m_timer {};
 
   public:
 
@@ -554,22 +559,22 @@ class Reading
     private:
     using coordinates_t = struct 
     {
-      int16_t X {0}; 
-      int16_t Y {0};
+      int16_t X {}; 
+      int16_t Y {};
     };
 
-    coordinates_t m_position;
-    reading_t m_lowRead;
-    reading_t m_highRead;
-    reading_t m_reading;
-    reading_t m_mean;
-    reading_t m_cumulativeMovingAverage;
-    reading_t m_correction;
-    double    m_cmaCounter;
-    colours_t m_trace;          // graph line colour
-    uint8_t*  m_pipe;
-    char*     m_newString;
-    char*     m_oldString;
+    coordinates_t m_position {};
+    reading_t m_lowRead {};
+    reading_t m_highRead {};
+    reading_t m_reading {};
+    reading_t m_mean {};
+    reading_t m_cumulativeMovingAverage {};
+    reading_t m_correction {};
+    reading_t m_cmaCounter {};
+    colours_t m_trace {};          // graph line colour
+    uint8_t*  m_pipe {};
+    char*     m_newString {};
+    char*     m_oldString {};
 
     public:
     
@@ -590,9 +595,9 @@ class Reading
       m_trace = 0;           // graph line colour
       
       // If we run out of memory here, we've got bigger problems!
-      m_pipe = new uint8_t[TFT_HEIGHT];
+      m_pipe = new uint8_t[GRAPH_WIDTH];
 
-      for (auto i {0}; i < TFT_HEIGHT; ++i)
+      for (auto i {0}; i < GRAPH_WIDTH; ++i)
       {        
         m_pipe[i] = (GRAPH_Y + FSD);
       }
@@ -649,7 +654,7 @@ class Reading
   
   void slidePipe()
   {
-    for (auto i{1}; i < TFT_HEIGHT; ++i)
+    for (auto i{1}; i < GRAPH_WIDTH; ++i)
     {
       m_pipe[i-1] = m_pipe[i];
     }
