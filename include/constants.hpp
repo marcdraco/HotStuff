@@ -133,8 +133,8 @@ constexpr int GRAPH_WIDTH    {180};
 //constexpr int FONT_BUFF_WIDTH    {100}; // special "offscreen" buffer for deleting and pre-rendering fonts
 //constexpr int FONT_BUFF_HEIGHT   {50};
 
-constexpr int FONT_BUFF_WIDTH    {10}; // special "offscreen" buffer for deleting and pre-rendering fonts
-constexpr int FONT_BUFF_HEIGHT   {20};
+constexpr int FONT_BUFF_WIDTH    {60}; // special "offscreen" buffer for deleting and pre-rendering fonts
+constexpr int FONT_BUFF_HEIGHT   {50};
 
 
 constexpr int CAUTION        {32};     // Three watermarks (32,41,54)

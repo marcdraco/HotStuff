@@ -130,7 +130,7 @@ void pause()
 
 void setup()
 {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   uint16_t ID{screen.readID()};
 
   if (ID == 0xD3D3)
@@ -955,29 +955,24 @@ void Fonts::print(char* b, const bool &switchFloats)
 
 void Fonts::print(const int &X, const int &Y, char* oldBuff, char* newBuff, const bool &switchFloats)
 {
-    screen.fillRect(0,0,100,50,RED);    
-    screen.setCursor(X,Y);
     int cursorX = X;
-
-    int size = FONT_BUFF_HEIGHT * FONT_BUFF_WIDTH;
+    int size = (FONT_BUFF_HEIGHT * FONT_BUFF_WIDTH)/8;
 
     char* buffer = new char[size] {};
-    for (int i{0}; i < size; i++)
-    {
-      buffer[i] = 0;
-    }
 
     if (! buffer)
     {
-      screen.fillRect(0,0,100,50,RED);    
+      screen.fillRect(0, 0, FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT, RED);    
     }
     else
     { 
-      screen.fillRect(0,0,100,50,GREEN);   
-      showBuffer(50, 100, buffer); 
+      screen.fillRect(0, 0, FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT, GREEN);
+
+      showBuffer(100, 0, buffer); 
       delete [] buffer;
     }
-    
+    return;
+
     int i{0};
     do 
     {
@@ -991,10 +986,14 @@ void Fonts::print(const int &X, const int &Y, char* oldBuff, char* newBuff, cons
     while (oldBuff[i]);
 }
 
-void Fonts::bufferPixel(const int &X, const int &Y, const char* buffer)
+void Fonts::bufferPixel(const int &X, const int &Y, char* buffer)
 {
-  char byteAddress = (Y * FONT_BUFF_HEIGHT) + X;
-  int bit =  (int) 1 << (7 - (X % 8));
+  int16_t byteAddress = ((Y * FONT_BUFF_HEIGHT) + X) >> 3;  // fast divide by 8
+  int16_t bit = (int) 1 << (7 - (X % 8));
+  int8_t pixelAddress = byteAddress % 8;
+
+  //buffer[byteAddress] = buffer[byteAddress] | bit;
+  //buffer[20] = 255;
 }
 
 void Fonts::showBuffer(const int &X, const int &Y, const char* buffer)
@@ -1003,17 +1002,17 @@ void Fonts::showBuffer(const int &X, const int &Y, const char* buffer)
   {
     for (int x{0}; x < FONT_BUFF_WIDTH; ++x)
     {
-      int16_t byteAddress = (y * FONT_BUFF_HEIGHT) + x;
-      int8_t pixelAddress = byteAddress % 8;
+      int16_t byteAddress = ((y * FONT_BUFF_HEIGHT) + x) >> 3;  // fast divide by 8
+      int8_t pixelAddress = x % 8;
       int8_t bit = 1 << pixelAddress;
 
       if (buffer[byteAddress] & bit)
       {
-        screen.drawPixel(x + X, y + Y, BLUE);
+        screen.drawPixel(x + X, y + Y, BLACK);
       }
       else
       {
-        screen.drawPixel(x + X, y + Y, RED);
+        screen.drawPixel(x + X, y + Y, WHITE);
       }
     }
   }

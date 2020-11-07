@@ -226,7 +226,7 @@ class Fonts
 
     void printPixel(coordinate_t X, coordinate_t Y, colours_t ink);
 
-    void bufferPixel(const int &X, const int &Y, const char* buffer);
+    void bufferPixel(const int &X, const int &Y, char* buffer);
 
     void showBuffer(const int &X, const int &Y, const char* buffer);
 };
