@@ -130,12 +130,12 @@ class Fonts
 {
   private:
     
-    uint16_t m_X {0};
-    uint16_t m_Y {0};
+    uint16_t  m_X {0};
+    uint16_t  m_Y {0};
     colours_t m_ink;
     colours_t m_paper;
-    uint8_t m_rotation;
-
+    uint8_t   m_rotation;
+    char*     m_pixelBuffer {nullptr};
     const gfxfont_t* m_pFont {nullptr};
     
   public:
@@ -201,6 +201,8 @@ class Fonts
     uint8_t drawGlyph(const glyph_t &glyph);
 
     void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
+    
+    uint8_t bufferImgGlyph(const glyph_t &glyph);
 
     glyph_t findGlyphCode(const glyph_t &glyph);
     
@@ -220,15 +222,15 @@ class Fonts
 
     void print(char* b1, const bool &switchFloats);
 
-    void print(const int &X, const int &Y, char* b1, char* b2, const bool &switchFloats);
+    void print(const int &X, const int &Y, char* buffer);
 
     void setTextColor(const colours_t &ink, const colours_t &paper);  
 
     void printPixel(coordinate_t X, coordinate_t Y, colours_t ink);
 
-    void bufferPixel(const int &X, const int &Y, char* buffer);
+    void bufferPixel(const int &X, const int &Y);
 
-    void showBuffer(const int &X, const int &Y, const char* buffer);
+    void showBuffer(const int &X, const int &Y);
 };
 
 class Display : public MCUFRIEND_kbv
@@ -573,12 +575,9 @@ class Reading
     reading_t m_cmaCounter {};
     colours_t m_trace {};          // graph line colour
     uint8_t*  m_pipe {};
-    char*     m_newString {};
-    char*     m_oldString {};
-
     public:
     
-    Reading(const int &stringSize)
+    Reading()
     {
       // cumulative moving averages are a form of mean that doesn't need to track every single value
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
@@ -601,17 +600,6 @@ class Reading
       {        
         m_pipe[i] = (GRAPH_Y + FSD);
       }
-      m_oldString = new char[stringSize + 1];   // short string for previous reading 
-      m_newString = new char[stringSize + 1];   // short string for current reading
-
-      int i {0};
-      for (; i < stringSize-1; ++i)
-      {
-        m_oldString[i] = ' ';
-        m_newString[i] = ' ';
-      }
-      m_oldString[i] = 0;
-      m_newString[i] = 0;
   }
   
   ~Reading() 
@@ -619,27 +607,6 @@ class Reading
     // this should ever be called, but it's good
     // practise to do this even if it's not.
     delete [] m_pipe;
-  }
-
-  char* getNewStrAddr()
-  {
-    return m_newString;
-  }
-
-  char* getOldStrAddr()
-  {
-    return m_oldString;
-  }
-  
-  void copyBuffer()
-  {
-    int i{0};
-    do 
-    {
-      m_oldString[i] = m_newString[i];
-      ++i;
-    } 
-    while (m_newString[i]);
   }
 
   void setPipe(const uint16_t &i, const uint8_t &value)

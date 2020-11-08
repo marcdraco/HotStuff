@@ -92,8 +92,8 @@ Display screen;
 UniversalDHT dht22(DHT22_DATA);
 Graph chart;
 Alarm alarm;
-Reading humidity(4);
-Reading temperature(7);
+Reading humidity;
+Reading temperature;
 Messages messages;
 Fonts fonts;
 Environmental environment;
@@ -131,7 +131,7 @@ void pause()
 void setup()
 {
   Serial.begin(9600);
-  uint16_t ID{screen.readID()};
+ uint16_t ID{screen.readID()};
 
   if (ID == 0xD3D3)
   {
@@ -413,14 +413,11 @@ void Reading::updateReading(const reading_t &reading)
                                m_cmaCounter);
 }
 
-void Reading::showReadings(void)
+ void Reading::showReadings(void)
 {
     fonts.setFont(&HOTLARGE);
     screen.setInk(defaultInk);
-
-    static float s_bogus = 1.5;
-    s_bogus += 0.3;
-    temperature.setReading(s_bogus);
+    char buffer[10];
 
     limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
     limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
@@ -431,22 +428,14 @@ void Reading::showReadings(void)
     fonts.setFont(&HOTLARGE);
     
     prepReading(temperature.getReading(), 
-                temperature.getNewStrAddr(),
-                (flags.isSet(USEMETRIC) ? METRIC : 0) | 
-                (flags.isSet(USEMETRIC) ? FLOATS : 0) | 
-                TEMPERATURE);
-
-    fonts.print(0, fonts.getYstep(),
-                temperature.getOldStrAddr(),
-                temperature.getNewStrAddr(),
-                (flags.isSet(USEMETRIC) ? FLOATS : 0));
+                buffer,
+                (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
+    fonts.print(0, 0, buffer);
     
-    temperature.copyBuffer();
+    prepReading(humidity.getReading(), buffer, 0);
+    prepReading(65, buffer, HUMIDITY);
 
-    screen.setCursor(180, fonts.getYstep());
-    prepReading(humidity.getReading(), humidity.getNewStrAddr(), METRIC);
-    fonts.print(humidity.getNewStrAddr(), 0);
-    humidity.copyBuffer();
+    fonts.print(180, 0, buffer);
 
 return;
 
@@ -499,7 +488,7 @@ void Reading::prepReading(const reading_t &reading, char* buffer, const semaphor
   };
   
   reading_t r = reading;
-  if (! (flags & METRIC))
+  if ( flags & IMPERIAL)
   {
     r = toFahrenheit(reading);
   }
@@ -512,20 +501,19 @@ void Reading::prepReading(const reading_t &reading, char* buffer, const semaphor
   read.intPart   = static_cast<int>(integer);
   read.floatPart = static_cast<int>(abs(fract * 10));
 
-  if (flags & FLOATS) 
+  if (flags & METRIC) 
   {
-    sprintf(buffer, "%3d.%1d", read.intPart, read.floatPart);
+    sprintf(buffer, "%d.%1d", read.intPart, read.floatPart);
   }
-  else
+
+  if (flags & IMPERIAL)
   {
-    if (flags & TEMPERATURE)
-    {
-      sprintf(buffer, "%d", read.intPart);
-    }
-    else
-    {
-      sprintf(buffer, "%d%c", read.intPart, '%');
-    }
+    sprintf(buffer, "%d", read.intPart);
+  }
+  
+  if (flags & HUMIDITY)
+  {
+    sprintf(buffer, "%d%c", read.intPart, '%');
   }
 }
 
@@ -953,66 +941,65 @@ void Fonts::print(char* b, const bool &switchFloats)
   setFont((gfxfont_t*) &HOTLARGE);
 }
 
-void Fonts::print(const int &X, const int &Y, char* oldBuff, char* newBuff, const bool &switchFloats)
+void Fonts::print(const int &X, const int &Y, char* buffer)
 {
-    int cursorX = X;
-    int size = (FONT_BUFF_HEIGHT * FONT_BUFF_WIDTH)/8;
+    int size = (FONT_BUFF_HEIGHT * FONT_BUFF_WIDTH) >> 3;
+    m_pixelBuffer = new char[size] {};
 
-    char* buffer = new char[size] {};
-
-    if (! buffer)
+    if (! m_pixelBuffer)
     {
-      screen.fillRect(0, 0, FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT, RED);    
+      screen.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, RED);    
     }
     else
     { 
-      screen.fillRect(0, 0, FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT, GREEN);
+      screen.setCursor(X, Y);
+      m_X = 0;
+      m_Y = getYstep();
 
-      showBuffer(100, 0, buffer); 
-      delete [] buffer;
+      int i{0};
+
+      while (buffer[i])
+      {
+        glyphdata_t glyph;
+        drawGlyphPrep(findGlyphCode(buffer[i]), &glyph);
+        bufferImgGlyph(buffer[i]);
+        //screen.setCursor(bufferImgGlyph(buffer[i]), Y);
+        ++i;
+      } 
+      showBuffer(X, Y); 
+      delete [] m_pixelBuffer;
     }
     return;
-
-    int i{0};
-    do 
-    {
-      glyphdata_t glyph;
-      drawGlyphPrep(findGlyphCode(oldBuff[i]), &glyph);
-      fonts.setInk(YELLOW);
-      cursorX += drawGlyph(oldBuff[i]);
-      screen.setCursor(cursorX, Y);
-      ++i;
-    } 
-    while (oldBuff[i]);
 }
 
-void Fonts::bufferPixel(const int &X, const int &Y, char* buffer)
+void Fonts::bufferPixel(const int &X, const int &Y)
 {
-  int16_t byteAddress = ((Y * FONT_BUFF_HEIGHT) + X) >> 3;  // fast divide by 8
-  int16_t bit = (int) 1 << (7 - (X % 8));
-  int8_t pixelAddress = byteAddress % 8;
-
-  //buffer[byteAddress] = buffer[byteAddress] | bit;
-  //buffer[20] = 255;
+  if (X > FONT_BUFF_WIDTH || Y > FONT_BUFF_HEIGHT) 
+  {
+    return;
+  }
+  int16_t byteAddress = ((Y * FONT_BUFF_WIDTH) + X) >> 3;  // fast divide by 8
+  int16_t bit = (int) 128 >> (X % 8);
+  m_pixelBuffer[byteAddress] = m_pixelBuffer[byteAddress] | bit;
 }
 
-void Fonts::showBuffer(const int &X, const int &Y, const char* buffer)
+void Fonts::showBuffer(const int &X, const int &Y)
 {
   for (int y{0}; y < FONT_BUFF_HEIGHT; ++y)
   {
     for (int x{0}; x < FONT_BUFF_WIDTH; ++x)
     {
-      int16_t byteAddress = ((y * FONT_BUFF_HEIGHT) + x) >> 3;  // fast divide by 8
-      int8_t pixelAddress = x % 8;
-      int8_t bit = 1 << pixelAddress;
+      int16_t byteAddress  = ((y * FONT_BUFF_WIDTH) + x) >> 3;  // fast divide by 8
+      uint8_t pixelAddress = x % 8;
+      uint8_t bit          = 128 >> pixelAddress;
 
-      if (buffer[byteAddress] & bit)
+      if (m_pixelBuffer[byteAddress] & bit)
       {
-        screen.drawPixel(x + X, y + Y, BLACK);
+        screen.drawPixel(x + X, y + Y, CYAN);
       }
       else
       {
-        screen.drawPixel(x + X, y + Y, WHITE);
+        screen.drawPixel(x + X, y + Y, defaultPaper);
       }
     }
   }
@@ -1054,6 +1041,41 @@ uint8_t Fonts::drawGlyph(const glyph_t &glyph)
           else
           {
             printPixel(X, Y, m_paper);
+          }
+          ++X;
+          ++thisGlyph.bit;
+          thisGlyph.bits = thisGlyph.bits << 1;
+      }
+  }
+  m_X = m_X + thisGlyph.xAdvance;
+  screen.setCursor(m_X, m_Y);
+  screen.endWrite();
+  return thisGlyph.xAdvance;
+}
+
+uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
+{
+ 
+
+  screen.startWrite();
+  glyphdata_t thisGlyph;
+  drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+
+  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+  {
+      uint16_t X = m_X + thisGlyph.xo;
+      uint16_t Y = m_Y + thisGlyph.yo + i;
+
+      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
+      {
+          if (! (thisGlyph.bit & 0x07)) 
+          {
+            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+          }
+          
+          if (thisGlyph.bits & 0x80) 
+          {
+            bufferPixel(X, Y);
           }
           ++X;
           ++thisGlyph.bit;
