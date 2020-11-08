@@ -128,10 +128,10 @@ constexpr int TFT_WIDTH      {320 / WIDTH_SCALE};
 constexpr int TFT_HEIGHT     {240 / HEIGHT_SCALE};
 constexpr int HEIGHT         {100 / HEIGHT_SCALE};
 constexpr int GRAPH_Y        {110 / HEIGHT_SCALE};
-constexpr int GRAPH_WIDTH    {10};
+constexpr int GRAPH_WIDTH    {190};
 
-constexpr int FONT_BUFF_WIDTH    {136}; // special "offscreen" buffer for deleting and pre-rendering fonts
-constexpr int FONT_BUFF_HEIGHT   {50};
+constexpr int FONT_BUFF_WIDTH    {144}; // special "offscreen" buffer for deleting and pre-rendering fonts
+constexpr int FONT_BUFF_HEIGHT   {48};
 
 constexpr int CAUTION        {32};     // Three watermarks (32,41,54)
 constexpr int WARNING        {41};     // per Steadman "safe" for working temperatures

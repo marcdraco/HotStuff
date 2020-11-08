@@ -130,7 +130,6 @@ void pause()
 
 void setup()
 {
-  Serial.begin(9600);
  uint16_t ID{screen.readID()};
 
   if (ID == 0xD3D3)
@@ -427,14 +426,10 @@ void Reading::updateReading(const reading_t &reading)
 
     fonts.setFont(&HOTLARGE);
     
-    prepReading(temperature.getReading(), 
-                buffer,
-                (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
+    prepReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
     fonts.print(0, 0, buffer);
     
-    prepReading(humidity.getReading(), buffer, 0);
-    prepReading(65, buffer, HUMIDITY);
-
+    prepReading(humidity.getReading(), buffer, HUMIDITY);
     fonts.print(180, 0, buffer);
 
 return;
