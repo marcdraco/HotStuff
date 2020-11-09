@@ -2,45 +2,23 @@
 #ifndef __FIXEDFONTPINBALLTTF8
 #define __FIXEDFONTPINBALLTTF8
 const uint8_t HotStuff8Bitmaps[] PROGMEM = {
-  0x00, 0x20, 0x00, 0x00, 0x01, 0x83, 0x00, 0xA1, 0x06, 0x08, 0x20, 0x03,
-  0x00, 0xC1, 0x83, 0x06, 0x0C, 0x18, 0x08, 0x40, 0x00, 0x02, 0x00, 0x63,
-  0x18, 0x40, 0x20, 0x42, 0x00, 0x00, 0x00, 0xE0, 0x41, 0x0C, 0x20, 0x00,
-  0x80, 0x00, 0x20, 0x07, 0x81, 0x83, 0x06, 0x08, 0x20, 0x80, 0x00, 0x03,
-  0x80, 0x80, 0x81, 0x06, 0x08, 0x20, 0x00, 0x80, 0x00, 0x07, 0x00, 0xA1,
-  0x1E, 0x08, 0x42, 0x0C, 0x02, 0x00, 0x61, 0x0C, 0x61, 0x80, 0x20, 0x00,
-  0x00, 0x00, 0x01, 0x80, 0xA1, 0x06, 0x08, 0x20, 0x00, 0x00, 0x00, 0x05,
-  0x00, 0x81, 0x06, 0x08, 0xE8, 0x20, 0x80, 0x00, 0x20, 0x83, 0x0C, 0x33,
-  0x04, 0x08, 0x80 };
+   };
 
 // Glyph, Offset to bitmap, Width, Height, xAdvance, xOffset, yOffset
 
 const gfxglyph_t HotStuff8Glyphs[] PROGMEM = {
-  {32,     0,   1,   1,   9,    0,    0 },   // 0x00 ' ' 
-  {48,     1,   7,  10,   9,    0,   -9 },   // 0x01 '0' 
-  {49,    10,   7,  10,   9,    0,   -9 },   // 0x02 '1' 
-  {50,    19,   6,  10,   9,    1,   -9 },   // 0x03 '2' 
-  {51,    27,   6,  10,   9,    1,   -9 },   // 0x04 '3' 
-  {52,    35,   7,  10,   9,    0,   -9 },   // 0x05 '4' 
-  {53,    44,   7,  10,   9,    0,   -9 },   // 0x06 '5' 
-  {54,    53,   7,  10,   9,    0,   -9 },   // 0x07 '6' 
-  {55,    62,   6,  10,   9,    1,   -9 },   // 0x08 '7' 
-  {56,    70,   7,  10,   9,    0,   -9 },   // 0x09 '8' 
-  {57,    79,   7,  10,   9,    0,   -9 },   // 0x0A '9' 
-  {45,    88,   5,   1,   9,    1,   -4 },   // 0x0B '-' 
-  {37,    89,   7,  10,   9,    0,   -9 },   // 0x0C '%' 
-  {46,    98,   1,   1,   9,    3,   -1 }   // 0x0D '.' 
 };
 
 const gfxfont_t HotStuff8 PROGMEM = 
 {
   (uint8_t  *)HotStuff8Bitmaps, //< Glyph bitmaps, concatenated 
   (gfxglyph_t *)HotStuff8Glyphs, //< Glyph array
-  14,// total glyphs in the string
-  10,  // newline distance (y axis)
+  0,// total glyphs in the string
+   0,  // newline distance (y axis)
      0,  // minimum X - left most
      0,  // minimum Y - bottom most (descenders can drive this negative)
-     7,  // maximum X - right most
-    10}; // maximum Y - top most
-// Approx. 211 bytes -  but your mileage may vary.
+     0,  // maximum X - right most
+     0}; // maximum Y - top most
+// Approx. 14 bytes -  but your mileage may vary.
 
 #endif

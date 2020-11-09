@@ -1,7 +1,7 @@
 /*
   +++++----------------------------------------------------------------------+++++
 
-  Copyright 2020, Marc Draco with Garrington "Garrie" Steele & Daniel Melvin
+  Copyright 2020, Marc Draco with Garrie "Garrington" Steele & Daniel Melvin
   Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
 
@@ -426,10 +426,10 @@ void Reading::updateReading(const reading_t &reading)
 
     fonts.setFont(&HOTLARGE);
     
-    prepReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
+    bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
     fonts.print(0, 0, buffer);
     
-    prepReading(humidity.getReading(), buffer, HUMIDITY);
+    bufferReading(humidity.getReading(), buffer, HUMIDITY);
     fonts.print(180, 0, buffer);
 
 return;
@@ -448,7 +448,7 @@ return;
 
 
     fonts.setFont(&HOTSMALL);
-    prepReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
+    bufferReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
                 (flags.isSet(USEMETRIC)) ? METRIC : 0);
 
     fonts.setFont(&HOTSMALL);
@@ -461,20 +461,20 @@ return;
     fonts.moveTo(screen.width / 2, fonts.getY());
     fonts.setFont(&HOTSMALL);
 
-    prepReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
+    bufferReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
 
     fonts.setFont(&HOTSMALL);
 
     environment.setColour(humidity.getHighRead(), hLimits);
     fonts.setFont(&HOTSMALL);
-    prepReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
+    bufferReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
 
     humidity.setMinMax();
     temperature.setMinMax();
     */
 }
 
-void Reading::prepReading(const reading_t &reading, char* buffer, const semaphore_t &flags)
+void Reading::bufferReading(const reading_t &reading, char* buffer, const semaphore_t &flags)
 {
   using mixed_t = struct 
   {
@@ -907,7 +907,7 @@ void Fonts::print(const __FlashStringHelper *flashString)
   PGM_P p = reinterpret_cast<PGM_P>(flashString);
   while (glyph_t glyph = pgm_read_byte(p++))
   {
-    drawGlyph(glyph);
+    drawImgGlyph(glyph);
   }
 }
 
@@ -916,7 +916,7 @@ void Fonts::print(char* b)
   int i{0};
   while (b[i])
   {
-    drawGlyph(b[i]);
+    drawImgGlyph(b[i]);
     ++i;
   }
 }
@@ -930,7 +930,7 @@ void Fonts::print(char* b, const bool &switchFloats)
     {
       setFont(&HOTSMALL);
     }
-    drawGlyph(b[i]);
+    drawImgGlyph(b[i]);
     ++i;
   }
   setFont((gfxfont_t*) &HOTLARGE);
@@ -956,7 +956,7 @@ void Fonts::print(const int &X, const int &Y, char* buffer)
       while (buffer[i])
       {
         glyphdata_t glyph;
-        drawGlyphPrep(findGlyphCode(buffer[i]), &glyph);
+        prepImgGlyph(findGlyphCode(buffer[i]), &glyph);
         bufferImgGlyph(buffer[i]);
         //screen.setCursor(bufferImgGlyph(buffer[i]), Y);
         ++i;
@@ -969,13 +969,13 @@ void Fonts::print(const int &X, const int &Y, char* buffer)
 
 void Fonts::bufferPixel(const int &X, const int &Y)
 {
-  if (X > FONT_BUFF_WIDTH || Y > FONT_BUFF_HEIGHT) 
+  if (X >= FONT_BUFF_WIDTH || Y >= FONT_BUFF_HEIGHT) 
   {
     return;
   }
   int16_t byteAddress = ((Y * FONT_BUFF_WIDTH) + X) >> 3;  // fast divide by 8
-  int16_t bit = (int) 128 >> (X % 8);
-  m_pixelBuffer[byteAddress] = m_pixelBuffer[byteAddress] | bit;
+  int16_t bit = 128 >> (X % 8);
+  m_pixelBuffer[byteAddress] |= bit;
 }
 
 void Fonts::showBuffer(const int &X, const int &Y)
@@ -1004,18 +1004,18 @@ void Fonts::print(const String &string)
 {
   for (uint8_t i{0}; i < string.length(); i++)
   {
-      drawGlyph(string.charAt(i));
+      drawImgGlyph(string.charAt(i));
   }
 }
 
-uint8_t Fonts::drawGlyph(const glyph_t &glyph)
+uint8_t Fonts::drawImgGlyph(const glyph_t &glyph)
 {
   m_X = screen.getCursorX();
   m_Y = screen.getCursorY();
 
   screen.startWrite();
   glyphdata_t thisGlyph;
-  drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+  prepImgGlyph(findGlyphCode(glyph), &thisGlyph);
 
   for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
   {
@@ -1054,7 +1054,7 @@ uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
 
   screen.startWrite();
   glyphdata_t thisGlyph;
-  drawGlyphPrep(findGlyphCode(glyph), &thisGlyph);
+  prepImgGlyph(findGlyphCode(glyph), &thisGlyph);
 
   for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
   {
@@ -1078,12 +1078,13 @@ uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
       }
   }
   m_X = m_X + thisGlyph.xAdvance;
+ 
   screen.setCursor(m_X, m_Y);
   screen.endWrite();
   return thisGlyph.xAdvance;
 }
 
-void Fonts::drawGlyphPrep(const glyph_t &g, glyphdata_t* data)
+void Fonts::prepImgGlyph(const glyph_t &g, glyphdata_t* data)
 {
     const gfxfont_t*  font  = m_pFont;
     gfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
@@ -1108,7 +1109,7 @@ dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
     glyphdata_t G;
     glyph_t code = findGlyphCode(glyph);
 
-    drawGlyphPrep(code, &G);
+    prepImgGlyph(code, &G);
 
     return {G.dimensions.W, G.dimensions.W};
 }

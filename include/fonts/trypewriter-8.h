@@ -2,46 +2,23 @@
 #ifndef __FIXEDFONTKINGTHINGSTRYPEWRITERTTF8
 #define __FIXEDFONTKINGTHINGSTRYPEWRITERTTF8
 const uint8_t HotStuff8Bitmaps[] PROGMEM = {
-  0x00, 0x3C, 0x42, 0x42, 0x81, 0x81, 0x81, 0x81, 0x42, 0x62, 0x3C, 0x70,
-  0x20, 0x40, 0x81, 0x02, 0x04, 0x08, 0x10, 0xB1, 0xF8, 0x79, 0x8A, 0x18,
-  0x20, 0xC3, 0x1C, 0x20, 0x81, 0xFC, 0xFE, 0x18, 0x61, 0xE0, 0xC0, 0xC1,
-  0x82, 0x04, 0x30, 0xC2, 0x00, 0x08, 0x30, 0x61, 0x42, 0x89, 0x32, 0x7F,
-  0x08, 0x10, 0x20, 0xFA, 0x08, 0x28, 0xD8, 0x20, 0x42, 0x08, 0x6E, 0x20,
-  0x0C, 0x61, 0x02, 0x07, 0x88, 0xE0, 0xA1, 0x44, 0x70, 0xFF, 0x08, 0x10,
-  0x40, 0x81, 0x04, 0x08, 0x10, 0x20, 0x40, 0x7D, 0x8A, 0x0A, 0x17, 0xD0,
-  0x60, 0xC1, 0xC2, 0xF8, 0x2C, 0x82, 0x0C, 0x04, 0x2C, 0x86, 0x81, 0x00,
-  0x08, 0xE0, 0x00, 0xFE, 0x72, 0x29, 0x25, 0x0A, 0x87, 0x80, 0x78, 0x54,
-  0x29, 0x25, 0x13, 0x80, 0x5F, 0x80 };
+   };
 
 // Glyph, Offset to bitmap, Width, Height, xAdvance, xOffset, yOffset
 
 const gfxglyph_t HotStuff8Glyphs[] PROGMEM = {
-  {32,     0,   1,   1,   9,    0,    0 },   // 0x00 ' ' 
-  {48,     1,   8,  10,   9,    0,   -9 },   // 0x01 '0' 
-  {49,    11,   7,  11,   9,    1,  -10 },   // 0x02 '1' 
-  {50,    21,   7,  10,   9,    1,   -9 },   // 0x03 '2' 
-  {51,    30,   7,  12,   9,    1,   -9 },   // 0x04 '3' 
-  {52,    41,   7,  11,   9,    1,  -10 },   // 0x05 '4' 
-  {53,    51,   6,  12,   9,    2,   -9 },   // 0x06 '5' 
-  {54,    60,   7,  10,   9,    1,  -10 },   // 0x07 '6' 
-  {55,    69,   7,  11,   9,    1,   -9 },   // 0x08 '7' 
-  {56,    79,   7,  10,   9,    1,   -9 },   // 0x09 '8' 
-  {57,    88,   7,  12,   9,    1,  -10 },   // 0x0A '9' 
-  {45,    99,   7,   1,   9,    1,   -4 },   // 0x0B '-' 
-  {37,   100,   9,  10,   9,    0,   -9 },   // 0x0C '%' 
-  {46,   112,   3,   3,   9,    3,   -2 }   // 0x0D '.' 
 };
 
 const gfxfont_t HotStuff8 PROGMEM = 
 {
   (uint8_t  *)HotStuff8Bitmaps, //< Glyph bitmaps, concatenated 
   (gfxglyph_t *)HotStuff8Glyphs, //< Glyph array
-  14,// total glyphs in the string
-  12,  // newline distance (y axis)
+  0,// total glyphs in the string
+   0,  // newline distance (y axis)
      0,  // minimum X - left most
-    -2,  // minimum Y - bottom most (descenders can drive this negative)
-     9,  // maximum X - right most
-    11}; // maximum Y - top most
-// Approx. 226 bytes -  but your mileage may vary.
+     0,  // minimum Y - bottom most (descenders can drive this negative)
+     0,  // maximum X - right most
+     0}; // maximum Y - top most
+// Approx. 14 bytes -  but your mileage may vary.
 
 #endif

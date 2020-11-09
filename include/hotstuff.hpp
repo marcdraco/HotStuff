@@ -198,9 +198,9 @@ class Fonts
       return pgm_read_byte(&font->xMax);
     }
 
-    uint8_t drawGlyph(const glyph_t &glyph);
+    uint8_t drawImgGlyph(const glyph_t &glyph);
 
-    void drawGlyphPrep(const glyph_t &glyph, glyphdata_t* data);
+    void prepImgGlyph(const glyph_t &glyph, glyphdata_t* data);
     
     uint8_t bufferImgGlyph(const glyph_t &glyph);
 
@@ -723,7 +723,7 @@ class Reading
   void showReadings();
 
   /**
-   * @brief Calls prepReading with the current X,Y positions
+   * @brief Calls bufferReading with the current X,Y positions
    * 
    * @param newReading The current reading
    * @param oldReading The last reading
@@ -733,7 +733,7 @@ class Reading
    * @param showTemp set to true when working on a metric temp
    * 
    */
-    void prepReading(const reading_t &reading, char* buffer, const semaphore_t &flags);
+    void bufferReading(const reading_t &reading, char* buffer, const semaphore_t &flags);
 
 };
 #endif
