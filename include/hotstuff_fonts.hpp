@@ -37,10 +37,10 @@
 // the number of glyphs to ONLY what's absolutely necessary for
 // the display. 
 
-#include "fonts/digital7-30.h"
+#include "fonts/dejavuSerifBold-30.h"
 #define HOTLARGE HotStuff30
 
-#include "fonts/notoSansReg-6.h"
+#include "fonts/notoSansMono-6.h"
 #define HOTSMALL HotStuff6
 
 #define HOTFIXED HotStuff8
