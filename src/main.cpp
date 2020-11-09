@@ -412,7 +412,7 @@ void Reading::updateReading(const reading_t &reading)
                                m_cmaCounter);
 }
 
- void Reading::showReadings(void)
+void Reading::showReadings(void)
 {
     fonts.setFont(&HOTLARGE);
     screen.setInk(defaultInk);
@@ -425,7 +425,7 @@ void Reading::updateReading(const reading_t &reading)
     chart.displayGraph();
 
     fonts.setFont(&HOTLARGE);
-    
+    fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
     bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
     fonts.print(0, 0, buffer);
     
@@ -938,12 +938,13 @@ void Fonts::print(char* b, const bool &switchFloats)
 
 void Fonts::print(const int &X, const int &Y, char* buffer)
 {
-    int size = (FONT_BUFF_HEIGHT * FONT_BUFF_WIDTH) >> 3;
+    int size = (m_bufferWidth * m_bufferHeight) >> 3;
     m_pixelBuffer = new char[size] {};
 
     if (! m_pixelBuffer)
     {
-      screen.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, RED);    
+      screen.fillRect(0, 0, m_bufferWidth, m_bufferHeight, RED);   
+      STOP; 
     }
     else
     { 
@@ -958,7 +959,6 @@ void Fonts::print(const int &X, const int &Y, char* buffer)
         glyphdata_t glyph;
         prepImgGlyph(findGlyphCode(buffer[i]), &glyph);
         bufferImgGlyph(buffer[i]);
-        //screen.setCursor(bufferImgGlyph(buffer[i]), Y);
         ++i;
       } 
       showBuffer(X, Y); 
@@ -967,45 +967,66 @@ void Fonts::print(const int &X, const int &Y, char* buffer)
     return;
 }
 
-void Fonts::bufferPixel(const int &X, const int &Y)
-{
-  if (X >= FONT_BUFF_WIDTH || Y >= FONT_BUFF_HEIGHT) 
-  {
-    return;
-  }
-  int16_t byteAddress = ((Y * FONT_BUFF_WIDTH) + X) >> 3;  // fast divide by 8
-  int16_t bit = 128 >> (X % 8);
-  m_pixelBuffer[byteAddress] |= bit;
-}
-
-void Fonts::showBuffer(const int &X, const int &Y)
-{
-  for (int y{0}; y < FONT_BUFF_HEIGHT; ++y)
-  {
-    for (int x{0}; x < FONT_BUFF_WIDTH; ++x)
-    {
-      int16_t byteAddress  = ((y * FONT_BUFF_WIDTH) + x) >> 3;  // fast divide by 8
-      uint8_t pixelAddress = x % 8;
-      uint8_t bit          = 128 >> pixelAddress;
-
-      if (m_pixelBuffer[byteAddress] & bit)
-      {
-        screen.drawPixel(x + X, y + Y, CYAN);
-      }
-      else
-      {
-        screen.drawPixel(x + X, y + Y, defaultPaper);
-      }
-    }
-  }
-}
-
 void Fonts::print(const String &string)
 {
   for (uint8_t i{0}; i < string.length(); i++)
   {
       drawImgGlyph(string.charAt(i));
   }
+}
+
+void Fonts::prepImgGlyph(const glyph_t &g, glyphdata_t* data)
+{
+    const gfxfont_t*  font  = m_pFont;
+    gfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
+
+    data->bitmap       = pgm_read_bitmap_ptr(font);
+    data->offset       = pgm_read_word(&glyph->bitmapOffset);
+    data->dimensions.H = pgm_read_byte(&glyph->height);
+    data->dimensions.W = pgm_read_byte(&glyph->width);
+    data->xo           = pgm_read_byte(&glyph->xOffset);
+    data->yo           = pgm_read_byte(&glyph->yOffset);
+    data->xAdvance     = pgm_read_byte(&glyph->xAdvance);
+    data->bits         = 0;
+    data->bit          = 0;
+    data->x            = fonts.getX();
+    data->y            = fonts.getY();
+    data->glyph        = g;
+    data->colour       = screen.getInk();
+}
+
+uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
+{
+  screen.startWrite();
+  glyphdata_t thisGlyph;
+  prepImgGlyph(findGlyphCode(glyph), &thisGlyph);
+
+  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+  {
+      uint16_t X = m_X + thisGlyph.xo;
+      uint16_t Y = m_Y + thisGlyph.yo + i;
+
+      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
+      {
+          if (! (thisGlyph.bit & 0x07)) 
+          {
+            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
+          }
+          
+          if (thisGlyph.bits & 0x80) 
+          {
+            bufferPixel(X, Y);
+          }
+          ++X;
+          ++thisGlyph.bit;
+          thisGlyph.bits = thisGlyph.bits << 1;
+      }
+  }
+  m_X = m_X + thisGlyph.xAdvance;
+ 
+  screen.setCursor(m_X, m_Y);
+  screen.endWrite();
+  return thisGlyph.xAdvance;
 }
 
 uint8_t Fonts::drawImgGlyph(const glyph_t &glyph)
@@ -1048,60 +1069,37 @@ uint8_t Fonts::drawImgGlyph(const glyph_t &glyph)
   return thisGlyph.xAdvance;
 }
 
-uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
+void Fonts::bufferPixel(const uint16_t &X, const uint16_t &Y)
 {
- 
-
-  screen.startWrite();
-  glyphdata_t thisGlyph;
-  prepImgGlyph(findGlyphCode(glyph), &thisGlyph);
-
-  for (uint8_t i {0}; i < thisGlyph.dimensions.H; ++i) 
+  if (X >= m_bufferWidth || Y >= m_bufferHeight) 
   {
-      uint16_t X = m_X + thisGlyph.xo;
-      uint16_t Y = m_Y + thisGlyph.yo + i;
-
-      for (uint16_t j {0}; j < thisGlyph.dimensions.W; ++j) 
-      {
-          if (! (thisGlyph.bit & 0x07)) 
-          {
-            thisGlyph.bits = pgm_read_byte(&thisGlyph.bitmap[thisGlyph.offset++]);
-          }
-          
-          if (thisGlyph.bits & 0x80) 
-          {
-            bufferPixel(X, Y);
-          }
-          ++X;
-          ++thisGlyph.bit;
-          thisGlyph.bits = thisGlyph.bits << 1;
-      }
+    return;
   }
-  m_X = m_X + thisGlyph.xAdvance;
- 
-  screen.setCursor(m_X, m_Y);
-  screen.endWrite();
-  return thisGlyph.xAdvance;
+  int16_t byteAddress = ((Y * m_bufferWidth) + X) >> 3;  // fast divide by 8
+  int16_t bit = 128 >> (X % 8);
+  m_pixelBuffer[byteAddress] |= bit;
 }
 
-void Fonts::prepImgGlyph(const glyph_t &g, glyphdata_t* data)
+void Fonts::showBuffer(const int &X, const int &Y)
 {
-    const gfxfont_t*  font  = m_pFont;
-    gfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
+  for (uint16_t y{0}; y < m_bufferHeight; ++y)
+  {
+    for (uint16_t x{0}; x < m_bufferWidth; ++x)
+    {
+      int16_t byteAddress  = ((y * m_bufferWidth) + x) >> 3;  // fast divide by 8
+      uint8_t pixelAddress = x % 8;
+      uint8_t bit          = 128 >> pixelAddress;
 
-    data->bitmap       = pgm_read_bitmap_ptr(font);
-    data->offset       = pgm_read_word(&glyph->bitmapOffset);
-    data->dimensions.H = pgm_read_byte(&glyph->height);
-    data->dimensions.W = pgm_read_byte(&glyph->width);
-    data->xo           = pgm_read_byte(&glyph->xOffset);
-    data->yo           = pgm_read_byte(&glyph->yOffset);
-    data->xAdvance     = pgm_read_byte(&glyph->xAdvance);
-    data->bits         = 0;
-    data->bit          = 0;
-    data->x            = fonts.getX();
-    data->y            = fonts.getY();
-    data->glyph        = g;
-    data->colour       = screen.getInk();
+      if (m_pixelBuffer[byteAddress] & bit)
+      {
+        screen.drawPixel(x + X, y + Y, m_ink);
+      }
+      else
+      {
+        screen.drawPixel(x + X, y + Y, m_paper);
+      }
+    }
+  }
 }
 
 dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
@@ -1161,9 +1159,20 @@ void Messages::execute(const uint8_t &M)
   fonts.print(text);
 }
 
-uint8_t Messages::centerText(const uint8_t &M, const uint8_t &charWidth)
+uint8_t Messages::textWidth(char* &message, const gfxfont_t* font)
 {
-  return ((TFT_WIDTH - (translations[M].length() * charWidth)) / 2);
+  int x{0};
+  unsigned int i{0};
+  glyphdata_t data;
+
+  while (message[++i])
+  {
+    glyphdata_t G;
+    glyph_t code = fonts.findGlyphCode(message[i]);
+    fonts.prepImgGlyph(code, &G);
+    x += data.xAdvance;
+  }
+  return (TFT_WIDTH - x) / 2;
 }
 
 void Messages::clear(const uint8_t &message)
@@ -1181,7 +1190,7 @@ void Messages::flashText(const uint8_t &M)
 }
 
 void Messages::showUptime(void)
-{
+{  
   /*
     This block produces the uptime data at the base
     of the screen as a quick check that the machine
@@ -1190,19 +1199,19 @@ void Messages::showUptime(void)
   char* msg = new char[40];
 
   sprintf(msg, "Uptime: %2d Weeks, %2d Days, %02d:%02d:%02d", 
-                      isrTimings.timeInWeeks,
-                      isrTimings.timeInDays,
-                      isrTimings.timeInHours,
-                      isrTimings.timeInMinutes,
-                      isrTimings.timeInSeconds);
+          isrTimings.timeInWeeks,
+          isrTimings.timeInDays,
+          isrTimings.timeInHours,
+          isrTimings.timeInMinutes,
+          isrTimings.timeInSeconds);
  
   fonts.setTextColor(defaultPaper, GREY);  
   fonts.setFont(&HOTSMALL);
 
-  uint8_t margin = (TFT_WIDTH - (strlen(msg) * fonts.getXstep()) )/2;
-  screen.setCursor(margin, TFT_HEIGHT - 3);
-  fonts.print(msg);
-  fonts.setTextColor(defaultInk, defaultPaper);  
+  uint8_t margin = textWidth(msg, &HOTSMALL);
+  fonts.setBufferDimensions(TFT_WIDTH, 18);
+  fonts.print(margin, TFT_HEIGHT - 16, msg);
+  fonts.setTextColor(defaultInk, defaultPaper); 
   delete[] msg;
 }
 

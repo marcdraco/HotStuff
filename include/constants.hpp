@@ -131,7 +131,7 @@ constexpr int GRAPH_Y        {110 / HEIGHT_SCALE};
 constexpr int GRAPH_WIDTH    {190};
 
 constexpr int FONT_BUFF_WIDTH    {144}; // special "offscreen" buffer for deleting and pre-rendering fonts
-constexpr int FONT_BUFF_HEIGHT   {48};
+constexpr int FONT_BUFF_HEIGHT   {44};  // The size of this is crucial because it uses a LOT of RAM.
 
 constexpr int CAUTION        {32};     // Three watermarks (32,41,54)
 constexpr int WARNING        {41};     // per Steadman "safe" for working temperatures

@@ -37,10 +37,11 @@
 // the number of glyphs to ONLY what's absolutely necessary for
 // the display. 
 
-#include "fonts/dejavuSerifBold-30.h"
+#include "fonts/ubuntu-30.h"
 #define HOTLARGE HotStuff30
 
-#include "fonts/notoSansMono-6.h"
+//#include "fonts/sourceCodePro-6-full.h"
+#include "fonts/novaOval-6-full.h"
 #define HOTSMALL HotStuff6
 
 #define HOTFIXED HotStuff8

@@ -132,19 +132,18 @@ class Fonts
     
     uint16_t  m_X {0};
     uint16_t  m_Y {0};
-    colours_t m_ink;
-    colours_t m_paper;
+    colours_t m_ink {defaultInk};
+    colours_t m_paper {defaultPaper};
     uint8_t   m_rotation;
     char*     m_pixelBuffer {nullptr};
+    uint16_t  m_bufferWidth {FONT_BUFF_WIDTH};  
+    uint16_t  m_bufferHeight {FONT_BUFF_HEIGHT};
     const gfxfont_t* m_pFont {nullptr};
     
   public:
 
     Fonts() 
-    {
-      m_paper = defaultPaper;
-      m_ink   = defaultInk;
-    }
+    {}
 
     Fonts(gfxfont_t* font) 
     {
@@ -154,6 +153,12 @@ class Fonts
     ~Fonts() {}
 
     void init();
+
+    void setBufferDimensions(const uint16_t W, const uint16_t H)
+    {
+      m_bufferWidth  = W;
+      m_bufferHeight = H;
+    }
 
     void setInk(colours_t ink)
     {
@@ -228,7 +233,7 @@ class Fonts
 
     void printPixel(coordinate_t X, coordinate_t Y, colours_t ink);
 
-    void bufferPixel(const int &X, const int &Y);
+    void bufferPixel(const uint16_t &X, const uint16_t &Y);
 
     void showBuffer(const int &X, const int &Y);
 };
@@ -418,16 +423,15 @@ class Messages
    * @brief Centers a block of text given character size
    * 
    * @param text String of characters
-   * @param charWidth width of the current font
    * @return uint8_t central X offset based on the screen width
    */
-  uint8_t centerText(const uint8_t &M, const uint8_t &charWidth);
-
+    uint8_t textWidth(char* &message, const gfxfont_t* font);
+  
   /**
-     * @brief Horrible flashing test
-     * 
-     * @param M translate(triangle_t* triangle, const coordinates_t &cords)pre-defined message
-     */
+   * @brief Horrible flashing test
+   * 
+   * @param M translate(triangle_t* triangle, const coordinates_t &cords)pre-defined message
+   */
       
   void flashText(const uint8_t &M);
 
