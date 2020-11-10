@@ -128,10 +128,9 @@ constexpr int TFT_WIDTH      {320 / WIDTH_SCALE};
 constexpr int TFT_HEIGHT     {240 / HEIGHT_SCALE};
 constexpr int HEIGHT         {100 / HEIGHT_SCALE};
 constexpr int GRAPH_Y        {110 / HEIGHT_SCALE};
-constexpr int GRAPH_WIDTH    {190};
 
-constexpr int FONT_BUFF_WIDTH    {144}; // special "offscreen" buffer for deleting and pre-rendering fonts
-constexpr int FONT_BUFF_HEIGHT   {44};  // The size of this is crucial because it uses a LOT of RAM.
+constexpr int FONT_BUFF_WIDTH    {160}; // special "offscreen" buffer for deleting and pre-rendering fonts
+constexpr int FONT_BUFF_HEIGHT   {46};  // The size of this is crucial because it uses a LOT of RAM.
 
 constexpr int CAUTION        {32};     // Three watermarks (32,41,54)
 constexpr int WARNING        {41};     // per Steadman "safe" for working temperatures
@@ -191,6 +190,8 @@ constexpr auto defaultPaper  {BLACK};
 constexpr auto defaultInk    {CYAN};
 constexpr auto reticleColour {DEEPGREY};
 
+constexpr auto HOURS {24};
+
 constexpr auto LOW_LIMIT_EXCEEDED {BLUE};
 constexpr auto HIGH_LIMIT_EXCEEDED {RED};
 
@@ -229,9 +230,11 @@ enum semaphores : uint16_t
 // non-active semaphores used for function arguments}
 enum  
 {
-  IMPERIAL     = B00000001,
-  METRIC      = B00000010,
-  HUMIDITY    = B00001000
+  IMPERIAL = B00000001,
+  METRIC   = B00000010,
+  HUMIDITY = B00001000,
+  HOURLY   = B00010000,
+  DAILY    = B00100000
 };
 
 

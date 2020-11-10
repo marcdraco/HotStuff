@@ -22,10 +22,7 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*
-  Thanks to Steve Wood (ebay: audioSpectrumAnalysers) for the serial programmer.
-  3.5" TFT shield supplied by A-Z Delivery via Amazon.  
-*/
+
 
 #ifndef __DRACO_HOTSTUFF_H
 #define __DRACO_HOTSTUFF_H
@@ -179,6 +176,17 @@ class Fonts
     {
       return m_rotation;
     }
+
+    void setFont(const gfxfont_t* pNewSize)
+    {
+        m_pFont = pNewSize;
+    }
+
+    const gfxfont_t* getFont()
+    {
+      return m_pFont;
+    }
+
     
     int16_t getX()
     {
@@ -213,8 +221,6 @@ class Fonts
     
     dimensions_t getGlyphDimensions(const glyph_t &glyph);
 
-    void setFont(const gfxfont_t* pNewSize);
-
     void bleachGlyph(const glyph_t &glyph);
 
     void print(const char* b);
@@ -238,7 +244,7 @@ class Fonts
     void showBuffer(const int &X, const int &Y);
 };
 
-class Display : public MCUFRIEND_kbv
+class Display
 {
   colours_t m_ink {defaultInk};
   colours_t m_paper {defaultPaper};
@@ -278,7 +284,7 @@ class Display : public MCUFRIEND_kbv
 
 };
 
-class Graph : public Display
+class Graph
 {
 
   private:
@@ -299,6 +305,8 @@ class Graph : public Display
     
   void rotate(triangle_t* polygon, const angle_t &theta);
   void rotate(quadrilateral_t* polygon, const angle_t &theta);
+
+  void drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoordinate_t &W, const ucoordinate_t &H, const colours_t &ink);
 
   /**
    * @brief Displays the main graph
@@ -425,7 +433,7 @@ class Messages
    * @param text String of characters
    * @return uint8_t central X offset based on the screen width
    */
-    uint8_t textWidth(char* &message, const gfxfont_t* font);
+    uint16_t textWidth(char* message);
   
   /**
    * @brief Horrible flashing test
@@ -578,7 +586,9 @@ class Reading
     reading_t m_correction {};
     reading_t m_cmaCounter {};
     colours_t m_trace {};          // graph line colour
-    uint8_t*  m_pipe {};
+    int8_t*  m_max {};
+    int8_t*  m_min {};
+    
     public:
     
     Reading()
@@ -598,11 +608,13 @@ class Reading
       m_trace = 0;           // graph line colour
       
       // If we run out of memory here, we've got bigger problems!
-      m_pipe = new uint8_t[GRAPH_WIDTH];
+      m_min = new int8_t[HOURS];
+      m_max = new int8_t[HOURS];
 
-      for (auto i {0}; i < GRAPH_WIDTH; ++i)
+      for (auto i {0}; i < HOURS ; ++i)
       {        
-        m_pipe[i] = (GRAPH_Y + FSD);
+        m_max[i] = (GRAPH_Y + FSD);
+        m_min[i] = (GRAPH_Y + FSD);
       }
   }
   
@@ -610,26 +622,23 @@ class Reading
   {
     // this should ever be called, but it's good
     // practise to do this even if it's not.
-    delete [] m_pipe;
+    delete [] m_max;
+    delete [] m_min;
   }
 
-  void setPipe(const uint16_t &i, const uint8_t &value)
+  void setPipe(const uint16_t &i, const int8_t &min, const int8_t &max)
   {
-    m_pipe[i] = value;
+    m_max[i] = max;
+    m_min[i] = min;
   } 
 
-  uint8_t getPipe(const uint16_t &i)
-  {
-    return m_pipe[i];
-  }
-  
   void slidePipe()
   {
-    for (auto i{1}; i < GRAPH_WIDTH; ++i)
+    for (auto i{1}; i < HOURS; ++i)
     {
-      m_pipe[i-1] = m_pipe[i];
+      m_max[i-1] = m_max[i];
+      m_min[i-1] = m_max[i];
     }
-    
   }
   
   colours_t getTrace()

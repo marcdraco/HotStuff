@@ -69,10 +69,13 @@
   MEAN WASTED MEMORY AND AIN'T NO ONE GOT TIME FOR THAT.
   </nag mode>
 
+  Thanks to Steve Wood (ebay: audioSpectrumAnalysers) for the serial programmer.
+  3.5" TFT shield supplied by A-Z Delivery via Amazon
+  Clone UNO by Elegoo based on a design by Arduino  
+
 @file
 @brief Main code
 */
-
 
 #include <Arduino.h>
 #include <math.h>
@@ -88,9 +91,10 @@
 #include "hotstuff_fonts.hpp"
 #include "hotstuff.hpp"
 
-Display screen;
+MCUFRIEND_kbv screen;
+Display display;
 UniversalDHT dht22(DHT22_DATA);
-Graph chart;
+Graph graph;
 Alarm alarm;
 Reading humidity;
 Reading temperature;
@@ -158,12 +162,12 @@ void setup()
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
 
-  screen.setRotation(screen.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
+  screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  chart.initGraph();
+  graph.initGraph();
   fonts.setFont(&HOTSMALL);
-  screen.fillRect(0, TFT_HEIGHT - 12, TFT_WIDTH, 12, GREY); //just that little Uptime display, a nod to *nix.
+  screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
 
   pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
   pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
@@ -243,24 +247,37 @@ void Graph::displayGraph(void)
 
     //put the latest readings at the end of the pipe.
 
-    humidity.setPipe(getGraphWidth() - 1, humidity.getY());
-    temperature.setPipe(getGraphWidth() - 1, temperature.getY());
+    uint8_t step{16}; 
 
-    for (auto i {0}; i < getGraphWidth() -1; ++i)
+    for (auto i {0}; i < getGraphWidth() -1; i += step)
     {
       colours_t T = temperature.getTrace();
       colours_t H = humidity.getTrace();
       ucoordinate_t xPosition = i + getGraphX();
-      if (i > 0)
+      int temperatureX = xPosition;
+      int humidityX    = xPosition + (step / 2) + 1;
+      int baseY        = GRAPH_Y;
       {
-        screen.drawRect(xPosition, temperature.getPipe(i-1), 2, 2, defaultPaper);
-        screen.drawRect(xPosition, humidity.getPipe(i-1), 2, 2, defaultPaper);
+        int min = random(20)+18;
+        int max = random(20)+20;
+        drawIBar(temperatureX , baseY, 5, abs(max - min), T);
       }
-        screen.drawRect(xPosition, temperature.getPipe(i), 2, 2, T);
-        screen.drawRect(xPosition, humidity.getPipe(i), 2, 2, H);
+
+      {
+        int min = random(10)+50;
+        int max = random(10)+50;
+        drawIBar(humidityX , baseY, 5, abs(max - min), H);
+      }
     }
     temperature.slidePipe();
     humidity.slidePipe();
+}
+
+void Graph::drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoordinate_t &W, const ucoordinate_t &H, const colours_t &ink)
+{
+  screen.drawFastHLine(X, Y, W, ink);
+  screen.drawFastHLine(X, Y + H, W, ink);
+  screen.drawFastVLine(X + (W/2), Y, H, ink); // width should be an odd number or this looks odd
 }
 
 void Graph::drawMainAxes(void)
@@ -317,12 +334,12 @@ void Graph::initGraph(void)
   /*
   * Allow space for fonts 
   * 2 * height "temperature in *" and "Relative humidity" message.  
-  * 14 * (!) width allows for the scale markings
+  * 8 * (!) font width allows for the scale markings
   */
   fonts.setFont(&HOTSMALL);
-  setGraphWidth(TFT_WIDTH - ((2 * fonts.getYstep()) + (14 * fonts.getXstep())));
+  setGraphWidth(TFT_WIDTH - ((2 * fonts.getYstep()) + (8 * fonts.getXstep())));
 
-  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, screen.getPaper());
+  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.getPaper());
   drawGraphScaleMarks();
   drawMainAxes();
   drawReticles(); 
@@ -353,12 +370,13 @@ void Graph::drawGraphScaleMarks(void)
     fonts.setRotation(0);
 
     // temp scale
-    for (auto i{0}; i < 60; i = i + 10)
+    for (auto i{-10}; i < 50; i += 10)
     {
         fonts.setFont(&HOTSMALL);
         char b[6];
         reading_int_t value;
-        screen.setCursor(getGraphX() - (fonts.getXstep() * 4), (GRAPH_Y + FSD) - (i * 2) );
+        screen.setCursor(getGraphX() - (fonts.getXstep() * 3), 
+                        (GRAPH_Y + FSD) - (i * 2) - 20);
 
         (flags.isSet(USEMETRIC)) ? value = i : value = static_cast<reading_int_t>(toFahrenheit(i));
         sprintf(b, "%3d", value);
@@ -366,7 +384,7 @@ void Graph::drawGraphScaleMarks(void)
     }
         
     // humidity scale
-    for (auto i{0}; i < 120; i = i + 20)
+    for (auto i{0}; i < 120; i += 20)
     {
         fonts.setFont(&HOTSMALL);
         char b[6];
@@ -404,25 +422,26 @@ void Reading::takeReadings(void)
 
 void Reading::updateReading(const reading_t &reading)
 {
-
   m_reading = reading + m_correction;
-  ++m_cmaCounter;
+  m_lowRead = (reading > m_lowRead) ? reading : m_lowRead;
+  m_highRead = (reading > m_highRead) ? reading : m_highRead;
+
   m_cumulativeMovingAverage = (m_cumulativeMovingAverage + 
-                              (m_reading - m_cumulativeMovingAverage) / 
-                               m_cmaCounter);
+                              (m_reading - m_cumulativeMovingAverage) / ++m_cmaCounter
+                              );
+  
+  setPipe(HOURS - 1, static_cast<const uint8_t>(round(m_lowRead)), 
+                     static_cast<const uint8_t>(round(m_highRead))
+         );
 }
 
 void Reading::showReadings(void)
 {
     fonts.setFont(&HOTLARGE);
-    screen.setInk(defaultInk);
+    display.setInk(defaultInk);
     char buffer[10];
 
-    limits_t hLimits {MIN_COMFORT_HUMID, MAX_COMFORT_HUMID};
-    limits_t tLimits {MIN_COMFORT_TEMP, MAX_COMFORT_TEMP};
-
-    readings_t readings {temperature.getReading(), humidity.getReading()}; 
-    chart.displayGraph();
+    graph.displayGraph();
 
     fonts.setFont(&HOTLARGE);
     fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
@@ -430,48 +449,7 @@ void Reading::showReadings(void)
     fonts.print(0, 0, buffer);
     
     bufferReading(humidity.getReading(), buffer, HUMIDITY);
-    fonts.print(180, 0, buffer);
-
-return;
-
-  /*
-
-    return;
-
-    fonts.setFont(&HOTSMALL);
-    screen.setCursor(LOW_TEMP_X, fonts.getYstep() + 20);
-
-
-    // Min and Max readings.
-    environment.setColour(temperature.getHighRead(), tLimits);
-    screen.setCursor(LOW_TEMP_X, fonts.getYstep() + 20);
-
-
-    fonts.setFont(&HOTSMALL);
-    bufferReading((temperature.getReading() < temperature.getLowRead()) ? temperature.getReading() : temperature.getLowRead(),
-                (flags.isSet(USEMETRIC)) ? METRIC : 0);
-
-    fonts.setFont(&HOTSMALL);
-
-    environment";
-      char b2[20] = "12.1 (flags.isSet(USEMETRIC)) ? METRIC : 0);
-
-    environment.setColour(humidity.getHighRead(), hLimits);
-
-    fonts.moveTo(screen.width / 2, fonts.getY());
-    fonts.setFont(&HOTSMALL);
-
-    bufferReading((humidity.getReading() < humidity.getLowRead()) ? humidity.getReading() : humidity.getLowRead(), METRIC);
-
-    fonts.setFont(&HOTSMALL);
-
-    environment.setColour(humidity.getHighRead(), hLimits);
-    fonts.setFont(&HOTSMALL);
-    bufferReading((humidity.getReading() > humidity.getHighRead()) ?  humidity.getReading() :  humidity.getHighRead(), METRIC);
-
-    humidity.setMinMax();
-    temperature.setMinMax();
-    */
+    fonts.print(TFT_WIDTH / 2, 0, buffer);
 }
 
 void Reading::bufferReading(const reading_t &reading, char* buffer, const semaphore_t &flags)
@@ -516,15 +494,15 @@ void Environmental::setColour(const reading_t &value, const limits_t &limits)
 {
   if (value < static_cast<reading_t>(limits.lower))
   {
-    screen.setInk(LOW_LIMIT_EXCEEDED);
+    display.setInk(LOW_LIMIT_EXCEEDED);
     return;
   }
   else if (value > static_cast<reading_t>(limits.upper))
   {
-    screen.setInk(HIGH_LIMIT_EXCEEDED);
+    display.setInk(HIGH_LIMIT_EXCEEDED);
     return;
   }
-  screen.setInk(defaultInk);
+  display.setInk(defaultInk);
   return;
 }
 
@@ -803,7 +781,7 @@ void Alarm::checkButton(void)
         screen.fillRect(LEFTMARGIN - 2, LOWHUMID_Y + 12, 20, 40, defaultPaper);
         m_timer = 0;
         temperature.showReadings();
-        chart.drawGraphScaleMarks();
+        graph.drawGraphScaleMarks();
     }
 }
 
@@ -943,8 +921,8 @@ void Fonts::print(const int &X, const int &Y, char* buffer)
 
     if (! m_pixelBuffer)
     {
-      screen.fillRect(0, 0, m_bufferWidth, m_bufferHeight, RED);   
-      STOP; 
+      screen.fillRect(0, 0, m_bufferWidth, m_bufferHeight, RED);
+      STOP
     }
     else
     { 
@@ -992,7 +970,7 @@ void Fonts::prepImgGlyph(const glyph_t &g, glyphdata_t* data)
     data->x            = fonts.getX();
     data->y            = fonts.getY();
     data->glyph        = g;
-    data->colour       = screen.getInk();
+    data->colour       = display.getInk();
 }
 
 uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
@@ -1112,11 +1090,6 @@ dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
     return {G.dimensions.W, G.dimensions.W};
 }
 
-void Fonts::setFont(const gfxfont_t* pNewSize)
-{
-    m_pFont = pNewSize;
-}
-
 void Fonts::setTextColor(const colours_t &ink, const colours_t &paper)
 {
   m_ink = ink;
@@ -1159,26 +1132,25 @@ void Messages::execute(const uint8_t &M)
   fonts.print(text);
 }
 
-uint8_t Messages::textWidth(char* &message, const gfxfont_t* font)
+uint16_t Messages::textWidth(char* message)
 {
   int x{0};
   unsigned int i{0};
-  glyphdata_t data;
-
-  while (message[++i])
+ 
+  while (message[i++])
   {
-    glyphdata_t G;
+    glyphdata_t data;
     glyph_t code = fonts.findGlyphCode(message[i]);
-    fonts.prepImgGlyph(code, &G);
+    fonts.prepImgGlyph(code, &data);
     x += data.xAdvance;
   }
-  return (TFT_WIDTH - x) / 2;
+  return x;
 }
 
 void Messages::clear(const uint8_t &message)
 {
-  screen.setInk(defaultPaper);
-  screen.setPaper(defaultPaper);
+  display.setInk(defaultPaper);
+  display.setPaper(defaultPaper);
   execute(message);
 }
 
@@ -1207,8 +1179,8 @@ void Messages::showUptime(void)
  
   fonts.setTextColor(defaultPaper, GREY);  
   fonts.setFont(&HOTSMALL);
-
-  uint8_t margin = textWidth(msg, &HOTSMALL);
+  uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
+  uint8_t margin = (TFT_WIDTH - width) / 2;
   fonts.setBufferDimensions(TFT_WIDTH, 18);
   fonts.print(margin, TFT_HEIGHT - 16, msg);
   fonts.setTextColor(defaultInk, defaultPaper); 
