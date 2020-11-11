@@ -94,11 +94,11 @@
 MCUFRIEND_kbv screen;
 Display display;
 UniversalDHT dht22(DHT22_DATA);
+Messages messages;
 Graph graph;
 Alarm alarm;
 Reading humidity;
 Reading temperature;
-Messages messages;
 Fonts fonts;
 Environmental environment;
 Flags flags;
@@ -141,14 +141,16 @@ void setup()
     ID = 0x9481; //force ID if write-only screen
   }
   screen.begin(ID);
+  Serial.begin(9600);
   humidity.setTrace(AZURE);    // humidity graph line
   temperature.setTrace(YELLOW);   // temperature graph line
 
   fonts.setFont(static_cast<const gfxfont_t *>(&HOTLARGE));
+ /*
   humidity.setX(160);
   humidity.setY(10);
   temperature.setY(10);
-
+*/
 #ifdef USE_METRIC
   flags.set(USEMETRIC);
 #endif
@@ -165,6 +167,8 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
+  delay(00);
+
   graph.initGraph();
   fonts.setFont(&HOTSMALL);
   screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
@@ -180,23 +184,12 @@ void setup()
   
   dht22.read(&read.H, &read.T);
   
-  temperature.setLowRead(read.T);
-  temperature.setHighRead(read.T);
-  temperature.updateReading(read.T);
-  humidity.setLowRead(read.H);
-  humidity.setHighRead(read.H);
-  humidity.updateReading(read.H);
+  temperature.initReads(read.T);
+  humidity.initReads(read.H);
 }
  
 void loop()
 {
-
-  temperature.takeReadings();
-  humidity.takeReadings();
-
-  temperature.showReadings();  
-  humidity.showReadings();  
-
   if (isrTimings.timeInSeconds == 0) // this ticks every minute
   {
     /*
@@ -205,7 +198,7 @@ void loop()
       int if you prefer. Area temperatures don't vary much unless the sensor is 
       in a drafty corner!
     */
-    flags.set(UPDATEREADS);
+     flags.set(UPDATEREADS);
   }
 
   while (isrTimings.timeToRead < 3)
@@ -215,12 +208,18 @@ void loop()
     alarm.checkButton();
     messages.showUptime();
   }
+  
+  temperature.takeReadings();
+  humidity.takeReadings();
+
+  temperature.showReadings();  
+  humidity.showReadings();  
 }
 
 void showLCDReads(void)
 {}
 
-void Graph::displayGraph(void)
+void Graph::drawGraph(void)
 {
     if (flags.isSet(UPDATEREADS))
     {
@@ -230,36 +229,22 @@ void Graph::displayGraph(void)
 
     drawReticles();
 
-    if (temperature.getCMA() > 40)
-    {
-      temperature.setY((GRAPH_Y + FSD) - 100);
-    }
-    else if (temperature.getCMA() < 0)
-    {
-      temperature.setY(GRAPH_Y + FSD);
-    }
-    else
-    {
-      temperature.setY((GRAPH_Y + FSD) - (round(temperature.getCMA()) * 2));
-    }
-
-    humidity.setY((GRAPH_Y + FSD) - round(humidity.getCMA()));
-
     //put the latest readings at the end of the pipe.
 
     for (auto i {0}; i < HOURS; ++i)
     {
       float step {getGraphWidth() / 24.0};
-      colours_t T = temperature.getTrace();
-      colours_t H = humidity.getTrace();
       ucoordinate_t xPosition = static_cast<uint16_t>(step * i) + getGraphX();
-
-      drawDiamond(xPosition, i *3 + GRAPH_Y, 1, H);
+      drawDiamond(xPosition, GRAPH_Y + FSD - (temperature.getReading(i) * 3), 1, temperature.getTrace());
     }
 
+    for (auto i {0}; i < HOURS; ++i)
+    {
+      float step {getGraphWidth() / 24.0};
+      ucoordinate_t xPosition = static_cast<uint16_t>(step * i) + getGraphX();
+      drawDiamond(xPosition, GRAPH_Y + FSD - humidity.getReading(i)   , 1, humidity.getTrace());
+    }
 
-    temperature.slidePipe();
-    humidity.slidePipe();
 }
 
 void Graph::drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoordinate_t &W, const ucoordinate_t &H, const colours_t &ink)
@@ -340,6 +325,7 @@ void Graph::initGraph(void)
   * 2 * height "temperature in *" and "Relative humidity" message.  
   * 8 * (!) font width allows for the scale markings
   */
+
   fonts.setFont(&HOTSMALL);
   setGraphWidth(TFT_WIDTH - ((2 * fonts.getYstep()) + (8 * fonts.getXstep())));
 
@@ -417,6 +403,7 @@ void Reading::takeReadings(void)
 
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
+
   isrTimings.timeToRead = 0;
 
   environment.checkHumidityConditions();
@@ -426,14 +413,15 @@ void Reading::takeReadings(void)
 
 void Reading::updateReading(const reading_t &reading)
 {
-  m_reading = reading + m_correction;
-  m_lowRead = (reading > m_lowRead) ? reading : m_lowRead;
+  m_lowRead  = (reading > m_lowRead)  ? reading : m_lowRead;
   m_highRead = (reading > m_highRead) ? reading : m_highRead;
 
   m_cumulativeMovingAverage = (m_cumulativeMovingAverage + 
-                              (m_reading - m_cumulativeMovingAverage) / ++m_cmaCounter
-                              );
+                              (reading - m_cumulativeMovingAverage) / ++m_cmaCounter
+                              ) + m_correction;
   
+  m_reading = reading + m_correction;
+
   setPipe(static_cast<const uint8_t>(round(m_lowRead)), 
           static_cast<const uint8_t>(round(m_highRead)),
           static_cast<const uint8_t>(round(m_reading))
@@ -446,7 +434,7 @@ void Reading::showReadings(void)
     display.setInk(defaultInk);
     char buffer[10];
 
-    graph.displayGraph();
+    graph.drawGraph();
 
     fonts.setFont(&HOTLARGE);
     fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
@@ -695,34 +683,34 @@ void Alarm::annunciators(void)
   if ( flags.isSet(FROST))
   {
     screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.execute(FROST);
+    messages.execute(Messages::frost);
   }
   else
   {
     screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.clear(FROST);
+    messages.clear(Messages::frost);
   }
 
   if (flags.isSet(DAMP))
   {
     screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.execute(DAMP);
+    messages.execute(Messages::damp);
   }
   else
   {
     screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.clear(DAMP);
+    messages.clear(Messages::damp);
   }
 
   if (flags.isSet(DRY))
   {
     screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.execute(DRY);
+    messages.execute(Messages::dry);
   }
   else
   {
     screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.clear(DRY);
+    messages.clear(Messages::dry);
   }
 }
 
@@ -1016,7 +1004,9 @@ uint8_t Fonts::drawImgGlyph(const glyph_t &glyph)
 {
   m_X = screen.getCursorX();
   m_Y = screen.getCursorY();
-
+  colours_t ink = display.getInk();
+  colours_t paper = display.getPaper();
+  
   screen.startWrite();
   glyphdata_t thisGlyph;
   prepImgGlyph(findGlyphCode(glyph), &thisGlyph);
@@ -1035,11 +1025,11 @@ uint8_t Fonts::drawImgGlyph(const glyph_t &glyph)
           
           if (thisGlyph.bits & 0x80) 
           {
-            printPixel(X, Y, m_ink);
+            printPixel(X, Y, ink);
           }
           else
           {
-            printPixel(X, Y, m_paper);
+            printPixel(X, Y, paper);
           }
           ++X;
           ++thisGlyph.bit;
@@ -1065,6 +1055,9 @@ void Fonts::bufferPixel(const uint16_t &X, const uint16_t &Y)
 
 void Fonts::showBuffer(const int &X, const int &Y)
 {
+  colours_t ink = display.getInk();
+  colours_t paper = display.getPaper();
+
   for (uint16_t y{0}; y < m_bufferHeight; ++y)
   {
     for (uint16_t x{0}; x < m_bufferWidth; ++x)
@@ -1075,11 +1068,11 @@ void Fonts::showBuffer(const int &X, const int &Y)
 
       if (m_pixelBuffer[byteAddress] & bit)
       {
-        screen.drawPixel(x + X, y + Y, m_ink);
+        screen.drawPixel(x + X, y + Y, ink);
       }
       else
       {
-        screen.drawPixel(x + X, y + Y, m_paper);
+        screen.drawPixel(x + X, y + Y, paper);
       }
     }
   }
@@ -1093,12 +1086,6 @@ dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
     prepImgGlyph(code, &G);
 
     return {G.dimensions.W, G.dimensions.W};
-}
-
-void Fonts::setTextColor(const colours_t &ink, const colours_t &paper)
-{
-  m_ink = ink;
-  m_paper = paper;
 }
 
 void Fonts::printPixel(coordinate_t X, coordinate_t Y, colours_t ink)
@@ -1126,13 +1113,12 @@ void Fonts::printPixel(coordinate_t X, coordinate_t Y, colours_t ink)
 
 void Messages::execute(const char* buffer)
 {
-  fonts.setTextColor(defaultInk, defaultPaper);
+  display.setColours(defaultInk, defaultPaper);
   fonts.print((char *)(buffer));
 }
 
 void Messages::execute(const uint8_t &M)
 {
-  fonts.setTextColor(defaultInk, defaultPaper);
   String text = translations[M];
   fonts.print(text);
 }
@@ -1182,14 +1168,21 @@ void Messages::showUptime(void)
           isrTimings.timeInMinutes,
           isrTimings.timeInSeconds);
  
-  fonts.setTextColor(defaultPaper, GREY);  
+  display.setColours(defaultPaper, GREY);  
   fonts.setFont(&HOTSMALL);
   uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
   uint8_t margin = (TFT_WIDTH - width) / 2;
   fonts.setBufferDimensions(TFT_WIDTH, 18);
   fonts.print(margin, TFT_HEIGHT - 16, msg);
-  fonts.setTextColor(defaultInk, defaultPaper); 
+  display.setColours(defaultInk, defaultPaper); 
   delete[] msg;
+}
+
+void Messages::debugger(const int &X, const int &Y, char* msg)
+{
+  fonts.setFont(&HOTSMALL);
+  fonts.setBufferDimensions(TFT_WIDTH, 18);
+  fonts.print(X, Y, msg);
 }
 
 void Graph::draw(const quadrilateral_t* quad, const colours_t &ink, const colours_t &outline)

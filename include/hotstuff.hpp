@@ -129,8 +129,6 @@ class Fonts
     
     uint16_t  m_X {0};
     uint16_t  m_Y {0};
-    colours_t m_ink {defaultInk};
-    colours_t m_paper {defaultPaper};
     uint8_t   m_rotation;
     char*     m_pixelBuffer {nullptr};
     uint16_t  m_bufferWidth {FONT_BUFF_WIDTH};  
@@ -155,16 +153,6 @@ class Fonts
     {
       m_bufferWidth  = W;
       m_bufferHeight = H;
-    }
-
-    void setInk(colours_t ink)
-    {
-      m_ink = ink;
-    }
-
-    void setPaper(colours_t paper)
-    {
-      m_paper = paper;
     }
 
     void setRotation(const uint8_t &R)
@@ -254,6 +242,12 @@ class Display
   const uint16_t width  {TFT_WIDTH};
   const uint16_t height {TFT_HEIGHT};
   
+  void setColours(const colours_t &ink, const colours_t &paper)
+  {
+    m_ink   = ink;
+    m_paper = paper;
+  }
+
   colours_t getInk()
   {
     return m_ink;
@@ -317,7 +311,7 @@ class Graph
    * the first few lines just wall off temperatures from under freezing and above 50.
    */
 
-  void displayGraph();
+  void drawGraph();
 
   /**
    * @brief  Overdraws the graph outline in the current foreground
@@ -395,7 +389,11 @@ class Messages
     translations[xdanger]  = F("-DANGER TO LIFE-");
   };
 
+
+  void debugger(const int &X, const int &Y, char* msg);
+
   /**
+   * 
    * @brief Print a short enumerated message
    * 
    * @param M Message number
@@ -582,7 +580,6 @@ class Reading
     reading_t m_lowRead {};
     reading_t m_highRead {};
     reading_t m_reading {};
-    reading_t m_mean {};
     reading_t m_cumulativeMovingAverage {};
     reading_t m_correction {};
     reading_t m_cmaCounter {};
@@ -599,29 +596,21 @@ class Reading
       // cumulative moving averages are a form of mean that doesn't need to track every single value
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
       m_cmaCounter = 0.0;
-      m_lowRead = 0;
-      m_highRead = 0;
-      m_reading = 0;
-      m_readPtr = 0;
-      m_mean = 0;
-      m_cumulativeMovingAverage = 0;
-      m_correction = 0;
+      m_lowRead    = 0.;
+      m_highRead   = 0.0;
+      m_reading    = 0.0;
+      m_readPtr    = 0;
+      m_cumulativeMovingAverage = 0.0;
+      m_correction = 0.0;
       m_cmaCounter = 0;
       m_position.X = 0;
       m_position.Y = 0;
-      m_trace = 0;           // graph line colour
+      m_trace      = 0;   // graph line colour
       
       // If we run out of memory (just 72 bytes requested) here, we've got bigger problems!
       m_min  = new int8_t[HOURS];
       m_max  = new int8_t[HOURS];
       m_read = new int8_t[HOURS];
-
-      for (auto i {0}; i < HOURS ; ++i)
-      {        
-        m_max[i]  = (GRAPH_Y + FSD);
-        m_min[i]  = (GRAPH_Y + FSD);
-        m_read[i] = (GRAPH_Y + FSD);
-      }
   }
   
   ~Reading() 
@@ -635,20 +624,17 @@ class Reading
 
   void setPipe(const int8_t &min, const int8_t &max, const int8_t &read)
   {
-    m_max[m_readPtr]  = max;
-    m_min[m_readPtr]  = min;
-    m_read[m_readPtr] = read;
+    m_max[m_readPtr]  = (int8_t)max;
+    m_min[m_readPtr]  = (int8_t)min;
+    m_read[m_readPtr] = (int8_t)read;
     ++m_readPtr;
-  } 
-
-  void slidePipe()
-  {
-    for (auto i{1}; i < HOURS; ++i)
-    {
-      m_max[i-1] = m_max[i];
-      m_min[i-1] = m_max[i];
-    }
+    m_readPtr %= 24;
   }
+
+  uint8_t getPtr()
+  {
+    return m_readPtr;
+  } 
   
   colours_t getTrace()
   {
@@ -670,6 +656,21 @@ class Reading
     return m_lowRead;
   }
 
+  void initReads(const reading_t &R)
+  {
+    m_lowRead  = R;
+    m_highRead = R;
+    m_cumulativeMovingAverage = R;
+
+    for (auto i {0}; i < HOURS ; ++i)
+    {        
+      m_max[i]  = R;
+      m_min[i]  = R;
+      m_read[i] = R;
+    }
+    Serial.println((int)R);
+  }
+
   void setLowRead(const reading_t &R)
   {
     m_lowRead = R;
@@ -688,6 +689,11 @@ class Reading
   reading_t getReading()
   {
     return m_reading;
+  }
+
+  reading_t getReading(const int &ptr)
+  {
+    return m_read[ptr];
   }
 
   void setX(const int16_t &X)

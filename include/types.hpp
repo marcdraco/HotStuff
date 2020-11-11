@@ -108,17 +108,6 @@ using hieroglyphs_t = struct
   glyph_t glyphics[];
 };
 
-using dr_bleaching_t = struct
-{
-  int16_t Xmin;       // Leftmost X position of this glyph
-  int16_t Xmax;       // Rightmost X position of this glyph
-  int16_t cursorX;    // "cursor" position moved regardless of if glyph is printed
-  int16_t oXmin;   // As Xmin for previous loop
-  int16_t oXmax;   // As Xmax for previous loop
-  bool done;
-
-};
-
 struct 
 {
   volatile isrtiming_t timeInSeconds {0};

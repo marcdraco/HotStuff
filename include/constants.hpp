@@ -97,9 +97,9 @@ constexpr int TEXTSMALL      {1};
 constexpr int BASEWIDTH      {6};
 constexpr int BASEHEIGHT     {8};
 
-constexpr int DRY_WARN_X     {228 / WIDTH_SCALE};
-constexpr int DAMP_WARN_X    {228 / WIDTH_SCALE};
-constexpr int FROSTWARN_X    {228 / WIDTH_SCALE};
+constexpr int DRY_WARN_X     {0 / WIDTH_SCALE};
+constexpr int DAMP_WARN_X    {100 / WIDTH_SCALE};
+constexpr int FROSTWARN_X    {200 / WIDTH_SCALE};
 
 constexpr int LEFTMARGIN     {20 / WIDTH_SCALE};
 constexpr int LEFTAXISLABEL  {5 / WIDTH_SCALE};
