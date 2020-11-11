@@ -46,6 +46,12 @@ using coordinates_t  = struct
   coordinate_t Y;
 };
 
+using ucoordinates_t  = struct 
+{
+  ucoordinate_t X; 
+  ucoordinate_t Y;
+};
+
 using dimensions_t = struct 
 {
   uint16_t W;

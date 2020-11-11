@@ -230,7 +230,7 @@ void Graph::displayGraph(void)
 
     drawReticles();
 
-    if (temperature.getCMA() > 50)
+    if (temperature.getCMA() > 40)
     {
       temperature.setY((GRAPH_Y + FSD) - 100);
     }
@@ -247,28 +247,17 @@ void Graph::displayGraph(void)
 
     //put the latest readings at the end of the pipe.
 
-    uint8_t step{16}; 
-
-    for (auto i {0}; i < getGraphWidth() -1; i += step)
+    for (auto i {0}; i < HOURS; ++i)
     {
+      float step {getGraphWidth() / 24.0};
       colours_t T = temperature.getTrace();
       colours_t H = humidity.getTrace();
-      ucoordinate_t xPosition = i + getGraphX();
-      int temperatureX = xPosition;
-      int humidityX    = xPosition + (step / 2) + 1;
-      int baseY        = GRAPH_Y;
-      {
-        int min = random(20)+18;
-        int max = random(20)+20;
-        drawIBar(temperatureX , baseY, 5, abs(max - min), T);
-      }
+      ucoordinate_t xPosition = static_cast<uint16_t>(step * i) + getGraphX();
 
-      {
-        int min = random(10)+50;
-        int max = random(10)+50;
-        drawIBar(humidityX , baseY, 5, abs(max - min), H);
-      }
+      drawDiamond(xPosition, i *3 + GRAPH_Y, 1, H);
     }
+
+
     temperature.slidePipe();
     humidity.slidePipe();
 }
@@ -278,6 +267,21 @@ void Graph::drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoor
   screen.drawFastHLine(X, Y, W, ink);
   screen.drawFastHLine(X, Y + H, W, ink);
   screen.drawFastVLine(X + (W/2), Y, H, ink); // width should be an odd number or this looks odd
+}
+
+void Graph::drawDiamond(const ucoordinate_t &X, const ucoordinate_t &Y, const uint8_t &S, const colours_t &ink)
+{
+  ucoordinates_t d[4] {X, Y, 
+                        X + S, Y - S, 
+                        X + (S * 2), Y, 
+                        X + S, Y + S
+                      };
+
+  for (int i{0}; i < 3; ++i)
+  {
+    screen.drawLine(d[i].X, d[i].Y, d[i + 1].X, d[i + 1].Y, ink);
+  }
+  screen.drawLine(d[3].X, d[3].Y, d[0].X, d[0].Y, ink);
 }
 
 void Graph::drawMainAxes(void)
@@ -430,8 +434,9 @@ void Reading::updateReading(const reading_t &reading)
                               (m_reading - m_cumulativeMovingAverage) / ++m_cmaCounter
                               );
   
-  setPipe(HOURS - 1, static_cast<const uint8_t>(round(m_lowRead)), 
-                     static_cast<const uint8_t>(round(m_highRead))
+  setPipe(static_cast<const uint8_t>(round(m_lowRead)), 
+          static_cast<const uint8_t>(round(m_highRead)),
+          static_cast<const uint8_t>(round(m_reading))
          );
 }
 

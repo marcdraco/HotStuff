@@ -307,6 +307,7 @@ class Graph
   void rotate(quadrilateral_t* polygon, const angle_t &theta);
 
   void drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoordinate_t &W, const ucoordinate_t &H, const colours_t &ink);
+  void drawDiamond(const ucoordinate_t &X, const ucoordinate_t &Y, const uint8_t &S, const colours_t &ink);
 
   /**
    * @brief Displays the main graph
@@ -586,8 +587,10 @@ class Reading
     reading_t m_correction {};
     reading_t m_cmaCounter {};
     colours_t m_trace {};          // graph line colour
-    int8_t*  m_max {};
-    int8_t*  m_min {};
+    int8_t*   m_max {};
+    int8_t*   m_min {};
+    int8_t*   m_read {};
+    int8_t    m_readPtr {};   // clock-like pointer to array
     
     public:
     
@@ -599,6 +602,7 @@ class Reading
       m_lowRead = 0;
       m_highRead = 0;
       m_reading = 0;
+      m_readPtr = 0;
       m_mean = 0;
       m_cumulativeMovingAverage = 0;
       m_correction = 0;
@@ -607,14 +611,16 @@ class Reading
       m_position.Y = 0;
       m_trace = 0;           // graph line colour
       
-      // If we run out of memory here, we've got bigger problems!
-      m_min = new int8_t[HOURS];
-      m_max = new int8_t[HOURS];
+      // If we run out of memory (just 72 bytes requested) here, we've got bigger problems!
+      m_min  = new int8_t[HOURS];
+      m_max  = new int8_t[HOURS];
+      m_read = new int8_t[HOURS];
 
       for (auto i {0}; i < HOURS ; ++i)
       {        
-        m_max[i] = (GRAPH_Y + FSD);
-        m_min[i] = (GRAPH_Y + FSD);
+        m_max[i]  = (GRAPH_Y + FSD);
+        m_min[i]  = (GRAPH_Y + FSD);
+        m_read[i] = (GRAPH_Y + FSD);
       }
   }
   
@@ -624,12 +630,15 @@ class Reading
     // practise to do this even if it's not.
     delete [] m_max;
     delete [] m_min;
+    delete [] m_read;
   }
 
-  void setPipe(const uint16_t &i, const int8_t &min, const int8_t &max)
+  void setPipe(const int8_t &min, const int8_t &max, const int8_t &read)
   {
-    m_max[i] = max;
-    m_min[i] = min;
+    m_max[m_readPtr]  = max;
+    m_min[m_readPtr]  = min;
+    m_read[m_readPtr] = read;
+    ++m_readPtr;
   } 
 
   void slidePipe()
@@ -681,24 +690,6 @@ class Reading
     return m_reading;
   }
 
-  void setMinMax()
-  {
-    if (m_reading < m_lowRead)
-    {
-      m_lowRead = m_reading;
-    }
-
-    if (m_reading > m_highRead)
-    {
-      m_highRead = m_reading;
-    }
-  }
-
-  reading_t getCMA()
-  {
-    return m_cumulativeMovingAverage;
-  }
-
   void setX(const int16_t &X)
   {
     m_position.X = X;
@@ -733,6 +724,7 @@ class Reading
    * 
    */
   
+
   void showReadings();
 
   /**
@@ -747,6 +739,12 @@ class Reading
    * 
    */
     void bufferReading(const reading_t &reading, char* buffer, const semaphore_t &flags);
+
+  
+  reading_t getCMA()
+  {
+    return m_cumulativeMovingAverage;
+  }
 
 };
 #endif
