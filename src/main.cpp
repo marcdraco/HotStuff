@@ -167,7 +167,7 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  delay(00);
+  delay(0);
 
   graph.initGraph();
   fonts.setFont(&HOTSMALL);
@@ -183,9 +183,10 @@ void setup()
   readings_t read;
   
   dht22.read(&read.H, &read.T);
-  
-  temperature.initReads(read.T);
-  humidity.initReads(read.H);
+  Serial.println(read.H);
+  Serial.println(read.T);
+  temperature.initReads(20.0);
+  humidity.initReads(40.0);
 }
  
 void loop()
@@ -212,8 +213,8 @@ void loop()
   temperature.takeReadings();
   humidity.takeReadings();
 
-  temperature.showReadings();  
-  humidity.showReadings();  
+  Reading::showReadings(); // this should be static.
+  graph.drawGraph();
 }
 
 void showLCDReads(void)
@@ -221,30 +222,26 @@ void showLCDReads(void)
 
 void Graph::drawGraph(void)
 {
-    if (flags.isSet(UPDATEREADS))
-    {
-      return;
-    }
-    flags.clear(UPDATEREADS);
-
     drawReticles();
-
     //put the latest readings at the end of the pipe.
 
     for (auto i {0}; i < HOURS; ++i)
     {
+      colours_t ink = temperature.getTrace();
       float step {getGraphWidth() / 24.0};
       ucoordinate_t xPosition = static_cast<uint16_t>(step * i) + getGraphX();
-      drawDiamond(xPosition, GRAPH_Y + FSD - (temperature.getReading(i) * 3), 1, temperature.getTrace());
+      //drawDiamond(xPosition, GRAPH_Y + FSD - (temperature.getReading(i) * 3), 1, ink);
+      screen.fillRect(xPosition, GRAPH_Y + FSD - temperature.getReading(i) *3, 4, 4, ink);
     }
 
     for (auto i {0}; i < HOURS; ++i)
     {
+      colours_t ink = humidity.getTrace();
       float step {getGraphWidth() / 24.0};
       ucoordinate_t xPosition = static_cast<uint16_t>(step * i) + getGraphX();
-      drawDiamond(xPosition, GRAPH_Y + FSD - humidity.getReading(i)   , 1, humidity.getTrace());
+      //drawDiamond(xPosition, GRAPH_Y + FSD - humidity.getReading(i), 1, humidity.getTrace());
+      screen.fillRect(xPosition, GRAPH_Y + FSD - humidity.getReading(i), 4, 4, ink);
     }
-
 }
 
 void Graph::drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoordinate_t &W, const ucoordinate_t &H, const colours_t &ink)
@@ -433,15 +430,14 @@ void Reading::showReadings(void)
     fonts.setFont(&HOTLARGE);
     display.setInk(defaultInk);
     char buffer[10];
-
-    graph.drawGraph();
+    Serial.println("called");
 
     fonts.setFont(&HOTLARGE);
     fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
-    bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
+    temperature.bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
     fonts.print(0, 0, buffer);
     
-    bufferReading(humidity.getReading(), buffer, HUMIDITY);
+    temperature.bufferReading(humidity.getReading(), buffer, HUMIDITY);
     fonts.print(TFT_WIDTH / 2, 0, buffer);
 }
 

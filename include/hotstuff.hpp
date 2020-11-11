@@ -731,7 +731,7 @@ class Reading
    */
   
 
-  void showReadings();
+  static void showReadings();
 
   /**
    * @brief Calls bufferReading with the current X,Y positions
