@@ -89,55 +89,19 @@ constexpr int BUTTON_PIN     {10};      // the acknowlegement button to stop ale
 constexpr int DHT22_POWER    {11};      // pin to power the DHT22 since the power pins are covered.
 constexpr int DHT22_DATA     {12};      // The DHT 22 can be powered elsewhere leaving this free however.
 constexpr int ALARM_PIN      {13};      // LED or a high-impedance buzzer
-constexpr int WIDTH_SCALE    {1};       // divide the size of the screen based on a 320x240 matrix
-constexpr int HEIGHT_SCALE   {1};       // divide the size of the screen based on a 320x240 matrix
-constexpr int TEXTLARGE      {3};
-constexpr int TEXTSMALL      {1};
 
-constexpr int BASEWIDTH      {6};
-constexpr int BASEHEIGHT     {8};
+constexpr int UPTIME_Y       {228};
+constexpr int TRADIAL_X      {160};
+constexpr int TRADIAL_Y      {120};
+constexpr int HRADIAL        {160};
+constexpr int INNER_RADIUS   {40 };
+constexpr int OUTER_RADIUS   {70 };
 
-constexpr int DRY_WARN_X     {0 / WIDTH_SCALE};
-constexpr int DAMP_WARN_X    {100 / WIDTH_SCALE};
-constexpr int FROSTWARN_X    {200 / WIDTH_SCALE};
-
-constexpr int LEFTMARGIN     {20 / WIDTH_SCALE};
-constexpr int LEFTAXISLABEL  {5 / WIDTH_SCALE};
-
-constexpr int BIGREAD_Y      {60 / HEIGHT_SCALE};
-constexpr int DRY_WARN_Y     {80 / HEIGHT_SCALE};
-constexpr int FROSTWARN_Y    {80 / HEIGHT_SCALE};
-
-constexpr int HEATINDEX_Y    {120 / HEIGHT_SCALE};
-constexpr int LOW_TEMP_X      {42 / WIDTH_SCALE};
-constexpr int LOW_TEMP_Y      {100 / HEIGHT_SCALE};
-constexpr int HIGHTEMP_y     {LOW_TEMP_Y};
-constexpr int LOWHUMID_Y     {LOW_TEMP_Y};
-constexpr int HIGHHUMID_Y    {LOW_TEMP_Y};
-constexpr int DAMP_WARN_Y     {80  / HEIGHT_SCALE};
-constexpr int UPTIME_Y       {228 / HEIGHT_SCALE};
-constexpr int AXIS_Y_POSITION {30  / HEIGHT_SCALE};
-constexpr int TRADIAL_X      {160 / WIDTH_SCALE};
-constexpr int TRADIAL_Y      {120 / HEIGHT_SCALE};
-constexpr int HRADIAL        {160 / HEIGHT_SCALE};
-constexpr int INNER_RADIUS   {40  / WIDTH_SCALE};
-constexpr int OUTER_RADIUS   {70  / WIDTH_SCALE};
-constexpr int FSD            {100 / HEIGHT_SCALE};
-constexpr int TFT_ERROR_Y    {234 / HEIGHT_SCALE};
-constexpr int TFT_WIDTH      {320 / WIDTH_SCALE};
-constexpr int TFT_HEIGHT     {240 / HEIGHT_SCALE};
-constexpr int HEIGHT         {100 / HEIGHT_SCALE};
-constexpr int GRAPH_Y        {110 / HEIGHT_SCALE};
+constexpr int TFT_WIDTH      {320};
+constexpr int TFT_HEIGHT     {240};
 
 constexpr int FONT_BUFF_WIDTH    {160}; // special "offscreen" buffer for deleting and pre-rendering fonts
 constexpr int FONT_BUFF_HEIGHT   {46};  // The size of this is crucial because it uses a LOT of RAM.
-
-constexpr int CAUTION        {32};     // Three watermarks (32,41,54)
-constexpr int WARNING        {41};     // per Steadman "safe" for working temperatures
-constexpr int RISK           {54};     // Above 54c is very bad
-constexpr float FROST_WATERSHED {4.0}; // ice can appear/persist around this temp
-constexpr int SHORTPRESS     {2};
-constexpr int LONGPRESS      {10};
 
 constexpr float MIN_COMFORT_TEMP  {20.0};      // the minium temperature considered "normal"
 constexpr float MAX_COMFORT_TEMP  {22.0};     // the maxium temperature considered "normal"
@@ -146,9 +110,6 @@ constexpr float GUARD_TEMP        {2.0};      // the guard zone values +- the co
 constexpr float MIN_COMFORT_HUMID {40.0};      // the minium temperature considered "normal"
 constexpr float MAX_COMFORT_HUMID {60.0};      // the maxium temperature considered "normal"
 constexpr float GUARD_HUMID       {2.0};      // the guard zone values +- the comfort min/max start to set up more alerts
-
-constexpr float DAMP_AIR_WATERSHED {MIN_COMFORT_HUMID - GUARD_HUMID};
-constexpr float DRY_AIR_WATERSHED  {MAX_COMFORT_HUMID + GUARD_HUMID};
 
 #ifndef toFahrenheit
 #define toFahrenheit(a) (a * 1.8 + 32)

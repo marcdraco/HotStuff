@@ -134,23 +134,22 @@ void pause()
 
 void setup()
 {
- uint16_t ID{screen.readID()};
+  const int BUTTON_PIN  {10};      // the acknowlegement button to stop alerts for ice, damp etc.
+  const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
+  const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
+  const int ALARM_PIN   {13};      // LED or a high-impedance buzzer
+  uint16_t ID{screen.readID()};
 
   if (ID == 0xD3D3)
   {
     ID = 0x9481; //force ID if write-only screen
   }
   screen.begin(ID);
-  Serial.begin(9600);
   humidity.setTrace(AZURE);    // humidity graph line
   temperature.setTrace(YELLOW);   // temperature graph line
 
   fonts.setFont(static_cast<const gfxfont_t *>(&HOTLARGE));
- /*
-  humidity.setX(160);
-  humidity.setY(10);
-  temperature.setY(10);
-*/
+
 #ifdef USE_METRIC
   flags.set(USEMETRIC);
 #endif
@@ -167,8 +166,6 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  delay(0);
-
   graph.initGraph();
   fonts.setFont(&HOTSMALL);
   screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
@@ -183,8 +180,6 @@ void setup()
   readings_t read;
   
   dht22.read(&read.H, &read.T);
-  Serial.println(read.H);
-  Serial.println(read.T);
   temperature.initReads(20.0);
   humidity.initReads(40.0);
 }
@@ -222,41 +217,87 @@ void showLCDReads(void)
 
 void Graph::drawGraph(void)
 {
-    drawReticles();
-    //put the latest readings at the end of the pipe.
+    drawReticles(6, 6);
 
-    for (auto i {0}; i < HOURS; ++i)
+    for (auto i {1}; i < 7; ++i)
     {
-      colours_t ink = temperature.getTrace();
-      float step {getGraphWidth() / 24.0};
-      ucoordinate_t xPosition = static_cast<uint16_t>(step * i) + getGraphX();
-      //drawDiamond(xPosition, GRAPH_Y + FSD - (temperature.getReading(i) * 3), 1, ink);
-      screen.fillRect(xPosition, GRAPH_Y + FSD - temperature.getReading(i) *3, 4, 4, ink);
+      const colours_t ink  = temperature.getTrace();
+      const int8_t  scale  = 2;
+      int read = 19;
+      int min  = 18;
+      int max  = 23;
+      drawMinMax((xStep * i) + X, read, min, max, scale, ink);           
     }
 
-    for (auto i {0}; i < HOURS; ++i)
+    for (auto i {1}; i < 7; ++i)
     {
-      colours_t ink = humidity.getTrace();
-      float step {getGraphWidth() / 24.0};
-      ucoordinate_t xPosition = static_cast<uint16_t>(step * i) + getGraphX();
-      //drawDiamond(xPosition, GRAPH_Y + FSD - humidity.getReading(i), 1, humidity.getTrace());
-      screen.fillRect(xPosition, GRAPH_Y + FSD - humidity.getReading(i), 4, 4, ink);
+      const colours_t ink = humidity.getTrace();
+      const int8_t  scale  = 1;
+
+      int read = 65;
+      int min  = 40;
+      int max  = 80;
+      drawMinMax((xStep * i) + X, read, min, max, scale, ink);           
     }
 }
 
-void Graph::drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoordinate_t &W, const ucoordinate_t &H, const colours_t &ink)
+void Graph::drawIBar(const ucoordinate_t X, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink)
 {
-  screen.drawFastHLine(X, Y, W, ink);
-  screen.drawFastHLine(X, Y + H, W, ink);
-  screen.drawFastVLine(X + (W/2), Y, H, ink); // width should be an odd number or this looks odd
+  const ucoordinate_t vX = (ink == temperature.getTrace()) ? X - 1 : X + 1; 
+  const ucoordinate_t Y  = BASE - (static_cast<int8_t>(round(reading)) * scale);
+  const uint16_t max     = BASE - (static_cast<int8_t>(round(abs(maximum))) * scale);  
+  const uint16_t min     = BASE - (static_cast<int8_t>(round(abs(minimum))) * scale);
+  const uint16_t outset  = 5; 
+  screen.drawFastVLine(vX, max, min - max, ink);
+
+  if (ink == temperature.getTrace())
+  {
+    screen.drawFastHLine(vX - outset, Y, outset, ink);
+    screen.drawFastHLine(vX - outset, max, outset, ink);
+    screen.drawFastHLine(vX - outset, min, outset, ink);      
+  }
+  else
+  {
+    screen.drawFastHLine(vX, Y,   outset, ink);
+    screen.drawFastHLine(vX, max, outset, ink);
+    screen.drawFastHLine(vX, min, outset, ink);      
+  }
+        
 }
 
-void Graph::drawDiamond(const ucoordinate_t &X, const ucoordinate_t &Y, const uint8_t &S, const colours_t &ink)
+void Graph::drawMinMax(const ucoordinate_t X, const reading_t reading, const int16_t minimum, const int16_t maximum, const int8_t scale, const colours_t ink)
 {
-  ucoordinates_t d[4] {X, Y, 
-                        X + S, Y - S, 
-                        X + (S * 2), Y, 
-                        X + S, Y + S
+  const uint16_t outset  = 3; 
+  const ucoordinate_t vX = (ink == temperature.getTrace()) ? X - outset : X + outset;
+  const ucoordinate_t Y  = BASE - (static_cast<int8_t>(round(reading)) * scale);
+  const uint16_t max     = BASE - (static_cast<int8_t>(round(abs(maximum))) * scale);  
+  const uint16_t min     = BASE - (static_cast<int8_t>(round(abs(minimum))) * scale);
+
+  screen.drawFastVLine(vX, max, min - max, ink);
+
+  screen.drawLine(vX - outset, max - outset, vX, max, ink);
+  screen.drawLine(vX + outset, max - outset, vX, max, ink);
+  screen.drawLine(vX - outset, min + outset, vX, min, ink);
+  screen.drawLine(vX + outset, min + outset, vX, min, ink);
+
+  if (ink == temperature.getTrace())
+  {
+    screen.drawFastHLine(vX - outset, Y, outset, ink);
+  }
+  else
+  {
+    screen.drawFastHLine(vX, Y, outset, ink);
+  }
+}
+
+void Graph::drawDiamond(const ucoordinate_t X, const reading_t reading, const uint16_t scale, const uint8_t S, const colours_t ink)
+{
+  const uint16_t y = BASE - (static_cast<int8_t>(round(reading)) * scale);
+
+  ucoordinates_t d[4] { X - S,  y, 
+                        X,  y - S, 
+                        X + S,  y, 
+                        X,  y + S
                       };
 
   for (int i{0}; i < 3; ++i)
@@ -266,48 +307,27 @@ void Graph::drawDiamond(const ucoordinate_t &X, const ucoordinate_t &Y, const ui
   screen.drawLine(d[3].X, d[3].Y, d[0].X, d[0].Y, ink);
 }
 
-void Graph::drawMainAxes(void)
+void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 {
-  screen.drawFastHLine(getGraphX(), GRAPH_Y + FSD, getGraphWidth(), defaultInk);
-  screen.drawFastVLine(getGraphX() - 1, GRAPH_Y, FSD, defaultInk);
-  screen.drawFastVLine(getGraphX() + getGraphWidth(), GRAPH_Y, FSD, defaultInk);
-}
-
-void Graph::drawReticles(void)
-{
-   // draws vertical blanking strokes and reticules 
-  for (auto i {0}; i < getGraphWidth(); ++i)    
+  for (auto i {0}; i < 7; ++i)    
   {
-    ucoordinate_t xPosition = i + getGraphX();
-
-    // seven vertical divisions
-    if (i % (getGraphWidth() / 8) == 0)              
-    {
-      screen.drawFastVLine(xPosition, GRAPH_Y, FSD, reticleColour);
-    }
+    screen.drawFastVLine(X + xStep * i, Y - H, H, reticleColour);
   }
 
-  for (auto i {0}; i < FSD + 20; i = i + 20)
+  for (auto i {1}; i < 6; ++i)
   {
-    screen.drawFastHLine(getGraphX(), GRAPH_Y + i, getGraphWidth(), reticleColour);
+    screen.drawFastHLine(X, Y - H + i * yStep, W, reticleColour);
   }
 
-  minmax_t humids;
-  minmax_t temps;
-
-  humids.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_HUMID;
-  humids.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_HUMID;
-  temps.min = (GRAPH_Y + HEIGHT) - MIN_COMFORT_TEMP * 2;
-  temps.max = (GRAPH_Y + HEIGHT) - MAX_COMFORT_TEMP * 2;
-
-  for (auto i {1}; i <getGraphWidth(); i += 10)     
+  for (auto i {1}; i < 7; ++i)
   {
-    auto width {3};
-    screen.drawFastHLine(getGraphX() + i, humids.max, width, BROWNISH);
-    screen.drawFastHLine(getGraphX() + i, humids.min, width, BROWNISH);
-    screen.drawFastHLine(getGraphX() + i, temps.min, width, PURPLEISH);
-    screen.drawFastHLine(getGraphX() + i, temps.max, width, PURPLEISH);
+    screen.drawFastHLine(X - 5, Y - H + i * yStep, 5, defaultInk);
+    screen.drawFastHLine(X +  W, Y - H + i * yStep, 5, defaultInk);
   }
+
+  screen.drawFastHLine(X,     Y,  W,    defaultInk);
+  screen.drawFastVLine(X,     Y - H, H + 5, defaultInk);
+  screen.drawFastVLine(X + W, Y - H, H + 5, defaultInk);
 }
 
 void Graph::initGraph(void)
@@ -328,13 +348,14 @@ void Graph::initGraph(void)
 
   screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.getPaper());
   drawGraphScaleMarks();
-  drawMainAxes();
-  drawReticles(); 
+  drawReticles(6, 6); 
   flags.set(GRAPHACTIVE);
 };
 
 void Graph::drawGraphScaleMarks(void)
 {
+    const int AXIS_Y_POSITION {30};
+
     fonts.setRotation(3);
     fonts.setFont(&HOTSMALL);
     screen.setTextColor(defaultInk);
@@ -357,25 +378,29 @@ void Graph::drawGraphScaleMarks(void)
     fonts.setRotation(0);
 
     // temp scale
-    for (auto i{-10}; i < 50; i += 10)
+    for (auto i{0}; i < 60; i += 10)
     {
         fonts.setFont(&HOTSMALL);
-        char b[6];
-        reading_int_t value;
-        screen.setCursor(getGraphX() - (fonts.getXstep() * 3), 
-                        (GRAPH_Y + FSD) - (i * 2) - 20);
+        const int yShift = fonts.getYstep() / 2;
+        const int X = getGraphX() - (fonts.getXstep() * 3);
+        screen.setCursor(X, BASE - (i * 2) + yShift);
 
-        (flags.isSet(USEMETRIC)) ? value = i : value = static_cast<reading_int_t>(toFahrenheit(i));
+        reading_int_t value = (flags.isSet(USEMETRIC)) ? i : static_cast<reading_int_t>(toFahrenheit(i));
+
+        char b[6];
         sprintf(b, "%3d", value);
         fonts.print(b);
     }
-        
+    
     // humidity scale
     for (auto i{0}; i < 120; i += 20)
     {
         fonts.setFont(&HOTSMALL);
+        const int X = getGraphX() + getGraphWidth() + fonts.getXstep();
+        const int yShift = fonts.getYstep() / 2;
+        screen.setCursor(X, BASE - i + yShift);
+
         char b[6];
-        screen.setCursor(getGraphX() + getGraphWidth() + fonts.getXstep(), (GRAPH_Y + FSD - 4) - i );
         sprintf(b, "%3d", i);
         fonts.print(b);
     }
@@ -427,18 +452,17 @@ void Reading::updateReading(const reading_t &reading)
 
 void Reading::showReadings(void)
 {
-    fonts.setFont(&HOTLARGE);
-    display.setInk(defaultInk);
-    char buffer[10];
-    Serial.println("called");
+  fonts.setFont(&HOTLARGE);
+  display.setInk(defaultInk);
+  char buffer[10];
+  fonts.setFont(&HOTLARGE);
+  fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
+  temperature.bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
+  fonts.print(0, 0, buffer);
+  
+  temperature.bufferReading(humidity.getReading(), buffer, HUMIDITY);
+  fonts.print(TFT_WIDTH / 2, 0, buffer);
 
-    fonts.setFont(&HOTLARGE);
-    fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
-    temperature.bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
-    fonts.print(0, 0, buffer);
-    
-    temperature.bufferReading(humidity.getReading(), buffer, HUMIDITY);
-    fonts.print(TFT_WIDTH / 2, 0, buffer);
 }
 
 void Reading::bufferReading(const reading_t &reading, char* buffer, const semaphore_t &flags)

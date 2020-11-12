@@ -129,7 +129,7 @@ class Fonts
     
     uint16_t  m_X {0};
     uint16_t  m_Y {0};
-    uint8_t   m_rotation;
+    uint8_t   m_rotation {0};
     char*     m_pixelBuffer {nullptr};
     uint16_t  m_bufferWidth {FONT_BUFF_WIDTH};  
     uint16_t  m_bufferHeight {FONT_BUFF_HEIGHT};
@@ -280,9 +280,18 @@ class Display
 
 class Graph
 {
-
   private:
     
+    const int FSD {100};
+    const int W {189};
+    const int H {120};
+    const int X {63};
+    const int Y {240 - 30};
+    const int xStep {27};
+    const int yStep {20};
+    const int GRAPH_Y {110};
+    const int BASE {GRAPH_Y + FSD};
+  
     int m_graphWidth {};
 
   public:
@@ -300,8 +309,9 @@ class Graph
   void rotate(triangle_t* polygon, const angle_t &theta);
   void rotate(quadrilateral_t* polygon, const angle_t &theta);
 
-  void drawIBar(const ucoordinate_t &X, const ucoordinate_t &Y, const ucoordinate_t &W, const ucoordinate_t &H, const colours_t &ink);
-  void drawDiamond(const ucoordinate_t &X, const ucoordinate_t &Y, const uint8_t &S, const colours_t &ink);
+  void    drawIBar(const ucoordinate_t X, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
+  void  drawMinMax(const ucoordinate_t X, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
+  void drawDiamond(const ucoordinate_t X, const reading_t reading, const uint16_t scale, const uint8_t S, const colours_t ink);
 
   /**
    * @brief Displays the main graph
@@ -325,7 +335,7 @@ class Graph
    * @brief Draw the graph lines and chart calibration markings
    * 
    */  
-  void drawReticles();
+  void drawReticles(const uint8_t xDivs, const uint8_t yDivs);
 
   /**
    * @brief Blanks the chart area if it's not already active 
@@ -458,6 +468,24 @@ class Alarm
   private:
 
   uint16_t m_timer {};
+  
+  const int DRY_WARN_X  {0};
+  const int DAMP_WARN_X {100};
+  const int FROSTWARN_X {200};
+  const int DRY_WARN_Y  {80};
+  const int FROSTWARN_Y {80};
+  const int DAMP_WARN_Y {80};
+
+  const int LOW_TEMP_X  {42};
+  const int LOW_TEMP_Y  {100};
+  const int HIGHTEMP_y  {LOW_TEMP_Y};
+  const int LOWHUMID_Y  {LOW_TEMP_Y};
+
+  const int SHORTPRESS  {2};
+  const int LONGPRESS   {10};
+
+  const int LEFTMARGIN    {20};
+  const int LEFTAXISLABEL {5};
 
   public:
 
@@ -493,6 +521,14 @@ class Alarm
 
 class Environmental
 {
+
+  const int CAUTION        {32};     // Three watermarks (32,41,54)
+  const int WARNING        {41};     // per Steadman "safe" for working temperatures
+  const int RISK           {54};     // Above 54c is very bad
+  const float FROST_WATERSHED {4.0}; // ice can appear/persist around this temp
+  const float DAMP_AIR_WATERSHED {MIN_COMFORT_HUMID - GUARD_HUMID};
+  const float DRY_AIR_WATERSHED  {MAX_COMFORT_HUMID + GUARD_HUMID};
+
   public:
   /**
    * @brief Test the humidity is within watershed (and trigger alarms)
@@ -668,7 +704,6 @@ class Reading
       m_min[i]  = R;
       m_read[i] = R;
     }
-    Serial.println((int)R);
   }
 
   void setLowRead(const reading_t &R)
