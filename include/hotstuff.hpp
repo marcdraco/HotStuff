@@ -320,10 +320,10 @@ class Graph
    * 
    * convert the temperature and humidity.reading readings into something that scales to the chart.
    * the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
-   * the first few lines just wall off temperatures from under freezing and above 50.
+   * The flag determines which "phase" we're in (clear readings or set new ones)
    */
 
-  void drawGraph();
+  void drawGraph(const int8_t flag);
 
   /**
    * @brief  Overdraws the graph outline in the current foreground
@@ -608,24 +608,18 @@ class Environmental
 class Reading
 {
     private:
-    using coordinates_t = struct 
-    {
-      int16_t X {}; 
-      int16_t Y {};
-    };
 
-    coordinates_t m_position {};
-    reading_t m_lowRead {};
-    reading_t m_highRead {};
-    reading_t m_reading {};
-    reading_t m_cumulativeMovingAverage {};
-    reading_t m_correction {};
-    reading_t m_cmaCounter {};
-    colours_t m_trace {};          // graph line colour
-    int8_t*   m_max {};
-    int8_t*   m_min {};
-    int8_t*   m_read {};
-    int8_t    m_readPtr {};   // clock-like pointer to array
+    float      m_cumulativeMovingAverage {};
+    reading_t  m_correction {};
+    reading_t  m_cmaCounter {};
+    reading_t  m_minRead {};
+    reading_t  m_maxRead {};
+    reading_t  m_currRead {};
+    int8_t     m_readPtr {};  // clock-like pointer to array
+    colours_t  m_trace {};    // graph line colour
+    int8_t*    m_max {};      // pointer to rouned integers for the graph
+    int8_t*    m_min {};      // pointer to rouned integers for the graph
+    reading_t* m_read {};     // floating point for actual readings.
     
     public:
     
@@ -634,21 +628,16 @@ class Reading
       // cumulative moving averages are a form of mean that doesn't need to track every single value
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
       m_cmaCounter = 0.0;
-      m_lowRead    = 0.;
-      m_highRead   = 0.0;
-      m_reading    = 0.0;
       m_readPtr    = 0;
       m_cumulativeMovingAverage = 0.0;
       m_correction = 0.0;
       m_cmaCounter = 0;
-      m_position.X = 0;
-      m_position.Y = 0;
       m_trace      = 0;   // graph line colour
       
-      // If we run out of memory (just 72 bytes requested) here, we've got bigger problems!
+      // If we run out of memory here, we've got bigger problems!
       m_min  = new int8_t[HOURS];
       m_max  = new int8_t[HOURS];
-      m_read = new int8_t[HOURS];
+      m_read = new float[HOURS];    // floats are doubles by the looks of it!
   }
   
   ~Reading() 
@@ -658,15 +647,6 @@ class Reading
     delete [] m_max;
     delete [] m_min;
     delete [] m_read;
-  }
-
-  void setPipe(const int8_t min, const int8_t max, const int8_t read)
-  {
-    m_max[m_readPtr]  = (int8_t)max;
-    m_min[m_readPtr]  = (int8_t)min;
-    m_read[m_readPtr] = (int8_t)read;
-    ++m_readPtr;
-    m_readPtr %= 24;
   }
 
   uint8_t getPtr()
@@ -684,73 +664,31 @@ class Reading
     m_trace = C;
   }
 
-  reading_t getHighRead()
-  {
-    return m_highRead;
-  }
-
-  reading_t getLowRead()
-  {
-    return m_lowRead;
-  }
-
   void initReads(const reading_t R)
   {
-    m_lowRead  = R;
-    m_highRead = R;
     m_cumulativeMovingAverage = R;
 
     for (auto i {0}; i < HOURS; ++i)
     {        
-      m_max[i]  = R;
-      m_min[i]  = R;
-      m_read[i] = R;
+      m_max[i]  = 50;
+      m_min[i]  = 50;
+      m_read[i] = 126;
     }
-  }
-
-  void setLowRead(const reading_t R)
-  {
-    m_lowRead = R;
-  }
-
-  void setHighRead(const reading_t R)
-  {
-    m_highRead = R;
-  }
-
-  void setReading(const reading_t R)
-  {
-    m_reading = R;
   }
 
   reading_t getReading()
   {
-    return m_reading;
+    return m_currRead;
   }
 
-  reading_t getReading(const int ptr)
+  int8_t getMinRead(const int i)
   {
-    return m_read[ptr];
+    return m_min[i];
   }
 
-  void setX(const int16_t X)
+  int8_t getMaxRead(const int i)
   {
-    m_position.X = X;
-  }
-
-  void setY(const int16_t Y)
-  {
-    m_position.Y = Y;
-  }
-
-  int16_t getX()
-  {
-    return m_position.X;
-  }
-
-  int16_t getY()
-  {
-    return m_position.Y;
+    return m_max[i];
   }
 
   void updateReading(const reading_t reading);
@@ -760,7 +698,7 @@ class Reading
    * 
    */
 
-  void takeReadings();
+  static void takeReadings();
 
   /**
    * @brief Post the large humidity and temperature readings

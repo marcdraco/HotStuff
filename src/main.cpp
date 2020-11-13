@@ -180,64 +180,62 @@ void setup()
   readings_t read;
   
   dht22.read(&read.H, &read.T);
-  temperature.initReads(20.0);
-  humidity.initReads(40.0);
+  temperature.initReads(read.T);
+  humidity.initReads(read.H);
 }
 
 void loop()
 {
-  if (isrTimings.timeInSeconds == 0) // this ticks every minute
-  {
-    /*
-      The "timeToRead" variable is incremented by the interupt service routine
-      once every second. After three seconds we take a new read. Use a larger 
-      int if you prefer. Area temperatures don't vary much unless the sensor is 
-      in a drafty corner!
-    */
-     flags.set(UPDATEREADS);
-  }
+  alarm.checkAlarm();
+  alarm.annunciators();
+  alarm.checkButton();
+  messages.showUptime();
 
-  while (isrTimings.timeToRead < 3)
+  if ( ! (isrTimings.timeInSeconds % 4))
   {
-    alarm.checkAlarm();
-    alarm.annunciators();
-    alarm.checkButton();
-    messages.showUptime();
+    Reading::takeReadings();
+    Reading::showReadings();
   }
-  
-  temperature.takeReadings();
-  humidity.takeReadings();
-
-  Reading::showReadings(); // this should be static.
-  graph.drawGraph();
 }
 
 void showLCDReads(void)
 {}
 
-void Graph::drawGraph(void)
+void Graph::drawGraph(const int8_t flag)
 {
     drawReticles(6, 6);
 
     for (auto i {1}; i < 7; ++i)
     {
-      const colours_t ink  = temperature.getTrace();
-      const int8_t scale  = 2;
-      int read = 19;
-      int min  = 18;
-      int max  = 23;
-      drawMinMax((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
+      const colours_t ink  = (flag == RESET) ? defaultPaper : temperature.getTrace();
+      const int8_t scale   = 2;
+      const int read       = static_cast<int8_t>(round(temperature.getCMA()));
+      const int min        = static_cast<int8_t>(round(temperature.getMinRead(i)));
+      const int max        = static_cast<int8_t>(round(temperature.getMaxRead(i)));
+      if (max > 100)
+      {
+        continue;
+      }
+      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
     }
 
     for (auto i {1}; i < 7; ++i)
     {
-      const colours_t ink = humidity.getTrace();
-      const int8_t  scale  = 1;
+      const colours_t ink  = (flag == RESET) ? defaultPaper : humidity.getTrace();
+      const int8_t scale   = 1;
+      const int read       = static_cast<int8_t>(round(humidity.getCMA()));
+      const int min        = static_cast<int8_t>(round(humidity.getMinRead(i)));
+      const int max        = static_cast<int8_t>(round(humidity.getMaxRead(i)));
+      if (max > 100)
+      {
+        continue;
+      }
+      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
+    }
 
-      int read = 65;
-      int min  = 40;
-      int max  = 80;
-      drawMinMax((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
+    if (flag == RESET)
+    {
+      drawReticles(6, 6);
     }
 }
 
@@ -423,10 +421,11 @@ void Reading::takeReadings(void)
     alarm.sensorFailed(reading);
   }
 
+  graph.drawGraph(RESET);
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
-
-  isrTimings.timeToRead = 0;
+  delay(3000);
+  graph.drawGraph(0);
 
   environment.checkHumidityConditions();
   environment.checkTemperatureConditions();
@@ -435,19 +434,22 @@ void Reading::takeReadings(void)
 
 void Reading::updateReading(const reading_t reading)
 {
-  m_lowRead  = (reading > m_lowRead)  ? reading : m_lowRead;
-  m_highRead = (reading > m_highRead) ? reading : m_highRead;
+  m_currRead = reading + m_correction;
 
-  m_cumulativeMovingAverage = (m_cumulativeMovingAverage + 
-                              (reading - m_cumulativeMovingAverage) / ++m_cmaCounter
-                              ) + m_correction;
-  
-  m_reading = reading + m_correction;
+  m_minRead  = (reading < m_minRead) ? reading : m_minRead;
+  m_maxRead  = (reading > m_maxRead) ? reading : m_maxRead;
 
-  setPipe(static_cast<const uint8_t>(round(m_lowRead)), 
-          static_cast<const uint8_t>(round(m_highRead)),
-          static_cast<const uint8_t>(round(m_reading))
-         );
+  char msg[20];
+  sprintf(msg,"MIN: %d, %d %d", (int) m_minRead, (int) reading, isrTimings.timeToRead);
+  messages.debugger(10, 60, msg);
+
+  m_cumulativeMovingAverage = (m_cumulativeMovingAverage + (reading - m_cumulativeMovingAverage) / ++m_cmaCounter) + m_correction;
+
+  m_max[m_readPtr]  = m_maxRead;
+  m_min[m_readPtr]  = m_minRead;
+  m_read[m_readPtr] = m_currRead;
+  ++m_readPtr;
+  m_readPtr %= 24;
 }
 
 void Reading::showReadings(void)
@@ -462,7 +464,6 @@ void Reading::showReadings(void)
   
   temperature.bufferReading(humidity.getReading(), buffer, HUMIDITY);
   fonts.print(TFT_WIDTH / 2, 0, buffer);
-
 }
 
 void Reading::bufferReading(const reading_t reading, char* buffer, const semaphore_t flags)
@@ -523,8 +524,6 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 {
   TCNT1 = UPDATER;     // preload timer
 
-  ++isrTimings.timeToRead;
-
   flags.flip(FLASHING); // flip the boolean for flashing items
 
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
@@ -538,6 +537,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
     {
       isrTimings.timeInMinutes = 0;
       ++isrTimings.timeInHours;
+      flags.set(UPDATEGRAPH);
 
       if (isrTimings.timeInHours == 24)
       {
@@ -548,12 +548,6 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
         {
           isrTimings.timeInWeeks = 0;
           ++isrTimings.timeInWeeks;
-
-          if (isrTimings.timeInWeeks == 52)
-          {
-            isrTimings.timeInWeeks = 0;
-            ++isrTimings.timeInYears;
-          }
         }
       }
     }
@@ -934,7 +928,6 @@ void Fonts::print(const int X, const int Y, char* buffer)
 
     if (! m_pixelBuffer)
     {
-      screen.fillRect(0, 0, m_bufferWidth, m_bufferHeight, RED);
       STOP
     }
     else
@@ -1202,6 +1195,7 @@ void Messages::debugger(const int X, const int Y, char* msg)
 {
   fonts.setFont(&HOTSMALL);
   fonts.setBufferDimensions(TFT_WIDTH, 18);
+  display.setInk(RED);
   fonts.print(X, Y, msg);
 }
 
