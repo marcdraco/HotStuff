@@ -183,8 +183,6 @@ void setup()
   temperature.initReads(20.0);
   humidity.initReads(40.0);
 }
- 
-
 
 void loop()
 {
@@ -224,11 +222,11 @@ void Graph::drawGraph(void)
     for (auto i {1}; i < 7; ++i)
     {
       const colours_t ink  = temperature.getTrace();
-      const int8_t  scale  = 2;
+      const int8_t scale  = 2;
       int read = 19;
       int min  = 18;
       int max  = 23;
-      drawMinMax((xStep * i) + X, read, min, max, scale, ink);           
+      drawMinMax((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
     }
 
     for (auto i {1}; i < 7; ++i)
@@ -239,14 +237,14 @@ void Graph::drawGraph(void)
       int read = 65;
       int min  = 40;
       int max  = 80;
-      drawMinMax((xStep * i) + X, read, min, max, scale, ink);           
+      drawMinMax((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
     }
 }
 
-void Graph::drawIBar(const ucoordinate_t X, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink)
+void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink)
 {
-  const ucoordinate_t vX = (ink == temperature.getTrace()) ? X - 1 : X + 1; 
-  const ucoordinate_t Y  = BASE - (static_cast<int8_t>(round(reading)) * scale);
+  const ucoordinate_t vX = (ink == temperature.getTrace()) ? x - 1 : x + 1; 
+  const ucoordinate_t y  = BASE - (static_cast<int8_t>(round(reading)) * scale);
   const uint16_t max     = BASE - (static_cast<int8_t>(round(abs(maximum))) * scale);  
   const uint16_t min     = BASE - (static_cast<int8_t>(round(abs(minimum))) * scale);
   const uint16_t outset  = 5; 
@@ -254,23 +252,23 @@ void Graph::drawIBar(const ucoordinate_t X, const reading_t reading, int16_t min
 
   if (ink == temperature.getTrace())
   {
-    screen.drawFastHLine(vX - outset, Y, outset, ink);
+    screen.drawFastHLine(vX - outset, y,   outset, ink);
     screen.drawFastHLine(vX - outset, max, outset, ink);
     screen.drawFastHLine(vX - outset, min, outset, ink);      
   }
   else
   {
-    screen.drawFastHLine(vX, Y,   outset, ink);
+    screen.drawFastHLine(vX, y,   outset, ink);
     screen.drawFastHLine(vX, max, outset, ink);
     screen.drawFastHLine(vX, min, outset, ink);      
   }
         
 }
 
-void Graph::drawMinMax(const ucoordinate_t X, const reading_t reading, const int16_t minimum, const int16_t maximum, const int8_t scale, const colours_t ink)
+void Graph::drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t minimum, const int16_t maximum, const int8_t scale, const colours_t ink)
 {
   const uint16_t outset  = 3; 
-  const ucoordinate_t vX = (ink == temperature.getTrace()) ? X - outset : X + 1;
+  const ucoordinate_t vX = (ink == temperature.getTrace()) ? x - outset : x + 1;
   const ucoordinate_t Y  = BASE - (static_cast<int8_t>(round(reading)) * scale);
   const uint16_t max     = BASE - (static_cast<int8_t>(round(abs(maximum))) * scale);  
   const uint16_t min     = BASE - (static_cast<int8_t>(round(abs(minimum))) * scale);
@@ -292,14 +290,14 @@ void Graph::drawMinMax(const ucoordinate_t X, const reading_t reading, const int
   }
 }
 
-void Graph::drawDiamond(const ucoordinate_t X, const reading_t reading, const uint16_t scale, const uint8_t S, const colours_t ink)
+void Graph::drawDiamond(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink)
 {
   const uint16_t y = BASE - (static_cast<int8_t>(round(reading)) * scale);
 
-  ucoordinates_t d[4] { X - S,  y, 
-                        X,  y - S, 
-                        X + S,  y, 
-                        X,  y + S
+  ucoordinates_t d[4] { x - size,  y, 
+                        x,  y - size, 
+                        x + size,  y, 
+                        x,  y + size
                       };
 
   for (int i{0}; i < 3; ++i)
@@ -313,23 +311,23 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 {
   for (auto i {0}; i < 7; ++i)    
   {
-    screen.drawFastVLine(X + xStep * i, Y - H, H, reticleColour);
+    screen.drawFastVLine(GRAPH_LEFT + xStep * i, BASE - GRAPH_HEIGHT, GRAPH_HEIGHT, reticleColour);
   }
 
   for (auto i {1}; i < 6; ++i)
   {
-    screen.drawFastHLine(X, Y - H + i * yStep, W, reticleColour);
+    screen.drawFastHLine(GRAPH_LEFT, BASE - GRAPH_HEIGHT + i * yStep, GRAPH_WIDTH, reticleColour);
   }
 
   for (auto i {1}; i < 7; ++i)
   {
-    screen.drawFastHLine(X - 5, Y - H + i * yStep, 5, defaultInk);
-    screen.drawFastHLine(X +  W, Y - H + i * yStep, 5, defaultInk);
+    screen.drawFastHLine(GRAPH_LEFT - 5, BASE - GRAPH_HEIGHT + i * yStep, 5, defaultInk);
+    screen.drawFastHLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + i * yStep, 5, defaultInk);
   }
 
-  screen.drawFastHLine(X,     Y,  W,    defaultInk);
-  screen.drawFastVLine(X,     Y - H, H + 5, defaultInk);
-  screen.drawFastVLine(X + W, Y - H, H + 5, defaultInk);
+  screen.drawFastHLine(GRAPH_LEFT,     BASE,  GRAPH_WIDTH,    defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT,     BASE - GRAPH_HEIGHT, GRAPH_HEIGHT + 5, defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT, GRAPH_HEIGHT + 5, defaultInk);
 }
 
 void Graph::initGraph(void)

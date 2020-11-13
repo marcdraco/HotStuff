@@ -39,51 +39,54 @@
 // Do our own checks and defines here for good measure...
 
 #ifndef pgm_read_byte
-#define pgm_read_byte(addr) (*(const unsigned char*)(addr))
+  #define pgm_read_byte(addr) (*(const unsigned char*)(addr))
 #endif
+
 #ifndef pgm_read_word
-#define pgm_read_word(addr) (*(const unsigned short *)(addr))
+  #define pgm_read_word(addr) (*(const unsigned short *)(addr))
 #endif
+
 #ifndef pgm_read_dword
-#define pgm_read_dword(addr) (*(const unsigned long *)(addr))
+  #define pgm_read_dword(addr) (*(const unsigned long *)(addr))
 #endif
 
 // Pointers are a peculiar case...typically 16-bit on AVR boards,
 // 32 bits elsewhere.  Try to accommodate both...
 
 #if !defined(__INT_MAX__) || (__INT_MAX__ > 0xFFFF)
-#define pgm_read_pointer(addr) ((void *)pgm_read_dword(addr))
+  #define pgm_read_pointer(addr) ((void *)pgm_read_dword(addr))
 #else
-#define pgm_read_pointer(addr) ((void *)pgm_read_word(addr))
+  #define pgm_read_pointer(addr) ((void *)pgm_read_word(addr))
 #endif
 
 inline gfxglyph_t* pgm_read_glyph_ptr(const gfxfont_t*gfxFont, uint8_t c) 
 {
-#ifdef __AVR__
-  return &(((gfxglyph_t *)pgm_read_pointer(&gfxFont->glyph))[c]);
-#else
-  // expression in __AVR__ section may generate "dereferencing type-punned
-  // pointer will break strict-aliasing rules" warning In fact, on other
-  // platforms (such as STM32) there is no need to do this pointer magic as
-  // program memory may be read in a usual way So expression may be simplified
-  return gfxFont->glyph + c;
-#endif //__AVR__
+  #ifdef __AVR__
+    return &(((gfxglyph_t *)pgm_read_pointer(&gfxFont->glyph))[c]);
+  #else
+    // expression in __AVR__ section may generate "dereferencing type-punned
+    // pointer will break strict-aliasing rules" warning In fact, on other
+    // platforms (such as STM32) there is no need to do this pointer magic as
+    // program memory may be read in a usual way So expression may be simplified
+    return gfxFont->glyph + c;
+  #endif //__AVR__
 }
 
-inline uint8_t* pgm_read_bitmap_ptr(const gfxfont_t* gfxFont) {
-#ifdef __AVR__
-  return (uint8_t*) pgm_read_pointer(&gfxFont->bitmap);
-#else
-  // expression in __AVR__ section generates "dereferencing type-punned pointer
-  // will break strict-aliasing rules" warning In fact, on other platforms (such
-  // as STM32) there is no need to do this pointer magic as program memory may
-  // be read in a usual way So expression may be simplified
-  return gfxFont->bitmap;
-#endif //__AVR__
+inline uint8_t* pgm_read_bitmap_ptr(const gfxfont_t* gfxFont) 
+{
+  #ifdef __AVR__
+    return (uint8_t*) pgm_read_pointer(&gfxFont->bitmap);
+  #else
+    // expression in __AVR__ section generates "dereferencing type-punned pointer
+    // will break strict-aliasing rules" warning In fact, on other platforms (such
+    // as STM32) there is no need to do this pointer magic as program memory may
+    // be read in a usual way So expression may be simplified
+    return gfxFont->bitmap;
+  #endif //__AVR__
 }
 
 #ifndef min
-#define min(a, b) (((a) < (b)) ? (a) : (b))
+  #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
 class Flags 
@@ -167,7 +170,7 @@ class Fonts
 
     void setFont(const gfxfont_t* pNewSize)
     {
-        m_pFont = pNewSize;
+      m_pFont = pNewSize;
     }
 
     const gfxfont_t* getFont()
@@ -283,10 +286,9 @@ class Graph
   private:
     
     const int FSD {100};
-    const int W {189};
-    const int H {120};
-    const int X {63};
-    const int Y {240 - 30};
+    const int GRAPH_WIDTH {189};
+    const int GRAPH_HEIGHT {120};
+    const int GRAPH_LEFT {63};
     const int xStep {27};
     const int yStep {20};
     const int GRAPH_Y {110};
@@ -309,9 +311,9 @@ class Graph
   void rotate(triangle_t* polygon, const angle_t theta);
   void rotate(quadrilateral_t* polygon, const angle_t theta);
 
-  void    drawIBar(const ucoordinate_t X, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
-  void  drawMinMax(const ucoordinate_t X, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
-  void drawDiamond(const ucoordinate_t X, const reading_t reading, const uint16_t scale, const uint8_t S, const colours_t ink);
+  void    drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink);
+  void  drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
+  void drawDiamond(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
 
   /**
    * @brief Displays the main graph
@@ -587,7 +589,7 @@ class Environmental
    * > 54 °C  Extreme danger: heat stroke is imminent.
    */
 
-  float heatIndex(const readings_t);
+  float heatIndex(const readings_t R);
   /**
  * @brief Magnus' Dew Point (condensation temperature) calculation 
  * 
@@ -598,7 +600,7 @@ class Environmental
  * https://en.wikipedia.org/wiki/Dew_point
  * 
  */
-  float magnusDewpoint(const readings_t T);
+  float magnusDewpoint(const readings_t R);
 
   void setColour(const reading_t value, const limits_t limits);
 };
@@ -698,7 +700,7 @@ class Reading
     m_highRead = R;
     m_cumulativeMovingAverage = R;
 
-    for (auto i {0}; i < HOURS ; ++i)
+    for (auto i {0}; i < HOURS; ++i)
     {        
       m_max[i]  = R;
       m_min[i]  = R;
