@@ -184,6 +184,8 @@ void setup()
   humidity.initReads(40.0);
 }
  
+
+
 void loop()
 {
   if (isrTimings.timeInSeconds == 0) // this ticks every minute
@@ -268,7 +270,7 @@ void Graph::drawIBar(const ucoordinate_t X, const reading_t reading, int16_t min
 void Graph::drawMinMax(const ucoordinate_t X, const reading_t reading, const int16_t minimum, const int16_t maximum, const int8_t scale, const colours_t ink)
 {
   const uint16_t outset  = 3; 
-  const ucoordinate_t vX = (ink == temperature.getTrace()) ? X - outset : X + outset;
+  const ucoordinate_t vX = (ink == temperature.getTrace()) ? X - outset : X + 1;
   const ucoordinate_t Y  = BASE - (static_cast<int8_t>(round(reading)) * scale);
   const uint16_t max     = BASE - (static_cast<int8_t>(round(abs(maximum))) * scale);  
   const uint16_t min     = BASE - (static_cast<int8_t>(round(abs(minimum))) * scale);
@@ -433,7 +435,7 @@ void Reading::takeReadings(void)
   environment.checkHeatIndex(R);  
 }
 
-void Reading::updateReading(const reading_t &reading)
+void Reading::updateReading(const reading_t reading)
 {
   m_lowRead  = (reading > m_lowRead)  ? reading : m_lowRead;
   m_highRead = (reading > m_highRead) ? reading : m_highRead;
@@ -465,7 +467,7 @@ void Reading::showReadings(void)
 
 }
 
-void Reading::bufferReading(const reading_t &reading, char* buffer, const semaphore_t &flags)
+void Reading::bufferReading(const reading_t reading, char* buffer, const semaphore_t flags)
 {
   using mixed_t = struct 
   {
@@ -503,7 +505,7 @@ void Reading::bufferReading(const reading_t &reading, char* buffer, const semaph
   }
 }
 
-void Environmental::setColour(const reading_t &value, const limits_t &limits)
+void Environmental::setColour(const reading_t value, const limits_t limits)
 {
   if (value < static_cast<reading_t>(limits.lower))
   {
@@ -598,7 +600,7 @@ void Environmental::checkTemperatureConditions(void)
   }
 }
 
-void Environmental::checkHeatIndex(const readings_t &readings)
+void Environmental::checkHeatIndex(const readings_t readings)
 {
   reading_int_t effectiveTemperature = static_cast<reading_int_t>(heatIndex(readings));
 
@@ -645,7 +647,7 @@ void Environmental::checkHeatIndex(const readings_t &readings)
   }
 }
 
-void Environmental::unsafeTempWarnings(const reading_t &T)
+void Environmental::unsafeTempWarnings(const reading_t T)
 {
   screen.setTextSize(3);
 
@@ -664,7 +666,7 @@ void Environmental::unsafeTempWarnings(const reading_t &T)
   }
 }
 
-float Environmental::heatIndex(const readings_t &readings)
+float Environmental::heatIndex(const readings_t readings)
 {
   constexpr float c1 {-8.78469475556};
   constexpr float c2 {1.61139411};
@@ -686,7 +688,7 @@ float Environmental::heatIndex(const readings_t &readings)
           (c9 * (readings.T  *  readings.T)  * (readings.H   * readings.H)));
 }
 
-float Environmental::magnusDewpoint(const readings_t &readings)
+float Environmental::magnusDewpoint(const readings_t readings)
 {
   // Magnus dew point constants
   constexpr double a = 17.62;
@@ -871,7 +873,7 @@ void Alarm::sensorFailed(UniversalDHT::Response response)
   while (true); // loop until re-set.
 }
 
-glyph_t Fonts::findGlyphCode(const glyph_t &glyph)
+glyph_t Fonts::findGlyphCode(const glyph_t glyph)
 {
   // This searches the Flash memory for matching glyph
   // All this pulava is to reduce memory consumption
@@ -912,7 +914,7 @@ void Fonts::print(char* b)
   }
 }
 
-void Fonts::print(char* b, const bool &switchFloats)
+void Fonts::print(char* b, const bool switchFloats)
 {
   int i{0};
   while (b[i])
@@ -927,7 +929,7 @@ void Fonts::print(char* b, const bool &switchFloats)
   setFont((gfxfont_t*) &HOTLARGE);
 }
 
-void Fonts::print(const int &X, const int &Y, char* buffer)
+void Fonts::print(const int X, const int Y, char* buffer)
 {
     int size = (m_bufferWidth * m_bufferHeight) >> 3;
     m_pixelBuffer = new char[size] {};
@@ -966,7 +968,7 @@ void Fonts::print(const String &string)
   }
 }
 
-void Fonts::prepImgGlyph(const glyph_t &g, glyphdata_t* data)
+void Fonts::prepImgGlyph(const glyph_t g, glyphdata_t* data)
 {
     const gfxfont_t*  font  = m_pFont;
     gfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
@@ -986,7 +988,7 @@ void Fonts::prepImgGlyph(const glyph_t &g, glyphdata_t* data)
     data->colour       = display.getInk();
 }
 
-uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
+uint8_t Fonts::bufferImgGlyph(const glyph_t glyph)
 {
   screen.startWrite();
   glyphdata_t thisGlyph;
@@ -1020,7 +1022,7 @@ uint8_t Fonts::bufferImgGlyph(const glyph_t &glyph)
   return thisGlyph.xAdvance;
 }
 
-uint8_t Fonts::drawImgGlyph(const glyph_t &glyph)
+uint8_t Fonts::drawImgGlyph(const glyph_t glyph)
 {
   m_X = screen.getCursorX();
   m_Y = screen.getCursorY();
@@ -1062,7 +1064,7 @@ uint8_t Fonts::drawImgGlyph(const glyph_t &glyph)
   return thisGlyph.xAdvance;
 }
 
-void Fonts::bufferPixel(const uint16_t &X, const uint16_t &Y)
+void Fonts::bufferPixel(const uint16_t X, const uint16_t Y)
 {
   if (X >= m_bufferWidth || Y >= m_bufferHeight) 
   {
@@ -1073,7 +1075,7 @@ void Fonts::bufferPixel(const uint16_t &X, const uint16_t &Y)
   m_pixelBuffer[byteAddress] |= bit;
 }
 
-void Fonts::showBuffer(const int &X, const int &Y)
+void Fonts::showBuffer(const int X, const int Y)
 {
   colours_t ink = display.getInk();
   colours_t paper = display.getPaper();
@@ -1098,7 +1100,7 @@ void Fonts::showBuffer(const int &X, const int &Y)
   }
 }
 
-dimensions_t Fonts::getGlyphDimensions(const glyph_t &glyph)
+dimensions_t Fonts::getGlyphDimensions(const glyph_t glyph)
 {
     glyphdata_t G;
     glyph_t code = findGlyphCode(glyph);
@@ -1137,7 +1139,7 @@ void Messages::execute(const char* buffer)
   fonts.print((char *)(buffer));
 }
 
-void Messages::execute(const uint8_t &M)
+void Messages::execute(const uint8_t M)
 {
   String text = translations[M];
   fonts.print(text);
@@ -1158,14 +1160,14 @@ uint16_t Messages::textWidth(char* message)
   return x;
 }
 
-void Messages::clear(const uint8_t &message)
+void Messages::clear(const uint8_t message)
 {
   display.setInk(defaultPaper);
   display.setPaper(defaultPaper);
   execute(message);
 }
 
-void Messages::flashText(const uint8_t &M)
+void Messages::flashText(const uint8_t M)
 
 {
   execute(M);
@@ -1198,14 +1200,14 @@ void Messages::showUptime(void)
   delete[] msg;
 }
 
-void Messages::debugger(const int &X, const int &Y, char* msg)
+void Messages::debugger(const int X, const int Y, char* msg)
 {
   fonts.setFont(&HOTSMALL);
   fonts.setBufferDimensions(TFT_WIDTH, 18);
   fonts.print(X, Y, msg);
 }
 
-void Graph::draw(const quadrilateral_t* quad, const colours_t &ink, const colours_t &outline)
+void Graph::draw(const quadrilateral_t* quad, const colours_t ink, const colours_t outline)
 {
   screen.fillTriangle(quad->cords[0].X, quad->cords[0].Y,
                       quad->cords[1].X, quad->cords[1].Y,
@@ -1223,7 +1225,7 @@ void Graph::draw(const quadrilateral_t* quad, const colours_t &ink, const colour
   screen.drawLine(quad->cords[3].X, quad->cords[3].Y, quad->cords[0].X, quad->cords[0].Y, outline);
 }
 
-void Graph::rotate(quadrilateral_t* quad, const int16_t &rotation)
+void Graph::rotate(quadrilateral_t* quad, const int16_t rotation)
 {
   double sinTheta = sin(DEG_TO_RAD * rotation);
   double cosTheta = cos(DEG_TO_RAD * rotation);
@@ -1236,7 +1238,7 @@ void Graph::rotate(quadrilateral_t* quad, const int16_t &rotation)
   }
 }
 
-void Graph::translate(triangle_t* triangle, const coordinates_t &cords)
+void Graph::translate(triangle_t* triangle, const coordinates_t cords)
 {
   for (auto i{0}; i < 4; ++i)
   {
@@ -1245,7 +1247,7 @@ void Graph::translate(triangle_t* triangle, const coordinates_t &cords)
   }
 }
 
-void Graph::translate(quadrilateral_t* polygon, const coordinates_t &cords)
+void Graph::translate(quadrilateral_t* polygon, const coordinates_t cords)
 {
   for (auto i{0}; i < 4; ++i)
   {

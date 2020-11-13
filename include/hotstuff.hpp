@@ -97,30 +97,30 @@ class Flags
   {
     semaphore = 0;
   }
-    void clear(const semaphore_t &flag)
-    {
-      semaphore &= (flag ^ 0xFFFF);
-    }
+  void clear(const semaphore_t flag)
+  {
+    semaphore &= (flag ^ 0xFFFF);
+  }
 
-    void set(const semaphore_t &flag)
-    {
-      semaphore |= flag;
-    }
+  void set(const semaphore_t flag)
+  {
+    semaphore |= flag;
+  }
 
-    bool isSet(const semaphore_t &flag)
-    {
-      return (semaphore & flag);
-    }
+  bool isSet(const semaphore_t flag)
+  {
+    return (semaphore & flag);
+  }
 
-    bool isClear(const semaphore_t &flag)
-    {
-      return !(semaphore & flag);
-    }
+  bool isClear(const semaphore_t flag)
+  {
+    return !(semaphore & flag);
+  }
 
-    void flip(const semaphore_t &flag)
-    {
-      semaphore ^= flag;
-    }
+  void flip(const semaphore_t flag)
+  {
+    semaphore ^= flag;
+  }
 };
 
 class Fonts
@@ -155,12 +155,12 @@ class Fonts
       m_bufferHeight = H;
     }
 
-    void setRotation(const uint8_t &R)
+    void setRotation(const uint8_t R)
     {
       m_rotation = R;
     }
 
-    uint8_t getRotation(const uint8_t &R)
+    uint8_t getRotation(const uint8_t R)
     {
       return m_rotation;
     }
@@ -199,17 +199,17 @@ class Fonts
       return pgm_read_byte(&font->xMax);
     }
 
-    uint8_t drawImgGlyph(const glyph_t &glyph);
+    uint8_t drawImgGlyph(const glyph_t glyph);
 
-    void prepImgGlyph(const glyph_t &glyph, glyphdata_t* data);
+    void prepImgGlyph(const glyph_t glyph, glyphdata_t* data);
     
-    uint8_t bufferImgGlyph(const glyph_t &glyph);
+    uint8_t bufferImgGlyph(const glyph_t glyph);
 
-    glyph_t findGlyphCode(const glyph_t &glyph);
+    glyph_t findGlyphCode(const glyph_t glyph);
     
-    dimensions_t getGlyphDimensions(const glyph_t &glyph);
+    dimensions_t getGlyphDimensions(const glyph_t glyph);
 
-    void bleachGlyph(const glyph_t &glyph);
+    void bleachGlyph(const glyph_t glyph);
 
     void print(const char* b);
 
@@ -219,17 +219,17 @@ class Fonts
 
     void print(char* b);
 
-    void print(char* b1, const bool &switchFloats);
+    void print(char* b1, const bool switchFloats);
 
-    void print(const int &X, const int &Y, char* buffer);
+    void print(const int X, const int Y, char* buffer);
 
-    void setTextColor(const colours_t &ink, const colours_t &paper);  
+    void setTextColor(const colours_t ink, const colours_t paper);  
 
     void printPixel(coordinate_t X, coordinate_t Y, colours_t ink);
 
-    void bufferPixel(const uint16_t &X, const uint16_t &Y);
+    void bufferPixel(const uint16_t X, const uint16_t Y);
 
-    void showBuffer(const int &X, const int &Y);
+    void showBuffer(const int X, const int Y);
 };
 
 class Display
@@ -242,7 +242,7 @@ class Display
   const uint16_t width  {TFT_WIDTH};
   const uint16_t height {TFT_HEIGHT};
   
-  void setColours(const colours_t &ink, const colours_t &paper)
+  void setColours(const colours_t ink, const colours_t paper)
   {
     m_ink   = ink;
     m_paper = paper;
@@ -253,7 +253,7 @@ class Display
     return m_ink;
   }
 
-  void setInk(const colours_t &C)
+  void setInk(const colours_t C)
   {
     m_ink = C;
   }
@@ -263,7 +263,7 @@ class Display
     return m_paper;
   }
 
-  void setPaper(const colours_t &C)
+  void setPaper(const colours_t C)
   {
     m_paper = C;
   }
@@ -300,14 +300,14 @@ class Graph
 
   void drawPointers();
 
-  void draw(const triangle_t* polygon, const colours_t &ink, const colours_t &outline);
-  void draw(const quadrilateral_t* polygon, const colours_t &ink, const  colours_t &outline);
+  void draw(const triangle_t* polygon, const colours_t ink, const colours_t outline);
+  void draw(const quadrilateral_t* polygon, const colours_t ink, const colours_t outline);
 
-  void translate(triangle_t* polygon, const coordinates_t &cords);
-  void translate(quadrilateral_t* polygon, const coordinates_t &cords);
+  void translate(triangle_t* polygon, const coordinates_t cords);
+  void translate(quadrilateral_t* polygon, const coordinates_t cords);
     
-  void rotate(triangle_t* polygon, const angle_t &theta);
-  void rotate(quadrilateral_t* polygon, const angle_t &theta);
+  void rotate(triangle_t* polygon, const angle_t theta);
+  void rotate(quadrilateral_t* polygon, const angle_t theta);
 
   void    drawIBar(const ucoordinate_t X, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
   void  drawMinMax(const ucoordinate_t X, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
@@ -400,7 +400,7 @@ class Messages
   };
 
 
-  void debugger(const int &X, const int &Y, char* msg);
+  void debugger(const int X, const int Y, char* msg);
 
   /**
    * 
@@ -409,7 +409,7 @@ class Messages
    * @param M Message number
    */
 
-  void execute(const uint8_t &M);
+  void execute(const uint8_t M);
 
   /**
    * @brief Print a buffer of text prepared by sprintf
@@ -425,7 +425,7 @@ class Messages
    * @param M enumerated message
    */
 
-  void clear(const uint8_t &M);
+  void clear(const uint8_t M);
   
   /**
    * @brief Get a pointed to an enumerated message block
@@ -434,7 +434,7 @@ class Messages
    * @return const char* to message string (NOT a string object!)
    */
 
-  const char* getString(const uint8_t &M);
+  const char* getString(const uint8_t M);
 
   /**
    * @brief Centers a block of text given character size
@@ -447,14 +447,14 @@ class Messages
   /**
    * @brief Horrible flashing test
    * 
-   * @param M translate(triangle_t* triangle, const coordinates_t &cords)pre-defined message
+   * @param M 
    */
       
-  void flashText(const uint8_t &M);
+  void flashText(const uint8_t M);
 
-  void printNumber(const colours_t &ink, const uint8_t &characterSize, const uint8_t &number, const semaphore_t &flags);
+  void printNumber(const colours_t ink, const uint8_t characterSize, const uint8_t number, const semaphore_t flags);
   
-  void rightAlign(const float &floaty, const char* buffer, const uint8_t &formatWidth, const uint16_t &integralWidth);
+  void rightAlign(const float floaty, const char* buffer, const uint8_t formatWidth, const uint16_t integralWidth);
   /**
   * @brief A little nod to *nix systems
   * @remark This was developed on Linux due to the much faster compiler
@@ -548,7 +548,7 @@ class Environmental
    * @param T Temperature in C
    * @param H Relative humidity in %
    */
-  void checkHeatIndex(const readings_t &readings);
+  void checkHeatIndex(const readings_t readings);
 
   /**
    * @brief Display warnings about effective working temperature
@@ -559,7 +559,7 @@ class Environmental
    * activity for health and safety. 
    */
 
-  void unsafeTempWarnings(const float &);
+  void unsafeTempWarnings(const float T);
   
    /**
    * @brief Steadman's 1994 approximation for heat in given humidity 
@@ -587,7 +587,7 @@ class Environmental
    * > 54 °C  Extreme danger: heat stroke is imminent.
    */
 
-  float heatIndex(const readings_t &);
+  float heatIndex(const readings_t);
   /**
  * @brief Magnus' Dew Point (condensation temperature) calculation 
  * 
@@ -598,9 +598,9 @@ class Environmental
  * https://en.wikipedia.org/wiki/Dew_point
  * 
  */
-  float magnusDewpoint(const readings_t &);
+  float magnusDewpoint(const readings_t T);
 
-  void setColour(const reading_t &value, const limits_t &limits);
+  void setColour(const reading_t value, const limits_t limits);
 };
 
 class Reading
@@ -658,7 +658,7 @@ class Reading
     delete [] m_read;
   }
 
-  void setPipe(const int8_t &min, const int8_t &max, const int8_t &read)
+  void setPipe(const int8_t min, const int8_t max, const int8_t read)
   {
     m_max[m_readPtr]  = (int8_t)max;
     m_min[m_readPtr]  = (int8_t)min;
@@ -677,7 +677,7 @@ class Reading
     return m_trace;
   }
 
-  void setTrace(const colours_t &C)
+  void setTrace(const colours_t C)
   {
     m_trace = C;
   }
@@ -692,7 +692,7 @@ class Reading
     return m_lowRead;
   }
 
-  void initReads(const reading_t &R)
+  void initReads(const reading_t R)
   {
     m_lowRead  = R;
     m_highRead = R;
@@ -706,17 +706,17 @@ class Reading
     }
   }
 
-  void setLowRead(const reading_t &R)
+  void setLowRead(const reading_t R)
   {
     m_lowRead = R;
   }
 
-  void setHighRead(const reading_t &R)
+  void setHighRead(const reading_t R)
   {
     m_highRead = R;
   }
 
-  void setReading(const reading_t &R)
+  void setReading(const reading_t R)
   {
     m_reading = R;
   }
@@ -726,17 +726,17 @@ class Reading
     return m_reading;
   }
 
-  reading_t getReading(const int &ptr)
+  reading_t getReading(const int ptr)
   {
     return m_read[ptr];
   }
 
-  void setX(const int16_t &X)
+  void setX(const int16_t X)
   {
     m_position.X = X;
   }
 
-  void setY(const int16_t &Y)
+  void setY(const int16_t Y)
   {
     m_position.Y = Y;
   }
@@ -751,7 +751,7 @@ class Reading
     return m_position.Y;
   }
 
-  void updateReading(const reading_t &reading);
+  void updateReading(const reading_t reading);
 
   /**
    * @brief Get the current RH and Temp from the DHT11/22
@@ -779,7 +779,7 @@ class Reading
    * @param showTemp set to true when working on a metric temp
    * 
    */
-    void bufferReading(const reading_t &reading, char* buffer, const semaphore_t &flags);
+    void bufferReading(const reading_t reading, char* buffer, const semaphore_t flags);
 
   
   reading_t getCMA()
