@@ -164,6 +164,12 @@ void setup()
 
   readings_t read;
   
+  temperature.initReads(read.T);
+  humidity.initReads(read.H);
+
+  delay(3000);
+  dht22.read(&read.H, &read.T);
+  delay(3000);
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
@@ -174,7 +180,8 @@ void loop()
   alarm.checkAlarm();
   alarm.annunciators();
   alarm.checkButton();
-  messages.showUptime();
+  //messages.showUptime();
+  messages.showMinMax();
 
   if ( ! (isrTimings.timeInSeconds % 4))
   {
@@ -195,18 +202,13 @@ void Graph::drawGraph(const int8_t flag)
       const colours_t ink  = (flag == RESET) ? defaultPaper : temperature.getTrace();
       const int8_t scale   = 2;
       const int read       = static_cast<int8_t>(round(temperature.getCMA()));
-      const int min        = static_cast<int8_t>(round(temperature.getMinRead(i)));
-      const int max        = static_cast<int8_t>(round(temperature.getMaxRead(i)));
+      const int min        = temperature.getMinRead(i);
+      const int max        = temperature.getMaxRead(i);
       if (max > 100)
       {
         continue;
       }
-      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
-
-      char msg[25];
-      sprintf(msg,"X:%d, L:%d R:%d", max, min, read);
-      messages.debugger(10, 60, msg);
-
+      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink, true);           
     }
 
     for (auto i {1}; i < 7; ++i)
@@ -214,17 +216,13 @@ void Graph::drawGraph(const int8_t flag)
       const colours_t ink  = (flag == RESET) ? defaultPaper : humidity.getTrace();
       const int8_t scale   = 1;
       const int read       = static_cast<int8_t>(round(humidity.getCMA()));
-      const int min        = static_cast<int8_t>(round(humidity.getMinRead(i)));
-      const int max        = static_cast<int8_t>(round(humidity.getMaxRead(i)));
+      const int min        = humidity.getMinRead(i);
+      const int max        = humidity.getMaxRead(i);
       if (max > 100)
       {
         continue;
       }
-      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
-
-      char msg[25];
-      sprintf(msg,"X:%d, L:%d R:%d", max, min, read);
-      messages.debugger(10, 75, msg);
+      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink, false); 
     }
 
     if (flag == RESET)
@@ -233,9 +231,9 @@ void Graph::drawGraph(const int8_t flag)
     }
 }
 
-void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink)
+void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer)
 {
-  const ucoordinate_t vX = (ink == temperature.getTrace()) ? x - 1 : x + 1; 
+  const ucoordinate_t vX = (pointer) ? x - 1 : x + 1; 
   const ucoordinate_t y  = BASE - (static_cast<int8_t>(round(reading)) * scale);
   const uint16_t max     = BASE - (static_cast<int8_t>(round(abs(maximum))) * scale);  
   const uint16_t min     = BASE - (static_cast<int8_t>(round(abs(minimum))) * scale);
@@ -244,7 +242,7 @@ void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t min
 
   if (ink == temperature.getTrace())
   {
-    screen.drawFastHLine(vX - outset, y,   outset, ink);
+    screen.drawFastHLine(vX - outset, y,   outset*2, GREEN);
     screen.drawFastHLine(vX - outset, max, outset, ink);
     screen.drawFastHLine(vX - outset, min, outset, ink);      
   }
@@ -447,7 +445,7 @@ void Reading::updateReading(const reading_t reading)
   m_min[m_readPtr]  = static_cast<int8_t>(round(m_minRead));
   m_read[m_readPtr] = m_currRead;
   ++m_readPtr;
-  m_readPtr %= 24;
+  m_readPtr %= HOURS;
 }
 
 void Reading::showReadings(void)
@@ -924,6 +922,7 @@ void Fonts::print(const int X, const int Y, char* buffer)
 
     if (! m_pixelBuffer)
     {
+      screen.fillRect(X, Y, m_bufferWidth, m_bufferHeight, RED);
       STOP
     }
     else
@@ -1180,6 +1179,29 @@ void Messages::showUptime(void)
   fonts.setFont(&HOTSMALL);
   uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
   uint8_t margin = (TFT_WIDTH - width) / 2;
+  fonts.setBufferDimensions(TFT_WIDTH, 18);
+  fonts.print(margin, TFT_HEIGHT - 16, msg);
+  display.setColours(defaultInk, defaultPaper); 
+  free(msg);
+}
+
+void Messages::showMinMax(void)
+{  
+
+  char* msg = static_cast<char *> (malloc(80));
+
+  sprintf(msg, "Temperature: %d / %d    Humidity: %d / %d", 
+          temperature.getMinRead(),
+          temperature.getMaxRead(),
+          humidity.getMinRead(),
+          humidity.getMaxRead()
+          );
+ 
+  display.setColours(defaultPaper, GREY);  
+  fonts.setFont(&HOTSMALL);
+  uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
+  uint8_t margin = (TFT_WIDTH - width) / 2;
+  margin = 0; // Bug-a-loo... need to fix this!
   fonts.setBufferDimensions(TFT_WIDTH, 18);
   fonts.print(margin, TFT_HEIGHT - 16, msg);
   display.setColours(defaultInk, defaultPaper); 

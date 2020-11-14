@@ -77,7 +77,7 @@ const uint8_t HotStuff9Bitmaps[] PROGMEM = {
   0xD5, 0x43, 0xC0, 0xF0, 0x00, 0xF0, 0xFC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,
   0xCC, 0xCF, 0xF3, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x3F, 0x36, 0x4C,
   0xC8, 0x88, 0x88, 0x8C, 0xC4, 0x63, 0xC6, 0x23, 0x31, 0x11, 0x11, 0x13,
-  0x32, 0x6C };
+  0x32, 0x6C, 0x04, 0x30, 0xC2, 0x18, 0x41, 0x0C, 0x21, 0x86, 0x10, 0xC0 };
 
 // Glyph, Offset to bitmap, Width, Height, xAdvance, xOffset, yOffset
 
@@ -154,19 +154,20 @@ const gfxglyph_t HotStuff9Glyphs[] PROGMEM = {
   {91,   870,   4,  16,  11,    4,  -12 },   // 0x45 '[' 
   {93,   878,   4,  16,  11,    3,  -12 },   // 0x46 ']' 
   {40,   886,   4,  16,  11,    4,  -12 },   // 0x47 '(' 
-  {41,   894,   4,  16,  11,    3,  -12 }   // 0x48 ')' 
+  {41,   894,   4,  16,  11,    3,  -12 },   // 0x48 ')' 
+  {47,   902,   6,  13,  11,    2,  -12 }   // 0x49 '/' 
 };
 
 const gfxfont_t HotStuff9 PROGMEM = 
 {
   (uint8_t  *)HotStuff9Bitmaps, //< Glyph bitmaps, concatenated 
   (gfxglyph_t *)HotStuff9Glyphs, //< Glyph array
-  73,// total glyphs in the string
+  74,// total glyphs in the string
   18,  // newline distance (y axis)
      0,  // minimum X - left most
     -4,  // minimum Y - bottom most (descenders can drive this negative)
     11,  // maximum X - right most
     14}; // maximum Y - top most
-// Approx. 1427 bytes -  but your mileage may vary.
+// Approx. 1444 bytes -  but your mileage may vary.
 
 #endif

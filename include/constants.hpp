@@ -151,7 +151,7 @@ constexpr auto defaultPaper  {BLACK};
 constexpr auto defaultInk    {CYAN};
 constexpr auto reticleColour {DEEPGREY};
 
-constexpr auto HOURS {24};
+constexpr auto HOURS {7};
 
 constexpr auto LOW_LIMIT_EXCEEDED {BLUE};
 constexpr auto HIGH_LIMIT_EXCEEDED {RED};

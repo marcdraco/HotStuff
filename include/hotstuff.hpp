@@ -328,7 +328,7 @@ class Graph
   void rotate(triangle_t* polygon, const angle_t theta);
   void rotate(quadrilateral_t* polygon, const angle_t theta);
 
-  void    drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink);
+  void    drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer);
   void  drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
   void drawDiamond(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
   void drawTarget(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
@@ -477,9 +477,12 @@ class Messages
   void rightAlign(const float floaty, const char* buffer, const uint8_t formatWidth, const uint16_t integralWidth);
   /**
   * @brief A little nod to *nix systems
-  * @remark This was developed on Linux due to the much faster compiler
+  * @remark Hotstuff was developed on Linux Mint due to the much faster compiler using VSCode
   */
   void showUptime();
+  
+  void showMinMax(void);
+
 };
 
 class Alarm
@@ -655,7 +658,7 @@ class Reading
       // If we run out of memory here, we've got bigger problems!
       m_min  = (int8_t *) malloc(sizeof(int8_t) * HOURS);
       m_max  = (int8_t *) malloc(sizeof(int8_t) * HOURS);
-      m_read = (float *) malloc(sizeof(float) * HOURS);  // floats are doubles by the looks of it!
+      m_read = (float *)  malloc(sizeof(float) * HOURS);  // floats are doubles by the looks of it!
   }
   
   ~Reading() 
@@ -685,13 +688,25 @@ class Reading
   void initReads(const reading_t R)
   {
     m_cumulativeMovingAverage = R;
+    m_maxRead = R;
+    m_minRead = R;
 
     for (auto i {0}; i < HOURS; ++i)
     {        
-      m_max[i]  = static_cast<int8_t>(round(R));
-      m_min[i]  = static_cast<int8_t>(round(R));
-      m_read[i] = R;
+      m_max[i]  = R;
+      m_min[i]  = R;
+      m_read[i] = 127;
     }
+  }
+
+  int8_t getMinRead()
+  {
+    return m_minRead;
+  }
+
+  int8_t getMaxRead()
+  {
+    return m_maxRead;
   }
 
   reading_t getReading()
@@ -740,10 +755,10 @@ class Reading
     void bufferReading(const reading_t reading, char* buffer, const semaphore_t flags);
 
   
-  reading_t getCMA()
-  {
-    return m_cumulativeMovingAverage;
-  }
+    reading_t getCMA()
+    {
+      return m_cumulativeMovingAverage;
+    }
 
 };
 #endif
