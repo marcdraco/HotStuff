@@ -173,33 +173,32 @@ void setup()
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
+  graph.drawGraph();
 }
 
 void loop()
 {
-  alarm.checkAlarm();
-  alarm.annunciators();
-  alarm.checkButton();
-  //messages.showUptime();
-  messages.showMinMax();
-
   if ( ! (isrTimings.timeInSeconds % 4))
   {
     Reading::takeReadings();
     Reading::showReadings();
   }
+  messages.showMinMax();
+  messages.showUptime();
+  alarm.checkButton();
 }
 
 void showLCDReads(void)
 {}
 
-void Graph::drawGraph(const int8_t flag)
+void Graph::drawGraph()
 {
+    screen.fillRect(GRAPH_LEFT + 1, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
     drawReticles(6, 6);
 
     for (auto i {1}; i < 7; ++i)
     {
-      const colours_t ink  = (flag == RESET) ? defaultPaper : temperature.getTrace();
+      const colours_t ink  = temperature.getTrace();
       const int8_t scale   = 2;
       const int read       = static_cast<int8_t>(round(temperature.getCMA()));
       const int min        = temperature.getMinRead(i);
@@ -213,7 +212,7 @@ void Graph::drawGraph(const int8_t flag)
 
     for (auto i {1}; i < 7; ++i)
     {
-      const colours_t ink  = (flag == RESET) ? defaultPaper : humidity.getTrace();
+      const colours_t ink  = humidity.getTrace();
       const int8_t scale   = 1;
       const int read       = static_cast<int8_t>(round(humidity.getCMA()));
       const int min        = humidity.getMinRead(i);
@@ -223,11 +222,6 @@ void Graph::drawGraph(const int8_t flag)
         continue;
       }
       drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink, false); 
-    }
-
-    if (flag == RESET)
-    {
-      drawReticles(6, 6);
     }
 }
 
@@ -242,7 +236,7 @@ void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t min
 
   if (ink == temperature.getTrace())
   {
-    screen.drawFastHLine(vX - outset, y,   outset*2, GREEN);
+    screen.drawFastHLine(vX - outset, y,   outset, ink);
     screen.drawFastHLine(vX - outset, max, outset, ink);
     screen.drawFastHLine(vX - outset, min, outset, ink);      
   }
@@ -252,7 +246,6 @@ void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t min
     screen.drawFastHLine(vX, max, outset, ink);
     screen.drawFastHLine(vX, min, outset, ink);      
   }
-        
 }
 
 void Graph::drawTarget(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink)
@@ -330,24 +323,11 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 
 void Graph::initGraph(void)
 {
-  if (flags.isSet(GRAPHACTIVE))
-  {
-    return;
-  }
-  
-  /*
-  * Allow space for fonts 
-  * 2 * height "temperature in *" and "Relative humidity" message.  
-  * 8 * (!) font width allows for the scale markings
-  */
-
   fonts.setFont(&HOTSMALL);
-  setGraphWidth(TFT_WIDTH - ((2 * fonts.getYstep()) + (8 * fonts.getXstep())));
-
+  //setGraphWidth(TFT_WIDTH - ((2 * fonts.getYstep()) + (8 * fonts.getXstep())));
   screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.getPaper());
   drawGraphScaleMarks();
   drawReticles(6, 6); 
-  flags.set(GRAPHACTIVE);
 };
 
 void Graph::drawGraphScaleMarks(void)
@@ -394,7 +374,7 @@ void Graph::drawGraphScaleMarks(void)
     for (auto i{0}; i < 120; i += 20)
     {
         fonts.setFont(&HOTSMALL);
-        const int X = getGraphX() + getGraphWidth() + fonts.getXstep();
+        const int X = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
         const int yShift = fonts.getYstep() / 2;
         screen.setCursor(X, BASE - i + yShift);
 
@@ -421,10 +401,16 @@ void Reading::takeReadings(void)
     alarm.sensorFailed(reading);
   }
 
-  graph.drawGraph(RESET);
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
-  graph.drawGraph(0);
+
+  if (flags.isSet(REDRAWGRAPH))
+  {
+    flags.clear(REDRAWGRAPH);
+    humidity.setMinMax();
+    temperature.setMinMax();
+    graph.drawGraph();
+  }
 
   environment.checkHumidityConditions();
   environment.checkTemperatureConditions();
@@ -433,7 +419,6 @@ void Reading::takeReadings(void)
 
 void Reading::updateReading(const reading_t reading)
 {
-
   m_currRead = reading + m_correction;
 
   m_minRead  = (reading < m_minRead) ? reading : m_minRead;
@@ -456,7 +441,7 @@ void Reading::showReadings(void)
   fonts.setFont(&HOTLARGE);
   fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
   temperature.bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
-  fonts.print(0, 0, buffer);
+  fonts.print(0, 18, buffer);
   
   temperature.bufferReading(humidity.getReading(), buffer, HUMIDITY);
   fonts.print(TFT_WIDTH / 2, 0, buffer);
@@ -520,7 +505,12 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 {
   TCNT1 = UPDATER;     // preload timer
 
-  flags.flip(FLASHING); // flip the boolean for flashing items
+  flags.flip(FLASH); // flip the boolean for flashing items
+
+  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))
+  {
+    (flags.isSet(FLASH)) ? digitalWrite(ALARM_PIN, HIGH) : digitalWrite(ALARM_PIN, LOW);
+  }
 
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
 
@@ -528,12 +518,13 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   {
     isrTimings.timeInSeconds = 0;
     ++isrTimings.timeInMinutes;
+    flags.set(REDRAWGRAPH);
 
     if (isrTimings.timeInMinutes == 60)
     {
       isrTimings.timeInMinutes = 0;
       ++isrTimings.timeInHours;
-      flags.set(UPDATEGRAPH);
+      flags.set(REDRAWGRAPH);
 
       if (isrTimings.timeInHours == 24)
       {
@@ -554,23 +545,32 @@ void Environmental::checkHumidityConditions(void)
 {
   if (humidity.getCMA() > DAMP_AIR_WATERSHED)
   {
-      flags.set(DAMP);
+    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
+    messages.execute(Messages::damp);      
+    flags.set(DAMP);
   }
-
-  if (humidity.getCMA() < DRY_AIR_WATERSHED)
-  {
-    flags.clear(DRY);
-  }
-
-  if (humidity.getCMA() >= DRY_AIR_WATERSHED)
-  {
-    flags.set(DRY);
-  }
-  
+      
   if (humidity.getCMA() <= DAMP_AIR_WATERSHED)
   {
     flags.clear(DAMP);
+    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
+    messages.clear(Messages::damp);
   }
+
+  if (humidity.getCMA() > DRY_AIR_WATERSHED)
+  {
+    flags.clear(DRY);
+    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
+    messages.clear(Messages::dry);
+  }
+
+  if (humidity.getCMA() <= DRY_AIR_WATERSHED)
+  {
+    flags.set(DRY);
+    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
+    messages.execute(Messages::dry);
+  }
+
 }
 
 void Environmental::checkTemperatureConditions(void)
@@ -579,12 +579,16 @@ void Environmental::checkTemperatureConditions(void)
   {
     flags.set(FROST);          // start das-blinky-flashun light
     flags.set(ALARMFROST);     // true prevents re-firing
+    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
+    messages.execute(Messages::frost);
   }
 
   if (temperature.getCMA() > FROST_WATERSHED)
   {
     flags.clear(FROST);          // start das-blinky-flashun light
     flags.clear(ALARMFROST);     // true prevents re-firing
+    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
+    messages.clear(Messages::frost);
   }
 }
 
@@ -687,105 +691,12 @@ float Environmental::magnusDewpoint(const readings_t readings)
   return static_cast<reading_t>(b * (r + c) / (a - (r + c)));
 }
 
-void Alarm::annunciators(void)
-{
-  fonts.setFont(&HOTSMALL);
-  if ( flags.isSet(FROST))
-  {
-    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.execute(Messages::frost);
-  }
-  else
-  {
-    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.clear(Messages::frost);
-  }
-
-  if (flags.isSet(DAMP))
-  {
-    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.execute(Messages::damp);
-  }
-  else
-  {
-    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.clear(Messages::damp);
-  }
-
-  if (flags.isSet(DRY))
-  {
-    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.execute(Messages::dry);
-  }
-  else
-  {
-    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.clear(Messages::dry);
-  }
-}
-
-void Alarm::checkAlarm(void)
-{
-
-  if (flags.isClear(FROST | DAMP | DRY | OVERTEMP)) 
-  {
-    digitalWrite(ALARM_PIN, LOW);
-  }
-
-  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))
-  {
-    if (flags.isSet(FLASHING))
-    {
-      digitalWrite(ALARM_PIN, HIGH);
-    }
-    else
-    {
-      digitalWrite(ALARM_PIN, LOW);
-    }
-  }
-}
-
 void Alarm::checkButton(void)
 {
-    if (digitalRead(BUTTON_PIN) == LOW)
-    {
-        STOP
-    }
-
-    if (digitalRead(BUTTON_PIN) == HIGH)
-    {
-        if (! m_timer)
-        {
-            if (m_timer < SHORTPRESS) // button.shortPress)
-            {
-                flags.clear(FROST | DAMP | DRY | OVERTEMP);
-                m_timer = 0;
-                digitalWrite(ALARM_PIN, LOW);
-            }
-        }
-    }
-    else
-    {
-        if (! m_timer)
-        {
-            m_timer = 1;
-        }
-        else
-        {
-            m_timer += 1;
-        }
-    }
-
-    if (m_timer > LONGPRESS)
-    {
-        // Toggle metric/imperial
-        (flags.flip(METRIC) );
-        screen.fillRect(LOW_TEMP_X,     LOW_TEMP_Y,  72,  8,     defaultPaper);
-        screen.fillRect(LEFTMARGIN - 2, LOWHUMID_Y + 12, 20, 40, defaultPaper);
-        m_timer = 0;
-        temperature.showReadings();
-        graph.drawGraphScaleMarks();
-    }
+  if (digitalRead(BUTTON_PIN) == LOW)
+  {
+      STOP
+  }
 }
 
 void Alarm::sensorFailed(UniversalDHT::Response response)
@@ -1153,10 +1064,8 @@ void Messages::clear(const uint8_t message)
 }
 
 void Messages::flashText(const uint8_t M)
-
 {
   execute(M);
-  flags.flip(FLASHING);
 }
 
 void Messages::showUptime(void)
@@ -1187,23 +1096,33 @@ void Messages::showUptime(void)
 
 void Messages::showMinMax(void)
 {  
-
   char* msg = static_cast<char *> (malloc(80));
 
-  sprintf(msg, "Temperature: %d / %d    Humidity: %d / %d", 
-          temperature.getMinRead(),
-          temperature.getMaxRead(),
+  int min = temperature.getMinRead();
+  int max = temperature.getMaxRead();
+  int cma = temperature.getMinRead();
+
+  if (flags.isClear(USEMETRIC))
+  {
+    min = static_cast<int>(toFahrenheit(temperature.getMinRead()));
+    max = static_cast<int>(toFahrenheit(temperature.getMaxRead()));
+    cma = static_cast<int>(toFahrenheit(temperature.getMinRead()));
+  }
+
+  sprintf(msg, "Temperature: %d / %d / %d  Humidity: %d / %d / %d", 
+          min, max, cma,
           humidity.getMinRead(),
+          static_cast<int>(humidity.getCMA()),
           humidity.getMaxRead()
           );
- 
+
   display.setColours(defaultPaper, GREY);  
   fonts.setFont(&HOTSMALL);
   uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
   uint8_t margin = (TFT_WIDTH - width) / 2;
-  margin = 0; // Bug-a-loo... need to fix this!
+
   fonts.setBufferDimensions(TFT_WIDTH, 18);
-  fonts.print(margin, TFT_HEIGHT - 16, msg);
+  fonts.print(0, 0, msg);
   display.setColours(defaultInk, defaultPaper); 
   free(msg);
 }

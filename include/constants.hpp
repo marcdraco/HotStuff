@@ -100,16 +100,8 @@ constexpr int OUTER_RADIUS   {70 };
 constexpr int TFT_WIDTH      {320};
 constexpr int TFT_HEIGHT     {240};
 
-constexpr int FONT_BUFF_WIDTH    {156}; // special "offscreen" buffer for deleting and pre-rendering LARGE fonts (keep this to a div of 3)
+constexpr int FONT_BUFF_WIDTH    {162}; // special "offscreen" buffer for deleting and pre-rendering LARGE fonts (keep this to a div of 3)
 constexpr int FONT_BUFF_HEIGHT   {46};  // The size of this is crucial because it uses a LOT of RAM.
-
-constexpr float MIN_COMFORT_TEMP  {20.0};      // the minium temperature considered "normal"
-constexpr float MAX_COMFORT_TEMP  {22.0};     // the maxium temperature considered "normal"
-constexpr float GUARD_TEMP        {2.0};      // the guard zone values +- the comfort min/max start to set up more alerts
-
-constexpr float MIN_COMFORT_HUMID {40.0};      // the minium temperature considered "normal"
-constexpr float MAX_COMFORT_HUMID {60.0};      // the maxium temperature considered "normal"
-constexpr float GUARD_HUMID       {2.0};      // the guard zone values +- the comfort min/max start to set up more alerts
 
 #ifndef toFahrenheit
 #define toFahrenheit(a) (a * 1.8 + 32)
@@ -176,15 +168,15 @@ enum semaphores : uint16_t
   DAMP        = 0x0002, 
   DRY         = 0x0004, 
   OVERTEMP    = 0x0008,
-  FLASHING    = 0x0010,
+  FLASH       = 0x0010,
   WARNDANGER  = 0x0020,
-  GRAPHACTIVE = 0x0040,
+  UNUSED      = 0x0040,
   ALARMDRY    = 0x0080,
   ALARMFROST  = 0x0100,
   ALARMDAMP   = 0x0200,
   USEMETRIC   = 0x0400,
   UPDATEREADS = 0x0800,
-  UPDATEGRAPH = 0x1000,
+  REDRAWGRAPH = 0x1000,
   RESETALL    = 0xFFFF
 };
 

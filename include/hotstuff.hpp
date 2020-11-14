@@ -22,10 +22,12 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 #ifndef __DRACO_HOTSTUFF_H
 #define __DRACO_HOTSTUFF_H
+
+// remove this line to have the unit read in fahrenheit
+//#define USE_METRIC                   
+
 
 #include <Arduino.h>
 #include "types.hpp"
@@ -48,8 +50,6 @@ void SerialBar(char *b)
 }
 */
 
-// remove this line to have the unit read in fahrenheit
-#define USE_METRIC                   
  
 // Many (but maybe not all) non-AVR board installs define macros
 // for compatibility with existing PROGMEM-reading AVR code.
@@ -311,8 +311,6 @@ class Graph
     const int GRAPH_Y {110};
     const int BASE {GRAPH_Y + FSD};
   
-    int m_graphWidth {};
-
   public:
 
   Graph() {};
@@ -341,7 +339,7 @@ class Graph
    * The flag determines which "phase" we're in (clear readings or set new ones)
    */
 
-  void drawGraph(const int8_t flag);
+  void drawGraph();
 
   /**
    * @brief  Overdraws the graph outline in the current foreground
@@ -369,19 +367,9 @@ class Graph
    */
   void drawRadials();
 
-  void setGraphWidth(int W)
-  {
-    m_graphWidth = W;
-  }
-
-  int getGraphWidth()
-  {
-    return m_graphWidth;
-  }
-
   int getGraphX()
   {
-    return (TFT_WIDTH - m_graphWidth) / 2;
+    return (TFT_WIDTH - GRAPH_WIDTH) / 2;
   }
 };
 
@@ -491,21 +479,7 @@ class Alarm
   private:
 
   uint16_t m_timer {};
-  
-  const int DRY_WARN_X  {0};
-  const int DAMP_WARN_X {100};
-  const int FROSTWARN_X {200};
-  const int DRY_WARN_Y  {80};
-  const int FROSTWARN_Y {80};
-  const int DAMP_WARN_Y {80};
 
-  const int LOW_TEMP_X  {42};
-  const int LOW_TEMP_Y  {100};
-  const int HIGHTEMP_y  {LOW_TEMP_Y};
-  const int LOWHUMID_Y  {LOW_TEMP_Y};
-
-  const int SHORTPRESS  {2};
-  const int LONGPRESS   {10};
 
   const int LEFTMARGIN    {20};
   const int LEFTAXISLABEL {5};
@@ -544,13 +518,28 @@ class Alarm
 
 class Environmental
 {
-
   const int CAUTION        {32};     // Three watermarks (32,41,54)
   const int WARNING        {41};     // per Steadman "safe" for working temperatures
   const int RISK           {54};     // Above 54c is very bad
   const float FROST_WATERSHED {4.0}; // ice can appear/persist around this temp
-  const float DAMP_AIR_WATERSHED {MIN_COMFORT_HUMID - GUARD_HUMID};
-  const float DRY_AIR_WATERSHED  {MAX_COMFORT_HUMID + GUARD_HUMID};
+
+  const float DRY_AIR_WATERSHED  {45.0};
+  const float DAMP_AIR_WATERSHED {65.0};
+  
+  const float MIN_COMFORT_TEMP  {18.0};      // the minium temperature considered "normal"
+  const float MAX_COMFORT_TEMP  {24.0};     // the maxium temperature considered "normal"
+
+  const int DRY_WARN_X  {0};
+  const int DAMP_WARN_X {100};
+  const int FROSTWARN_X {200};
+  const int DRY_WARN_Y  {80};
+  const int FROSTWARN_Y {80};
+  const int DAMP_WARN_Y {80};
+
+  const int LOW_TEMP_X  {42};
+  const int LOW_TEMP_Y  {100};
+  const int HIGHTEMP_y  {LOW_TEMP_Y};
+  const int LOWHUMID_Y  {LOW_TEMP_Y};
 
   public:
   /**
@@ -683,6 +672,12 @@ class Reading
   void setTrace(const colours_t C)
   {
     m_trace = C;
+  }
+
+  void setMinMax()
+  {
+    m_maxRead = m_currRead;
+    m_minRead = m_currRead;
   }
 
   void initReads(const reading_t R)
