@@ -30,6 +30,23 @@
 #include <Arduino.h>
 #include "types.hpp"
 
+/*
+void SerialBar(char *b)
+{
+  for (int n = 0; n < 25; n++)
+  {
+    Serial.print("=");
+  }
+
+  Serial.print(b);
+
+  for (int n = 0; n < 25; n++)
+  {
+    Serial.print("=");
+  }
+  Serial.println("");
+}
+*/
 
 // remove this line to have the unit read in fahrenheit
 #define USE_METRIC                   
@@ -314,6 +331,7 @@ class Graph
   void    drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink);
   void  drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
   void drawDiamond(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
+  void drawTarget(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
 
   /**
    * @brief Displays the main graph
@@ -635,18 +653,18 @@ class Reading
       m_trace      = 0;   // graph line colour
       
       // If we run out of memory here, we've got bigger problems!
-      m_min  = new int8_t[HOURS];
-      m_max  = new int8_t[HOURS];
-      m_read = new float[HOURS];    // floats are doubles by the looks of it!
+      m_min  = (int8_t *) malloc(sizeof(int8_t) * HOURS);
+      m_max  = (int8_t *) malloc(sizeof(int8_t) * HOURS);
+      m_read = (float *) malloc(sizeof(float) * HOURS);  // floats are doubles by the looks of it!
   }
   
   ~Reading() 
   {
     // this should ever be called, but it's good
     // practise to do this even if it's not.
-    delete [] m_max;
-    delete [] m_min;
-    delete [] m_read;
+    free(m_max);
+    free(m_min);
+    free(m_read);
   }
 
   uint8_t getPtr()
@@ -670,9 +688,9 @@ class Reading
 
     for (auto i {0}; i < HOURS; ++i)
     {        
-      m_max[i]  = 50;
-      m_min[i]  = 50;
-      m_read[i] = 126;
+      m_max[i]  = static_cast<int8_t>(round(R));
+      m_min[i]  = static_cast<int8_t>(round(R));
+      m_read[i] = R;
     }
   }
 

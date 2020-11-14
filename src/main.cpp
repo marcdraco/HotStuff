@@ -77,6 +77,8 @@
 @brief Main code
 */
 
+// Rotary encoder!? 
+
 #include <Arduino.h>
 #include <math.h>
 #include <string.h>
@@ -94,7 +96,6 @@
 MCUFRIEND_kbv screen;
 Display display;
 UniversalDHT dht22(DHT22_DATA);
-Messages messages;
 Graph graph;
 Alarm alarm;
 Reading humidity;
@@ -102,23 +103,7 @@ Reading temperature;
 Fonts fonts;
 Environmental environment;
 Flags flags;
-/*
-void SerialBar(char *b)
-{
-  for (int n = 0; n < 25; n++)
-  {
-    Serial.print("=");
-  }
-
-  Serial.print(b);
-
-  for (int n = 0; n < 25; n++)
-  {
-    Serial.print("=");
-  }
-  Serial.println("");
-}
-*/
+Messages messages;
 
 void pause()
 {
@@ -217,6 +202,11 @@ void Graph::drawGraph(const int8_t flag)
         continue;
       }
       drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
+
+      char msg[25];
+      sprintf(msg,"X:%d, L:%d R:%d", max, min, read);
+      messages.debugger(10, 60, msg);
+
     }
 
     for (auto i {1}; i < 7; ++i)
@@ -231,6 +221,10 @@ void Graph::drawGraph(const int8_t flag)
         continue;
       }
       drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink);           
+
+      char msg[25];
+      sprintf(msg,"X:%d, L:%d R:%d", max, min, read);
+      messages.debugger(10, 75, msg);
     }
 
     if (flag == RESET)
@@ -261,6 +255,14 @@ void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t min
     screen.drawFastHLine(vX, min, outset, ink);      
   }
         
+}
+
+void Graph::drawTarget(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink)
+{
+  const uint16_t y = BASE - (static_cast<int8_t>(round(reading)) * scale);
+  screen.drawFastHLine(x - size, y, size * 2, ink);
+  screen.drawFastVLine(x, y - size, size * 2, ink);
+  screen.drawCircle(x, y, 4, ink);
 }
 
 void Graph::drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t minimum, const int16_t maximum, const int8_t scale, const colours_t ink)
@@ -424,7 +426,6 @@ void Reading::takeReadings(void)
   graph.drawGraph(RESET);
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
-  delay(3000);
   graph.drawGraph(0);
 
   environment.checkHumidityConditions();
@@ -434,19 +435,16 @@ void Reading::takeReadings(void)
 
 void Reading::updateReading(const reading_t reading)
 {
+
   m_currRead = reading + m_correction;
 
   m_minRead  = (reading < m_minRead) ? reading : m_minRead;
   m_maxRead  = (reading > m_maxRead) ? reading : m_maxRead;
 
-  char msg[20];
-  sprintf(msg,"MIN: %d, %d %d", (int) m_minRead, (int) reading, isrTimings.timeToRead);
-  messages.debugger(10, 60, msg);
-
   m_cumulativeMovingAverage = (m_cumulativeMovingAverage + (reading - m_cumulativeMovingAverage) / ++m_cmaCounter) + m_correction;
 
-  m_max[m_readPtr]  = m_maxRead;
-  m_min[m_readPtr]  = m_minRead;
+  m_max[m_readPtr]  = static_cast<int8_t>(round(m_maxRead));
+  m_min[m_readPtr]  = static_cast<int8_t>(round(m_minRead));
   m_read[m_readPtr] = m_currRead;
   ++m_readPtr;
   m_readPtr %= 24;
@@ -797,7 +795,6 @@ void Alarm::sensorFailed(UniversalDHT::Response response)
   // He's dead Jim! He's DEAD!
 
 #ifdef SENSOR_MISSING_OR_BUSTED
-
   return;
 #endif
   screen.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
@@ -861,8 +858,7 @@ void Alarm::sensorFailed(UniversalDHT::Response response)
       break;
     case SimpleDHTSuccess: ;  // shuts up the compiler warning
   }
-
-  while (true); // loop until re-set.
+  STOP // loop until re-set.
 }
 
 glyph_t Fonts::findGlyphCode(const glyph_t glyph)
@@ -948,7 +944,6 @@ void Fonts::print(const int X, const int Y, char* buffer)
       showBuffer(X, Y); 
       delete [] m_pixelBuffer;
     }
-    return;
 }
 
 void Fonts::print(const String &string)
@@ -1172,7 +1167,7 @@ void Messages::showUptime(void)
     of the screen as a quick check that the machine
     hasn't suffered a power loss or reset.
   */
-  char* msg = new char[40];
+  char* msg = static_cast<char *> (malloc(40));
 
   sprintf(msg, "Uptime: %2d Weeks, %2d Days, %02d:%02d:%02d", 
           isrTimings.timeInWeeks,
@@ -1188,7 +1183,7 @@ void Messages::showUptime(void)
   fonts.setBufferDimensions(TFT_WIDTH, 18);
   fonts.print(margin, TFT_HEIGHT - 16, msg);
   display.setColours(defaultInk, defaultPaper); 
-  delete[] msg;
+  free(msg);
 }
 
 void Messages::debugger(const int X, const int Y, char* msg)
