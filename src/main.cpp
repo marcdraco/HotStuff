@@ -92,6 +92,7 @@
 #include "types.hpp"
 #include "hotstuff_fonts.hpp"
 #include "hotstuff.hpp"
+#include "sevensegments.hpp"
 
 MCUFRIEND_kbv screen;
 Display display;
@@ -104,6 +105,7 @@ Fonts fonts;
 Environmental environment;
 Flags flags;
 Messages messages;
+Sevensegments segments;
 
 void pause()
 {
@@ -119,6 +121,7 @@ void pause()
 
 void setup()
 {
+  Serial.begin(9600);
   const int BUTTON_PIN  {10};      // the acknowlegement button to stop alerts for ice, damp etc.
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
@@ -151,7 +154,6 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  graph.initGraph();
   fonts.setFont(&HOTSMALL);
   screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
 
@@ -167,21 +169,23 @@ void setup()
   temperature.initReads(read.T);
   humidity.initReads(read.H);
 
+  segments.drawGlyphB(0, 0, 8, 1);
+  STOP
+  
   delay(3000);
   dht22.read(&read.H, &read.T);
   delay(3000);
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
-  graph.drawGraph();
 }
 
 void loop()
 {
   if ( ! (isrTimings.timeInSeconds % 4))
   {
-    Reading::takeReadings();
-    Reading::showReadings();
+    //Reading::takeReadings();
+    //Reading::showReadings();
   }
   messages.showMinMax();
   messages.showUptime();
@@ -441,10 +445,10 @@ void Reading::showReadings(void)
   fonts.setFont(&HOTLARGE);
   fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
   temperature.bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
-  fonts.print(0, 18, buffer);
+  fonts.print(0, 20, buffer);
   
   temperature.bufferReading(humidity.getReading(), buffer, HUMIDITY);
-  fonts.print(TFT_WIDTH / 2, 0, buffer);
+  fonts.print(TFT_WIDTH / 2, 20, buffer);
 }
 
 void Reading::bufferReading(const reading_t reading, char* buffer, const semaphore_t flags)
@@ -469,12 +473,11 @@ void Reading::bufferReading(const reading_t reading, char* buffer, const semapho
   read.intPart   = static_cast<int>(integer);
   read.floatPart = static_cast<int>(abs(fract * 10));
 
-  if (flags & METRIC) 
+  if (read.intPart < 100 && read.intPart > - 9)
   {
     sprintf(buffer, "%d.%1d", read.intPart, read.floatPart);
   }
-
-  if (flags & IMPERIAL)
+  else
   {
     sprintf(buffer, "%d", read.intPart);
   }
@@ -1227,6 +1230,7 @@ void Graph::drawPointers()
 }
 
 void Graph::drawRadials()
+
 {
  for (int t = 0; t<190; t+=10)
   {
@@ -1253,4 +1257,49 @@ void Graph::drawRadials()
     Graph::translate(&tick, {160,120});
     Graph::draw(&tick, RED, RED);
   }
+}
+
+inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t height, const colours_t ink)
+{
+  for (int i {0}; i < height; ++i)
+  {
+    screen.drawFastHLine(X, Y, len, ink);
+    screen.drawFastHLine(X + i, Y + i, len - (i *2), ink);
+    screen.drawFastHLine(X + i, Y - i, len - (i *2), ink);
+  }
+}
+inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t width, const colours_t ink)
+{
+ for (int i {0}; i < width; ++i)
+  {
+    screen.drawFastVLine(X, Y, len, ink);
+    screen.drawFastVLine(X + i, Y + i, len - (i *2), ink);
+    screen.drawFastVLine(X - i, Y + i, len - (i *2), ink);
+  }
+}
+
+void Sevensegments::drawGlyphA(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t scale)
+{
+  drawVSegment(10, 20, 100, 12, RED);
+  drawVSegment(10, 124, 100, 12, RED);
+
+  drawVSegment(118, 20, 100, 12, RED);
+  drawVSegment(118, 124, 100, 12, RED);
+
+  drawHSegment(15,  16, 100, 12, RED);
+  drawHSegment(15, 122, 100, 12, RED);
+  drawHSegment(15, 226, 100, 12, RED);
+}
+
+void Sevensegments::drawGlyphB(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t scale)
+{
+  drawVSegment(10, 20, 50, 6, RED);
+  drawVSegment(10, 74, 50, 6, RED);
+
+  drawVSegment(70, 20, 50, 6, RED);
+  drawVSegment(70, 74, 50, 6, RED);
+
+  drawHSegment(15, 16, 50, 6, RED);
+  drawHSegment(15, 72, 50, 6, RED);
+  drawHSegment(15, 125, 50, 6, RED);
 }

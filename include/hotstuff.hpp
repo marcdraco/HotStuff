@@ -29,6 +29,19 @@
 //#define USE_METRIC                   
 
 
+
+/*
+
+BUG: CMA display is not working
+BUG: Min/Max is not working either - could be the "ALL TIME min/max needs a separate variable"
+
+? BUG - write better code to flip that LED per the helicopter dude
+
+*/
+
+
+
+
 #include <Arduino.h>
 #include "types.hpp"
 
@@ -676,8 +689,8 @@ class Reading
 
   void setMinMax()
   {
-    m_maxRead = m_currRead;
-    m_minRead = m_currRead;
+    m_maxRead = m_cumulativeMovingAverage;
+    m_minRead = m_cumulativeMovingAverage;
   }
 
   void initReads(const reading_t R)
@@ -756,4 +769,5 @@ class Reading
     }
 
 };
+
 #endif

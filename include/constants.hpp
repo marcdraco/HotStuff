@@ -100,8 +100,8 @@ constexpr int OUTER_RADIUS   {70 };
 constexpr int TFT_WIDTH      {320};
 constexpr int TFT_HEIGHT     {240};
 
-constexpr int FONT_BUFF_WIDTH    {162}; // special "offscreen" buffer for deleting and pre-rendering LARGE fonts (keep this to a div of 3)
-constexpr int FONT_BUFF_HEIGHT   {46};  // The size of this is crucial because it uses a LOT of RAM.
+constexpr int FONT_BUFF_WIDTH    {10}; // special "offscreen" buffer for deleting and pre-rendering LARGE fonts (keep this to a div of 3)
+constexpr int FONT_BUFF_HEIGHT   {10};  // The size of this is crucial because it uses a LOT of RAM.
 
 #ifndef toFahrenheit
 #define toFahrenheit(a) (a * 1.8 + 32)

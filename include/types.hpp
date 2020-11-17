@@ -58,6 +58,11 @@ using dimensions_t = struct
   uint16_t H;
 };
 
+using segment_t = struct 
+{
+    coordinates_t coords[12];
+};
+
 using readings_t = struct
 {
   float H;

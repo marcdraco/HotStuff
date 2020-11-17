@@ -37,8 +37,8 @@
 // the number of glyphs to ONLY what's absolutely necessary for
 // the display. 
 
-#include "fonts/ubuntu-30.h"
-#define HOTLARGE HotStuff30
+#include "fonts/ubuntu-8-full.h"
+#define HOTLARGE HotStuff8
 
 //#include "fonts/sourceCodePro-6-full.h"
 #include "fonts/novaOval-6-full.h"
