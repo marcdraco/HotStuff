@@ -121,6 +121,8 @@ constexpr int FONT_BUFF_HEIGHT   {10};  // The size of this is crucial because i
 #define DARKGRAY  RGB(64, 64, 64)
 #define DEEPGREY  RGB(16, 16, 16)
 #define DEEPGRAY  RGB(16, 16, 16)
+#define DEEPRED   RGB(16, 0, 0)
+#define DARKRED   RGB(24, 0, 0)
 #define TURQUOISE RGB(0, 128, 128)
 #define PINK      RGB(255, 128, 192)
 #define OLIVE     RGB(128, 128, 0)

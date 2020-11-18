@@ -155,7 +155,7 @@ void setup()
   screen.fillScreen(defaultPaper);
 
   fonts.setFont(&HOTSMALL);
-  screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
+  //screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
 
   pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
   pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
@@ -169,9 +169,9 @@ void setup()
   temperature.initReads(read.T);
   humidity.initReads(read.H);
 
-  segments.drawGlyphB(0, 0, 8, 1);
+  segments.drawGlyph(0, 0, 8, 90, 60, 10, 5);
   STOP
-  
+
   delay(3000);
   dht22.read(&read.H, &read.T);
   delay(3000);
@@ -1261,45 +1261,106 @@ void Graph::drawRadials()
 
 inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t height, const colours_t ink)
 {
+  int16_t y = Y + height;
   for (int i {0}; i < height; ++i)
   {
-    screen.drawFastHLine(X, Y, len, ink);
-    screen.drawFastHLine(X + i, Y + i, len - (i *2), ink);
-    screen.drawFastHLine(X + i, Y - i, len - (i *2), ink);
+    screen.drawFastHLine(X + i, y + i, len - (i *2), ink);
+    screen.drawFastHLine(X + i, y - i, len - (i *2), ink);
   }
 }
+
 inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t width, const colours_t ink)
 {
+ int16_t x = X + width; 
  for (int i {0}; i < width; ++i)
   {
-    screen.drawFastVLine(X, Y, len, ink);
-    screen.drawFastVLine(X + i, Y + i, len - (i *2), ink);
-    screen.drawFastVLine(X - i, Y + i, len - (i *2), ink);
+    screen.drawFastVLine(x + i, Y + i, len - (i *2), ink);
+    screen.drawFastVLine(x - i, Y + i, len - (i *2), ink);
   }
 }
 
-void Sevensegments::drawGlyphA(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t scale)
+void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, 
+                              const uint8_t glyph, 
+                              const uint8_t wide, const uint8_t high,
+                              const uint8_t rows, const uint8_t bias)
 {
-  drawVSegment(10, 20, 100, 12, RED);
-  drawVSegment(10, 124, 100, 12, RED);
+  colours_t on = RED;
+  colours_t off = DARKRED;
+ 
+  uint8_t S = 0;
 
-  drawVSegment(118, 20, 100, 12, RED);
-  drawVSegment(118, 124, 100, 12, RED);
+  switch (glyph)
+  {
+    case 0:
+      S = B11111100;
+    break;
 
-  drawHSegment(15,  16, 100, 12, RED);
-  drawHSegment(15, 122, 100, 12, RED);
-  drawHSegment(15, 226, 100, 12, RED);
-}
+    case 1:
+      S = B01100000;
+    break;
 
-void Sevensegments::drawGlyphB(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t scale)
-{
-  drawVSegment(10, 20, 50, 6, RED);
-  drawVSegment(10, 74, 50, 6, RED);
+    case 2:
+      S = B11011010;
+    break;
 
-  drawVSegment(70, 20, 50, 6, RED);
-  drawVSegment(70, 74, 50, 6, RED);
+    case 3:
+      S = B11110010;
+    break;
 
-  drawHSegment(15, 16, 50, 6, RED);
-  drawHSegment(15, 72, 50, 6, RED);
-  drawHSegment(15, 125, 50, 6, RED);
+    case 4:
+      S = B01100110;
+    break;
+
+    case 5:
+      S = B10110110;
+    break;
+
+    case 6:
+      S = B10111110;
+    break;
+
+    case 7:
+      S = B11100000;
+      break;
+
+    case 8:
+      S = B11111111;
+      break;
+
+    case 9:
+      S = B11100110;
+      break;
+    
+    case 10:    // F
+      S = B10001110;
+      break;
+
+    case 11:    // C
+      S = B00011010;
+      break;
+
+    case 12:    // E
+      S = B10011110;
+      break;
+
+    case 13:    // degree symbol (!)
+      S = B11000110;
+      break;
+
+    case 14:    // - symbol
+      S = B00000010;
+      break;
+
+    default:  // decimal point (unused at the mo)
+      S = B00000001;
+  }
+
+  drawHSegment(X + rows + bias, Y, wide, rows, (S & B10000000) ? on : off);  //seg A
+  drawHSegment(X + bias + rows, Y + high * 2 + (bias * 3), wide, rows, (S & B00010000) ? on : off);  //seg D
+  drawHSegment(X + rows + bias, Y + high + (bias * 1.5), wide, rows, (S & B00000010) ? on : off);  //seg G
+
+  drawVSegment(X + wide + (bias * 2), Y + rows + bias, high, rows, (S & B01000000) ? on : off);  //seg B
+  drawVSegment(X + wide + (bias * 2), Y + high + rows + (bias * 2), high, rows, (S & B00100000) ? on : off);  //seg C
+  drawVSegment(X, Y + high + rows + (bias * 2), high, rows, (S & B00001000) ? on : off);  //seg E
+  drawVSegment(X, Y + rows + bias, high, rows, (S & B00000100) ? on : off);  //seg F
 }
