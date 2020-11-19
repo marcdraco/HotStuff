@@ -132,23 +132,23 @@ constexpr int FONT_BUFF_HEIGHT   {10};  // The size of this is crucial because i
 #define BROWNISH  RGB(0x2e,0x2d,0x0)
 #define PURPLEISH RGB(0x2f,0x00,0x2d)
 
-constexpr auto BLACK    {0x0000};
-constexpr auto BLUE     {0x001F};
-constexpr auto RED      {0xF800};
-constexpr auto GREEN    {0x07E0};
-constexpr auto CYAN     {0x07FF};
-constexpr auto MAGENTA  {0xF81F};
-constexpr auto YELLOW   {0xFFE0};
-constexpr auto WHITE    {0xFFFF};
+#define BLACK    0x0000
+#define BLUE     0x001F
+#define RED      0xF800
+#define GREEN    0x07E0
+#define CYAN     0x07FF
+#define MAGENTA  0xF81F
+#define YELLOW   0xFFE0
+#define WHITE    0xFFFF
 
-constexpr auto defaultPaper  {BLACK};
-constexpr auto defaultInk    {CYAN};
-constexpr auto reticleColour {DEEPGREY};
+#define defaultPaper  BLACK
+#define defaultInk    CYAN
+#define reticleColour DEEPGREY
 
-constexpr auto HOURS {7};
+#define HOURS 7
 
-constexpr auto LOW_LIMIT_EXCEEDED {BLUE};
-constexpr auto HIGH_LIMIT_EXCEEDED {RED};
+#define LOW_LIMIT_EXCEEDED BLUE
+#define HIGH_LIMIT_EXCEEDED RED
 
 /*
   Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful!
@@ -160,7 +160,7 @@ constexpr auto HIGH_LIMIT_EXCEEDED {RED};
   https://oscarliang.com/arduino-timer-and-interrupt-tutorial/
 */
 
-constexpr auto UPDATER {49910};  // one second timer. 
+#define UPDATER {49910};  // one second timer. 
 
 
 // Active semaphores
@@ -179,8 +179,20 @@ enum semaphores : uint16_t
   USEMETRIC   = 0x0400,
   UPDATEREADS = 0x0800,
   REDRAWGRAPH = 0x1000,
+  RESERVED1   = 0x2000,
+  RESERVED2   = 0x4000,
+  RESERVED3   = 0x8000,
   RESETALL    = 0xFFFF
 };
+
+#define B0000000100000000 = 0x0100
+#define B0000001000000000 = 0x0200
+#define B0000010000000000 = 0x0400
+#define B0000100000000000 = 0x0800
+#define B0001000000000000 = 0x1000
+#define B0010000000000000 = 0x2000
+#define B0100000000000000 = 0x4000
+#define B1000000000000000 = 0x8000
 
 // non-active semaphores used for function arguments}
 enum  
@@ -192,6 +204,5 @@ enum
   DAILY    = B00100000,
   RESET    = B01000000,
 };
-
 
 #endif

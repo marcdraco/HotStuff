@@ -47,18 +47,29 @@
   CLEARLY MARKED SCOPE IS THE FUTURE.
   
   ENCLOSE EVERYTHING IN BRACES AND MAKE SURE IT'S INDENTED CORRECTLY. JUST BECAUSE 
-  C ALLOWS YOU TO LEAVE OUT ENCLOSING BRACES, DOESN'T MEAN YOU *SHOULD* LEAVE THEM 
+  C/C++ ALLOWS YOU TO LEAVE OUT ENCLOSING BRACES, DOESN'T MEAN YOU *SHOULD* LEAVE THEM 
   OUT BECAUSE THAT SORT OF THING ONLY LEADS TO ACCIDENTAL LINE INSERTIONS THAT 
-  DON'T WORK AS INTENDED.
-  
-  WANT DO MULTIPLY BY 2? USE VAR = VAR *2, VAR <<= 1 WILL DO THE SAME THING BUT THE 
-  COMPILER WILL DO THAT ASSUMING IT DOESN'T OPTIMISE YOUR HARDER TO READ CODE AWAY 
-  ANYWAY. ONLY USE SHIFT OPERATORS WHEN YOU MEAN TO SHIFT BITS"
+  DON'T WORK AS INTENDED. C++ USED HERE FOR ORGANIZATIONAL PURPOSES AND TO MAKE THE
+  CODE EASIER TO MAINTAIN/EXPAND. C WOULD HAVE BEEN MARGINALLY MORE EFFICIENT HOWEVER.
 
-  #DEFINES ARE USED IN PREFERENCE TO CONSTS BECAUSE THEY CAN SAVE A LITTLE MEMORY 
-  AND MEMORY IS VERY PRECIOUS ON MCUS!
+  * #DEFINES ARE USED IN PREFERENCE TO CONSTS ON MCUS BECAUSE A CONSTEXPR REQUIRES 
+  A MEMORY LOCATION (ACCORDING TO THE MANUFACTURER'S APPLICATION NOTE) AND THAT CAN'T 
+  OPTIMIZED.
+
+  * THE TARGET MCUs ARE 8-BIT. FOR THIS REASON WE ONLY USE 16, 32 OR LARGER VARIABLES 
+  WHEN IT'S NOT POSSIBLE TO FIT EVERYTHING INTO 8BITS. THE USUAL WISDOM OF USING SIGNED
+  INTS BECUASE "BETTER" THAN UNSIGNED, IS ESCHEWED BY MICROCHIP FOR PERFORMANCE REASONS
+
+  * SIGNED ARITHMETIC IS SLIGHTLY MORE COMPLEX THAN UNSIGNED SO WE PREFER UNSIGNED WHERE
+  THAT IS POSSIBLE.
+
+  * IT'S CHEAPER (AT THE ASSEMBLY LEVEL) TO COUNT DOWN TO ZERO RATHER THAN UP TO A VALUE
+  SO WHERE PERFORMANCE IS REQUIRED WE'VE STARTED TO TRANSITION TO THE SLIGHTLY LONGER
+  BUT MORE PERFORMANT COUNT DOWNS UNLESS THERE IS A GOOD REASON NOT TO DO THIS. SOME OLDER
+  CODE HERE MIGHT NOT HAVE MADE THIS TRANSITION (YET) AS WE ONLY FOUND THE APPLICATION NOTE
+  LATE INTO DEVELOPMENT.
   
-  YOU MIGHT THINK YOURSELF CLEVER, BUT BET YOUR BUTT THE COMPILER IS SMARTER AND CAN
+  * YOU MIGHT THINK YOURSELF CLEVER, BUT BET YOUR BUTT THE COMPILER IS SMARTER AND CAN
   SEE THINGS YOU NEVER EVEN THOUGHT POSSIBLE SO MAKE IT EASIER FOR EVERYONE AND BE 
   AS EXPLICIT AS YOU POSSIBLY CAN, BUT NO MORE EXPLICT THAN THE PROGRAM REQUIRES.
 
@@ -105,7 +116,7 @@ Fonts fonts;
 Environmental environment;
 Flags flags;
 Messages messages;
-Sevensegments segments;
+Sevensegments segments(RED, DEEPRED);
 
 void pause()
 {
@@ -169,7 +180,16 @@ void setup()
   temperature.initReads(read.T);
   humidity.initReads(read.H);
 
-  segments.drawGlyph(0, 0, 8, 90, 60, 10, 5);
+  while(1)
+  {   
+      segments.drawGlyph(0, 0, 'C', 100, 90, 10, 5);
+      delay(500);
+      segments.drawGlyph(0, 0, 'c', 100, 90, 10, 5);
+      delay(500);
+      segments.drawGlyph(0, 0, '$', 100, 90, 10, 5);
+      delay(500);
+
+  }
   STOP
 
   delay(3000);
@@ -510,7 +530,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 
   flags.flip(FLASH); // flip the boolean for flashing items
 
-  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))
+  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))     // this SHOULD be a MACRO (and a global variable for speed on embedded systems)
   {
     (flags.isSet(FLASH)) ? digitalWrite(ALARM_PIN, HIGH) : digitalWrite(ALARM_PIN, LOW);
   }
@@ -1259,33 +1279,162 @@ void Graph::drawRadials()
   }
 }
 
-inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t height, const colours_t ink)
+inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t height, const uint8_t onFlag)
 {
-  int16_t y = Y + height;
-  for (int i {0}; i < height; ++i)
+  coordinate_t y = Y + height;
+  for (uint8_t i = height; i != 0; --i)                       // counting DOWN to 0 is faster for time critical loops
   {
-    screen.drawFastHLine(X + i, y + i, len - (i *2), ink);
-    screen.drawFastHLine(X + i, y - i, len - (i *2), ink);
+    screen.drawFastHLine(X + i, y + i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
+    screen.drawFastHLine(X + i, y - i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
   }
+    screen.drawFastHLine(X, y, len, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t width, const colours_t ink)
+inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t width, const  uint8_t onFlag)
 {
- int16_t x = X + width; 
- for (int i {0}; i < width; ++i)
+ coordinate_t x = X + width; 
+ for (uint8_t i = width; i != 0; --i)
   {
-    screen.drawFastVLine(x + i, Y + i, len - (i *2), ink);
-    screen.drawFastVLine(x - i, Y + i, len - (i *2), ink);
+    screen.drawFastVLine(x + i, Y + i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
+    screen.drawFastVLine(x - i, Y + i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
   }
+    screen.drawFastVLine(x, Y, len, (onFlag) ? m_lit : m_unlit);
 }
 
-void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, 
-                              const uint8_t glyph, 
-                              const uint8_t wide, const uint8_t high,
-                              const uint8_t rows, const uint8_t bias)
+inline void Sevensegments::drawXSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t width, const uint8_t onFlag)
+{
+ coordinate_t x0 = X;
+ coordinate_t x1 = X;
+
+ for (uint8_t i = width; i != 0; --i)
+  {
+    screen.drawLine(X,     Y - i, X + len,     Y - len - i, (onFlag) ? m_lit : m_unlit);
+    screen.drawLine(X + i, Y,     X + len + i, Y - len,     (onFlag) ? m_lit : m_unlit);
+  }
+    //screen.drawLine(x, Y, len, (onFlag) ? m_lit : m_unlit);
+}
+
+uint8_t Sevensegments::translateChar(const char glyph)
+{
+  uint8_t c;
+
+  switch (glyph)
+  {
+    case '0':
+      c = 0;
+  }
+
+  return c;
+}       
+
+void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, const uint8_t wide, const uint8_t high, const uint8_t rows, const uint8_t bias)
+{
+
+  uint8_t S = 0;
+
+  switch (glyph)
+  {
+    case '0':
+      S = B11111100;
+    break;
+
+    case '1':
+      S = B01100000;
+    break;
+
+    case '2':
+      S = B11011010;
+    break;
+
+    case '3':
+      S = B11110010;
+    break;
+
+    case '4':
+      S = B01100110;
+    break;
+
+    case '5':
+      S = B10110110;
+    break;
+
+    case '6':
+      S = B10111110;
+    break;
+
+    case '7':
+      S = B11100000;
+      break;
+
+    case '8':
+      S = B11111111;
+      break;
+
+    case '9':
+      S = B11100110;
+      break;
+    
+    case 'A':    // A
+      S = B11101111;
+      break;
+
+    case 'B':    // b
+      S = B00111111;
+      break;
+
+    case 'C':    // C
+      S = B10011101;
+      break;
+
+    case 'D':    // d
+      S = B01111011;
+      break;
+
+    case 'E':    // E
+      S = B10011110;
+      break;
+
+    case 'F':    // F
+      S = B10001110;
+      break;
+
+    case '-':    // - symbol
+      S = B00000010;
+      break;
+
+    case 'o':    // degree symbol (!)
+      S = B11000110;
+      break;
+
+    case 'c':    // Centigrade (c)
+      S = B00011010;
+      break;
+
+    case '$':    // Centigrade (c) upper decker... 
+      S = B10000110;
+      break;
+
+
+    default:  // decimal point (unused at the mo)
+      S = B00000001;
+  }
+
+  uint8_t biasA = bias << 1;
+  
+  drawHSegment(X + rows + bias,  Y,  wide,                             rows, (S & B10000000) ? 1 : 0);  //seg A
+  drawHSegment(X + bias + rows,  Y + (high << 1) + biasA + bias, wide, rows, (S & B00010000) ? 1 : 0);  //seg D
+  drawHSegment(X + rows + bias,  Y + high +        bias  * 1.5,  wide, rows, (S & B00000010) ? 1 : 0);  //seg G
+
+  drawVSegment(X + wide + biasA, Y + rows +        bias,         high, rows, (S & B01000000) ? 1 : 0);  //seg B
+  drawVSegment(X + wide + biasA, Y + high + rows + biasA,        high, rows, (S & B00100000) ? 1 : 0);  //seg C
+  drawVSegment(X,                Y + high + rows + biasA,        high, rows, (S & B00001000) ? 1 : 0);  //seg E
+  drawVSegment(X,                Y + rows +        bias,         high, rows, (S & B00000100) ? 1 : 0);  //seg F
+}
+
+void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, const uint8_t wide, const uint8_t high, const uint8_t rows, const uint8_t bias)
 {
   colours_t on = RED;
-  colours_t off = DARKRED;
+  colours_t off = DEEPRED;
  
   uint8_t S = 0;
 
@@ -1331,36 +1480,77 @@ void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y,
       S = B11100110;
       break;
     
-    case 10:    // F
-      S = B10001110;
+    case 10:    // A
+      S = B11101111;
       break;
 
-    case 11:    // C
-      S = B00011010;
+    case 11:    // b
+      S = B00111111;
       break;
 
-    case 12:    // E
+    case 12:    // C
+      S = B10011101;
+      break;
+
+    case 13:    // d
+      S = B01111011;
+      break;
+
+    case 14:    // E
       S = B10011110;
       break;
 
-    case 13:    // degree symbol (!)
+    case 15:    // F
+      S = B10001110;
+      break;
+
+    case 16:    // - symbol
+      S = B00000010;
+      break;
+
+    case 17:    // degree symbol (!)
       S = B11000110;
       break;
 
-    case 14:    // - symbol
-      S = B00000010;
+    case 18:    // Centigrade (upper C)
+      S = B00011010;
       break;
 
     default:  // decimal point (unused at the mo)
       S = B00000001;
   }
 
-  drawHSegment(X + rows + bias, Y, wide, rows, (S & B10000000) ? on : off);  //seg A
-  drawHSegment(X + bias + rows, Y + high * 2 + (bias * 3), wide, rows, (S & B00010000) ? on : off);  //seg D
-  drawHSegment(X + rows + bias, Y + high + (bias * 1.5), wide, rows, (S & B00000010) ? on : off);  //seg G
+  uint8_t biasA = bias  << 1;
+  uint8_t biasB = bias  * 1.5;
 
-  drawVSegment(X + wide + (bias * 2), Y + rows + bias, high, rows, (S & B01000000) ? on : off);  //seg B
-  drawVSegment(X + wide + (bias * 2), Y + high + rows + (bias * 2), high, rows, (S & B00100000) ? on : off);  //seg C
-  drawVSegment(X, Y + high + rows + (bias * 2), high, rows, (S & B00001000) ? on : off);  //seg E
-  drawVSegment(X, Y + rows + bias, high, rows, (S & B00000100) ? on : off);  //seg F
+  uint8_t halfwide = wide >> 1; 
+  
+  drawHSegment(X + rows + bias,  Y,  wide,                               rows, (S & B10000000) ? on : off);  //seg A1
+  drawHSegment(X + rows + bias,  Y,  wide,                               rows, (S & B10000000) ? on : off);  //seg A2
+
+  drawHSegment(X + bias + rows,  Y + (high << 1) +   biasA + bias, wide, rows, (S & B00010000) ? on : off);  //seg D1
+  drawHSegment(X + rows + bias,  Y + high +          biasB,        wide, rows, (S & B00000010) ? on : off);  //seg D2
+
+  drawHSegment(X + bias + rows,  Y + (high << 1) +   biasA + bias, wide, rows, (S & B00010000) ? on : off);  //seg G1
+  drawHSegment(X + rows + bias,  Y + high +          biasB,        wide, rows, (S & B00000010) ? on : off);  //seg G2
+
+  drawVSegment(X + wide + biasA, Y + rows +          bias,         high, rows, (S & B01000000) ? on : off);  //seg B
+
+  drawVSegment(X + wide + biasA, Y + high + rows +   biasA,        high, rows, (S & B00100000) ? on : off);  //seg C
+
+  drawVSegment(X,                Y + high + rows +   biasA,        high, rows, (S & B00001000) ? on : off);  //seg E
+
+  drawVSegment(X,                Y + rows +          bias,         high, rows, (S & B00000100) ? on : off);  //seg F
+
+  drawXSegment(X + wide + biasA, Y + rows +          bias,         high, rows, (S & B01000000) ? on : off);  //seg H
+  drawXSegment(X + wide + biasA, Y + high + rows +   biasA,        high, rows, (S & B00100000) ? on : off);  //seg I
+  drawXSegment(X,                Y + high + rows +   biasA,        high, rows, (S & B00001000) ? on : off);  //seg J
+  drawXSegment(X,                Y + rows +          bias,         high, rows, (S & B00000100) ? on : off);  //seg K
+  drawXSegment(X,                Y + high + rows +   biasA,        high, rows, (S & B00001000) ? on : off);  //seg L
+  drawXSegment(X,                Y + rows +          bias,         high, rows, (S & B00000100) ? on : off);  //seg M
+}
+
+void Sevensegments::drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag)
+{
+  screen.fillCircle(X, Y, radius, (onFlag) ? m_lit : m_unlit);
 }
