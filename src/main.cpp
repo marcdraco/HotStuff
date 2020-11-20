@@ -116,7 +116,22 @@ Fonts fonts;
 Environmental environment;
 Flags flags;
 Messages messages;
-Sevensegments segments(RED, DEEPRED);
+Sevensegments segments(defaultInk, DEEPGREEN);
+
+/*
+ * Nasty global variable...
+ * These flags are set/checked in an interupt service so they need to avoid
+ * diving in another subroutine (albetit one that could perceivably be inlined
+ * by the compiler.) These macros avoids leaving to chance.
+*/  
+struct globalVariables
+{
+  #define SETBIT(flag, bit) (globals.semaphores |= (bit))      //Set bit in byte addr
+  #define CLEARBIT(flag, bit) (globals.semaphores &= (~bit))   // Clear bit in byte addr
+  #define CHECKBIT(flag, bit) (globals.semaphores & (bit))     // Check bit in byte addr
+
+  uint16_t g_semaphores = 0;
+} globals;
 
 void pause()
 {
@@ -162,7 +177,7 @@ void setup()
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
 
-  screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
+  screen.setRotation(display.rotatePortraitSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
   fonts.setFont(&HOTSMALL);
@@ -180,18 +195,6 @@ void setup()
   temperature.initReads(read.T);
   humidity.initReads(read.H);
 
-  while(1)
-  {   
-      segments.drawGlyph(0, 0, 'C', 100, 90, 10, 5);
-      delay(500);
-      segments.drawGlyph(0, 0, 'c', 100, 90, 10, 5);
-      delay(500);
-      segments.drawGlyph(0, 0, '$', 100, 90, 10, 5);
-      delay(500);
-
-  }
-  STOP
-
   delay(3000);
   dht22.read(&read.H, &read.T);
   delay(3000);
@@ -204,16 +207,34 @@ void loop()
 {
   if ( ! (isrTimings.timeInSeconds % 4))
   {
-    //Reading::takeReadings();
+    Reading::takeReadings();
     //Reading::showReadings();
+    showLCDReads();
+    
   }
-  messages.showMinMax();
-  messages.showUptime();
-  alarm.checkButton();
+  //messages.showMinMax();
+  //messages.showUptime();
+  //alarm.checkButton();
 }
 
 void showLCDReads(void)
-{}
+{
+  char b[5];
+  int16_t r = temperature.getReading() * 10;
+  sprintf(b, "%d", r);
+
+  segments.drawGlyph(0, 0, b[0], 52, 52, 5, 4);
+  segments.drawGlyph(90, 0, b[1], 52, 52, 5, 4);
+  segments.drawGlyph(200, 0, b[2], 24, 24, 2, 3);
+  segments.drawGlyph(190, 100, 'o', 12, 12, 1, 1);
+  segments.drawGlyph(220, 100, 'C', 12, 12, 1, 1);
+
+  r = round(humidity.getReading());
+  sprintf(b, "%d", r);
+  segments.drawGlyph(0, 180, b[0], 52, 52, 5, 4);
+  segments.drawGlyph(90, 180, b[1], 52, 52, 5, 4);
+  segments.drawPercent(190, 265, 12, 1, 1);
+}
 
 void Graph::drawGraph()
 {
@@ -420,6 +441,7 @@ void Reading::takeReadings(void)
   */
   readings_t R;
   UniversalDHT::Response reading = dht22.read(&R.H, &R.T);
+
   if (reading.error != 0)
   {
     alarm.sensorFailed(reading);
@@ -427,6 +449,8 @@ void Reading::takeReadings(void)
 
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
+
+return;
 
   if (flags.isSet(REDRAWGRAPH))
   {
@@ -941,6 +965,37 @@ uint8_t Fonts::bufferImgGlyph(const glyph_t glyph)
   return thisGlyph.xAdvance;
 }
 
+void displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer)
+{
+  // Tweaked by MD from the orginal by Limor Freid. 
+  // 8-bits are used in preference to 16 where possible because these are faster on  
+  screen.startWrite();
+
+  int16_t byteWidth = (W + 7) >> 3;
+  uint8_t byte = 0;
+
+  for (int8_t j = 0; j < H; j++, Y++) 
+  {
+    for (int8_t i = 0; i < W ; i++) 
+    {
+      if (i & 7)
+      {
+        byte <<= 1;
+      }
+      else
+      {
+        byte = pgm_read_byte(&buffer[j * byteWidth + (i >> 3)]);
+      }
+      if (! (byte & 0x80))
+      {
+        screen.writePixel(X + i, Y, RED);
+      }
+    }
+  }
+  screen.endWrite();
+  return;
+}
+
 uint8_t Fonts::drawImgGlyph(const glyph_t glyph)
 {
   m_X = screen.getCursorX();
@@ -1279,39 +1334,39 @@ void Graph::drawRadials()
   }
 }
 
-inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t height, const uint8_t onFlag)
+inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag)
 {
-  coordinate_t y = Y + height;
-  for (uint8_t i = height; i != 0; --i)                       // counting DOWN to 0 is faster for time critical loops
+  coordinate_t y = Y + m_rows;
+  for (uint8_t i = m_rows; i != 0; --i)                       // counting DOWN to 0 is faster for time critical loops
   {
-    screen.drawFastHLine(X + i, y + i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
-    screen.drawFastHLine(X + i, y - i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
+    screen.drawFastHLine(X + i, y + i, m_Xlength - (i << 1), (onFlag) ? m_lit : m_unlit);
+    screen.drawFastHLine(X + i, y - i, m_Xlength - (i << 1), (onFlag) ? m_lit : m_unlit);
   }
-    screen.drawFastHLine(X, y, len, (onFlag) ? m_lit : m_unlit);
+    screen.drawFastHLine(X, y, m_Xlength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t width, const  uint8_t onFlag)
+inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const  uint8_t onFlag)
 {
- coordinate_t x = X + width; 
- for (uint8_t i = width; i != 0; --i)
+ coordinate_t x = X + m_rows; 
+ for (uint8_t i = m_rows; i != 0; --i)
   {
-    screen.drawFastVLine(x + i, Y + i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
-    screen.drawFastVLine(x - i, Y + i, len - (i << 1), (onFlag) ? m_lit : m_unlit);
+    screen.drawFastVLine(x + i, Y + i, m_Ylength - (i << 1), (onFlag) ? m_lit : m_unlit);
+    screen.drawFastVLine(x - i, Y + i, m_Ylength - (i << 1), (onFlag) ? m_lit : m_unlit);
   }
-    screen.drawFastVLine(x, Y, len, (onFlag) ? m_lit : m_unlit);
+    screen.drawFastVLine(x, Y, m_Ylength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawXSegment(const coordinate_t X, const coordinate_t Y, const uint8_t len, const uint8_t width, const uint8_t onFlag)
+inline void Sevensegments::drawXSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag)
 {
  coordinate_t x0 = X;
  coordinate_t x1 = X;
 
- for (uint8_t i = width; i != 0; --i)
+ for (uint8_t i = m_rows; i != 0; --i)
   {
-    screen.drawLine(X,     Y - i, X + len,     Y - len - i, (onFlag) ? m_lit : m_unlit);
-    screen.drawLine(X + i, Y,     X + len + i, Y - len,     (onFlag) ? m_lit : m_unlit);
+    screen.drawLine(X,     Y - i, X + m_XYlen,     Y - m_XYlen - i, (onFlag) ? m_lit : m_unlit);
+    screen.drawLine(X + i, Y,     X + m_XYlen + i, Y - m_XYlen,     (onFlag) ? m_lit : m_unlit);
   }
-    //screen.drawLine(x, Y, len, (onFlag) ? m_lit : m_unlit);
+    //screen.drawLine(x, Y, m_XYlen, (onFlag) ? m_lit : m_unlit);
 }
 
 uint8_t Sevensegments::translateChar(const char glyph)
@@ -1330,6 +1385,10 @@ uint8_t Sevensegments::translateChar(const char glyph)
 void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, const uint8_t wide, const uint8_t high, const uint8_t rows, const uint8_t bias)
 {
 
+  setXlen(wide);
+  setYlen(high);
+  setRows(rows);
+  setBias(bias);
   uint8_t S = 0;
 
   switch (glyph)
@@ -1421,14 +1480,54 @@ void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, const 
 
   uint8_t biasA = bias << 1;
   
-  drawHSegment(X + rows + bias,  Y,  wide,                             rows, (S & B10000000) ? 1 : 0);  //seg A
-  drawHSegment(X + bias + rows,  Y + (high << 1) + biasA + bias, wide, rows, (S & B00010000) ? 1 : 0);  //seg D
-  drawHSegment(X + rows + bias,  Y + high +        bias  * 1.5,  wide, rows, (S & B00000010) ? 1 : 0);  //seg G
+  drawHSegment(X + rows + bias,  Y,                              (S & B10000000) ? 1 : 0);  //seg A
+  drawHSegment(X + bias + rows,  Y + (high << 1) + biasA + bias, (S & B00010000) ? 1 : 0);  //seg D
+  drawHSegment(X + rows + bias,  Y + high + bias + (bias >> 1),  (S & B00000010) ? 1 : 0);  //seg G (Bias >> 1 + bias is a fast mult by 1.5)
 
-  drawVSegment(X + wide + biasA, Y + rows +        bias,         high, rows, (S & B01000000) ? 1 : 0);  //seg B
-  drawVSegment(X + wide + biasA, Y + high + rows + biasA,        high, rows, (S & B00100000) ? 1 : 0);  //seg C
-  drawVSegment(X,                Y + high + rows + biasA,        high, rows, (S & B00001000) ? 1 : 0);  //seg E
-  drawVSegment(X,                Y + rows +        bias,         high, rows, (S & B00000100) ? 1 : 0);  //seg F
+  drawVSegment(X + wide + biasA, Y + rows +        bias,         (S & B01000000) ? 1 : 0);  //seg B
+  drawVSegment(X + wide + biasA, Y + high + rows + biasA,        (S & B00100000) ? 1 : 0);  //seg C
+  drawVSegment(X,                Y + high + rows + biasA,        (S & B00001000) ? 1 : 0);  //seg E
+  drawVSegment(X,                Y + rows +        bias,         (S & B00000100) ? 1 : 0);  //seg F
+}
+
+void Sevensegments::drawPercent(coordinate_t X, coordinate_t Y, const uint8_t size, const uint8_t rows, const uint8_t bias)
+{
+  setXlen(size);
+  setYlen(size);
+  setRows(rows);
+  setBias(bias);
+
+  uint8_t biasA = m_bias << 1;
+
+  drawHSegment(X + rows + bias,  Y,                              1);  //seg A
+  drawHSegment(X + rows + bias,  Y + size + bias + (bias >> 1),  1);  //seg G (Bias >> 1 + bias is a fast mult by 1.5)
+  drawVSegment(X + size + biasA, Y + rows +        bias,         1);  //seg B
+  drawVSegment(X,                Y + rows +        bias,         1);  //seg F
+
+  X += m_Xlength << 1;
+  Y += m_Xlength << 1;
+
+  drawHSegment(X + rows + bias,  Y,                              1);  //seg A
+  drawHSegment(X + rows + bias,  Y + size + bias + (bias >> 1),  1);  //seg G (Bias >> 1 + bias is a fast mult by 1.5)
+  drawVSegment(X + size + biasA, Y + rows +        bias,         1);  //seg B
+  drawVSegment(X,                Y + rows +        bias,         1);  //seg F
+  slash(X, Y - m_Xlength, m_Xlength, (m_Xlength << 1), 4);
+}
+
+inline void Sevensegments::slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows)
+{
+  // insert dope Saul Hudson gag here...
+
+  displaySmallBitmap(180, 180, 60, 60, (uint8_t *) symbolDamp);
+  
+  for (int i = 0; i < rows; ++i)
+  {
+    screen.drawLine(X + i, Y, X + i - wide, Y + high, m_lit);
+  }
+}
+
+void Sevensegments::backslash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows)
+{
 }
 
 void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, const uint8_t wide, const uint8_t high, const uint8_t rows, const uint8_t bias)
@@ -1525,29 +1624,29 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
 
   uint8_t halfwide = wide >> 1; 
   
-  drawHSegment(X + rows + bias,  Y,  wide,                               rows, (S & B10000000) ? on : off);  //seg A1
-  drawHSegment(X + rows + bias,  Y,  wide,                               rows, (S & B10000000) ? on : off);  //seg A2
+  drawHSegment(X + rows + bias,  Y, (S & B10000000) ? on : off);  //seg A1
+  drawHSegment(X + rows + bias,  Y, (S & B10000000) ? on : off);  //seg A2
 
-  drawHSegment(X + bias + rows,  Y + (high << 1) +   biasA + bias, wide, rows, (S & B00010000) ? on : off);  //seg D1
-  drawHSegment(X + rows + bias,  Y + high +          biasB,        wide, rows, (S & B00000010) ? on : off);  //seg D2
+  drawHSegment(X + bias + rows,  Y + (high << 1) +   biasA + bias, (S & B00010000) ? on : off);  //seg D1
+  drawHSegment(X + rows + bias,  Y + high +          biasB,        (S & B00000010) ? on : off);  //seg D2
 
-  drawHSegment(X + bias + rows,  Y + (high << 1) +   biasA + bias, wide, rows, (S & B00010000) ? on : off);  //seg G1
-  drawHSegment(X + rows + bias,  Y + high +          biasB,        wide, rows, (S & B00000010) ? on : off);  //seg G2
+  drawHSegment(X + bias + rows,  Y + (high << 1) +   biasA + bias, (S & B00010000) ? on : off);  //seg G1
+  drawHSegment(X + rows + bias,  Y + high +          biasB,        (S & B00000010) ? on : off);  //seg G2
 
-  drawVSegment(X + wide + biasA, Y + rows +          bias,         high, rows, (S & B01000000) ? on : off);  //seg B
+  drawVSegment(X + wide + biasA, Y + rows +          bias,         (S & B01000000) ? on : off);  //seg B
 
-  drawVSegment(X + wide + biasA, Y + high + rows +   biasA,        high, rows, (S & B00100000) ? on : off);  //seg C
+  drawVSegment(X + wide + biasA, Y + high + rows +   biasA,        (S & B00100000) ? on : off);  //seg C
 
-  drawVSegment(X,                Y + high + rows +   biasA,        high, rows, (S & B00001000) ? on : off);  //seg E
+  drawVSegment(X,                Y + high + rows +   biasA,        (S & B00001000) ? on : off);  //seg E
 
-  drawVSegment(X,                Y + rows +          bias,         high, rows, (S & B00000100) ? on : off);  //seg F
+  drawVSegment(X,                Y + rows +          bias,         (S & B00000100) ? on : off);  //seg F
 
-  drawXSegment(X + wide + biasA, Y + rows +          bias,         high, rows, (S & B01000000) ? on : off);  //seg H
-  drawXSegment(X + wide + biasA, Y + high + rows +   biasA,        high, rows, (S & B00100000) ? on : off);  //seg I
-  drawXSegment(X,                Y + high + rows +   biasA,        high, rows, (S & B00001000) ? on : off);  //seg J
-  drawXSegment(X,                Y + rows +          bias,         high, rows, (S & B00000100) ? on : off);  //seg K
-  drawXSegment(X,                Y + high + rows +   biasA,        high, rows, (S & B00001000) ? on : off);  //seg L
-  drawXSegment(X,                Y + rows +          bias,         high, rows, (S & B00000100) ? on : off);  //seg M
+  drawXSegment(X + wide + biasA, Y + rows +          bias,         (S & B01000000) ? on : off);  //seg H
+  drawXSegment(X + wide + biasA, Y + high + rows +   biasA,        (S & B00100000) ? on : off);  //seg I
+  drawXSegment(X,                Y + high + rows +   biasA,        (S & B00001000) ? on : off);  //seg J
+  drawXSegment(X,                Y + rows +          bias,         (S & B00000100) ? on : off);  //seg K
+  drawXSegment(X,                Y + high + rows +   biasA,        (S & B00001000) ? on : off);  //seg L
+  drawXSegment(X,                Y + rows +          bias,         (S & B00000100) ? on : off);  //seg M
 }
 
 void Sevensegments::drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag)
