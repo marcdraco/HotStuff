@@ -147,18 +147,39 @@ void pause()
 
 void measureH(const int X, const int Y, const int len)
 {
-    screen.drawFastHLine(X, Y, len, WHITE);
-    screen.drawFastVLine(X, Y - 5, 10, WHITE);
-    screen.drawFastVLine(X + len, Y - 5, 10, WHITE);
+    screen.drawFastHLine(X, Y, len, RED);
+    screen.drawFastVLine(X, Y - 10, 20, RED);
+    screen.drawFastVLine(X + len, Y - 10, 20, RED);
+
+    for (int i = 0; i < len; i += 10)
+    {
+      screen.drawFastVLine(X + i, Y,  10, RED);
+    } 
+
+    for (int i = 0; i < len; i += 5)
+    {
+      screen.drawFastVLine(X+ i, Y, 10, RED);
+    } 
 }
 
 void measureV(const int X, const int Y, const int len)
 {
-    screen.drawFastVLine(X, Y, len, WHITE);
-    screen.drawFastHLine(X - 5, Y,  10, WHITE);
-    screen.drawFastHLine(X - 5, Y + len, 10, WHITE);    
-}
+    screen.drawFastVLine(X, Y, len, RED);
+    screen.drawFastHLine(X - 15, Y,  30, RED);
+    screen.drawFastHLine(X - 15, Y + len, 30, RED);    
 
+    for (int i = 0; i < len; i += 10)
+    {
+      screen.drawFastHLine(X - 10, Y+ i,  10, RED);
+    } 
+
+    for (int i = 0; i < len; i += 5)
+    {
+      screen.drawFastHLine(X, Y+ i, 10, WHITE);
+    } 
+
+
+}
 
 void setup()
 {
@@ -215,6 +236,8 @@ void setup()
 void loop()
 {
   segments.drawGlyph16(0, 100, '8', 60, 3, 5);
+  segments.drawGlyph16(100, 100, '8', 60, 3, 5);
+  segments.drawGlyph16(200, 100, '8', 60, 3, 5);
 
   if ( ! (isrTimings.timeInSeconds % 4))
   {
@@ -1391,17 +1414,20 @@ inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t
     screen.drawFastVLine(x, Y, m_Ylength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawXSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag)
+inline void Sevensegments::drawLRSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag)
 {
- coordinate_t x0 = X;
- coordinate_t x1 = X;
-
- for (uint8_t i = m_rows; i != 0; --i)
+  for (uint8_t i = 0; i < 5; i++)
   {
-    screen.drawLine(X,     Y - i, X + m_XYlen,     Y - m_XYlen - i, (onFlag) ? m_lit : m_unlit);
-    screen.drawLine(X + i, Y,     X + m_XYlen + i, Y - m_XYlen,     (onFlag) ? m_lit : m_unlit);
+    screen.drawLine(X + i, 112, X + 25 + i, 160, defaultInk);
   }
-    //screen.drawLine(x, Y, m_XYlen, (onFlag) ? m_lit : m_unlit);
+}
+     
+inline void Sevensegments::drawRLSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag)
+{
+  for (uint8_t i = 0; i < 5; i++)
+  {
+    screen.drawLine(X + i, 112, X + 25 + i, 160, defaultInk);
+  }
 }
      
 void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t wide, uint8_t high, const uint8_t rows, const uint8_t bias)
@@ -1512,7 +1538,13 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
   drawXSegment(X,                Y + size + rows +   biasA,        (S & SK0) ? 1 : 0);  //seg K
   drawXSegment(X,                Y + rows +          bias,         (S & SL0) ? 1 : 0);  //seg L
   drawXSegment(X,                Y + rows +          bias,         (S & SN0) ? 1 : 0);  //seg N
-*/}
+*/
+
+
+  measureV(85,100,70);
+  measureH(0,85,70);
+  //drawRLSegment(5,);
+}
 
 void Sevensegments::drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag)
 {

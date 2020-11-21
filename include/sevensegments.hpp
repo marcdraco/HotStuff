@@ -163,7 +163,8 @@ class Sevensegments
 
     void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
     void drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
-    void drawXSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
+    void drawRLSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag);
+    void drawLRSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag);
     void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
 };
 
