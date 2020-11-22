@@ -41,11 +41,11 @@ constexpr uint8_t sevenSegCodes[40] =
   #define SG1 0x0100
   #define SG2 0x0200
   #define SH0 0x0400
-  #define SJ0 0x0800
-  #define SK0 0x1000
-  #define SL0 0x2000
-  #define SMX 0x4000
-  #define SN0 0x8000
+  #define SI0 0x0800
+  #define SJ0 0x1000
+  #define SK0 0x2000
+  #define SL0 0x4000
+  #define SM0 0x8000
 
 
 constexpr uint16_t sixteenSegCodes[40] =
@@ -163,8 +163,8 @@ class Sevensegments
 
     void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
     void drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
-    void drawRLSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag);
-    void drawLRSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag);
+    void drawRLSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag);
+    void drawLRSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag);
     void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
 };
 

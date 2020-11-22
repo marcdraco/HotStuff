@@ -235,9 +235,10 @@ void setup()
 
 void loop()
 {
-  segments.drawGlyph16(0, 100, '8', 60, 3, 5);
-  segments.drawGlyph16(100, 100, '8', 60, 3, 5);
-  segments.drawGlyph16(200, 100, '8', 60, 3, 5);
+  segments.drawGlyph16(0, 100, '8', 50, 1, 1);
+  segments.drawGlyph16(100, 100, '8', 50, 2, 1);
+  segments.drawGlyph16(200, 100, '8', 50, 3, 1);
+
 
   if ( ! (isrTimings.timeInSeconds % 4))
   {
@@ -1203,7 +1204,7 @@ void Messages::flashText(const uint8_t M)
 {
   execute(M);
 }
-
+  
 void Messages::showUptime(void)
 {  
   /*
@@ -1414,19 +1415,23 @@ inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t
     screen.drawFastVLine(x, Y, m_Ylength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawLRSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag)
+inline void Sevensegments::drawLRSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag)
 {
+  int Y2 = Y + height;
+  int X2 = X + width;
   for (uint8_t i = 0; i < 5; i++)
   {
-    screen.drawLine(X + i, 112, X + 25 + i, 160, defaultInk);
+    screen.drawLine(X +i , Y, X2 + i, Y2, RED);
   }
 }
      
-inline void Sevensegments::drawRLSegment(const coordinate_t X, const coordinate_t Y, const uint8_t shift, const uint8_t onFlag)
+inline void Sevensegments::drawRLSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag)
 {
+  int X2 = X + width;
+  int Y2 = Y + height;
   for (uint8_t i = 0; i < 5; i++)
   {
-    screen.drawLine(X + i, 112, X + 25 + i, 160, defaultInk);
+    screen.drawLine(X + i, Y, X2 + i, Y2, RED);
   }
 }
      
@@ -1497,44 +1502,52 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
 {
   uint16_t S = translateChar16(glyph);
 
-  size = ((size >> 1) << 1); // make this even.
-  bias = ((bias >> 1) << 1);
 
-  uint8_t biasA = bias  << 1;
-  uint8_t biasB = bias  + (bias >> 1);
+  // this is a bad way!
+  // JUST add in the rows, distances, etc, starting from the top.
+  // There's always 1 extra line in each direction (making it odd)
+  // So that should make it easier to do the calculations.
+
   uint8_t shorts = size >> 1;
-  
-  setXlen(shorts -rows);
-  setYlen(shorts);
+
+  int16_t X0 = X  + bias   + rows;
+  int16_t X1 = X0 + shorts - rows;
+  int16_t X2 = X1 + bias   + rows;
+  int16_t X3 = X2 + shorts - rows;
+
+  int16_t Y0 = Y  + bias   + rows + 1;
+  int16_t Y2 = Y  + bias   + size + rows + 2;
+  int16_t Y1 = Y2 - rows   - 1;
+  int16_t Y3 = Y  + bias   * 2    + size * 2 + 2;
+
+  setXlen(shorts);
+  setYlen(size);
   setRows(rows);
   setBias(bias);
   S = 0xFFFF;
 
-  drawHSegment(X + rows + bias,                  Y,                         (S & SA1) ? 1 : 0);  //seg A1
-  drawHSegment(X + (rows << 1) + bias + shorts,  Y,                         (S & SA2) ? 1 : 0);  //seg A2
 
-  drawHSegment(X + rows + bias,           Y +  size + bias + (bias >> 1),   (S & SG1) ? 1 : 0);  //seg G1 (Bias >> 1 + bias is a fast mult by 1.5)
-  drawHSegment(X + rows + bias + shorts,  Y +  size + bias + (bias >> 1),   (S & SG2) ? 1 : 0);  //seg G2 (Bias >> 1 + bias is a fast mult by 1.5)
+  drawHSegment(X0, Y,  (S & SA1) ? 1 : 0);  //seg A1
+  drawHSegment(X2, Y,  (S & SA2) ? 1 : 0);  //seg A2
 
-  drawHSegment(X + rows + bias,           Y + (size << 1) +   biasA + bias, (S & SD1) ? 1 : 0);  //seg D1
-  drawHSegment(X + rows + bias + shorts,  Y + (size << 1) +   biasA + bias, (S & SD2) ? 1 : 0);  //seg D2
+  drawHSegment(X0, Y1, (S & SG1) ? 1 : 0);  //seg G1 
+  drawHSegment(X2, Y1, (S & SG2) ? 1 : 0);  //seg G2 
 
-  setXlen(size);
-  setYlen(size);
+  drawVSegment(X,  Y0, (S & SF0) ? 1 : 0);  //seg F 
+  drawVSegment(X,  Y2, (S & SE0) ? 1 : 0);  //seg E 
+
+  drawHSegment(X0, Y3, (S & SD1) ? 1 : 0);  //seg D1 
+  drawHSegment(X2, Y3, (S & SD2) ? 1 : 0);  //seg D2 
+
+  drawVSegment(X1, Y0, (S & SI0) ? 1 : 0);  //seg I
+  drawVSegment(X1, Y2, (S & SL0) ? 1 : 0);  //seg L
+
+  drawVSegment(X3, Y0, (S & SB0) ? 1 : 0);  //seg B
+  drawVSegment(X3, Y2, (S & SC0) ? 1 : 0);  //seg C
+
+  drawRLSegment(X + rows, Y + bias, shorts, size, rows, (S & SH0) ? 1 : 0);  //seg H
   
-  drawVSegment(X + size + biasB, Y + rows +          bias,         (S & SB0) ? 1 : 0);  //seg B
-  drawVSegment(X + size + biasB, Y + size + rows +   biasA,        (S & SC0) ? 1 : 0);  //seg C
-  
-  drawVSegment(X,                Y + size + rows +   biasA,        (S & SE0) ? 1 : 0);  //seg E
-  drawVSegment(X,                Y + rows +          bias,         (S & SF0) ? 1 : 0);  //seg F
-
-  setYlen(size - rows);
-
-  drawVSegment(X + shorts + biasB - rows, Y + biasA,                            (S & SJ0) ? 1 : 0);  //seg J (I isn't used)
-  drawVSegment(X + shorts + biasB - rows, Y + size + bias + (rows << 1) + rows, (S & SM0) ? 1 : 0);  //seg M 
-/*
-  
-  drawXSegment(X + size + biasA, Y + rows +          bias,         (S & SH0) ? 1 : 0);  //seg H
+/*  
   drawXSegment(X,                Y + size + rows +   biasA,        (S & SK0) ? 1 : 0);  //seg K
   drawXSegment(X,                Y + rows +          bias,         (S & SL0) ? 1 : 0);  //seg L
   drawXSegment(X,                Y + rows +          bias,         (S & SN0) ? 1 : 0);  //seg N
@@ -1543,7 +1556,6 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
 
   measureV(85,100,70);
   measureH(0,85,70);
-  //drawRLSegment(5,);
 }
 
 void Sevensegments::drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag)
