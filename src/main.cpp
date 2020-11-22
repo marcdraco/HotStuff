@@ -239,6 +239,7 @@ void loop()
   segments.drawGlyph16(100, 100, '8', 50, 2, 1);
   segments.drawGlyph16(200, 100, '8', 50, 3, 1);
 
+  STOP
 
   if ( ! (isrTimings.timeInSeconds % 4))
   {
@@ -1419,9 +1420,9 @@ inline void Sevensegments::drawLRSegment(const coordinate_t X, coordinate_t Y, c
 {
   int Y2 = Y + height;
   int X2 = X + width;
-  for (uint8_t i = 0; i < 5; i++)
+  for (uint8_t i = 0; i < (rows << 1); i++)
   {
-    screen.drawLine(X +i , Y, X2 + i, Y2, RED);
+    screen.drawLine(X +i , Y2, X2 + i, Y, RED);
   }
 }
      
@@ -1429,9 +1430,9 @@ inline void Sevensegments::drawRLSegment(const coordinate_t X, coordinate_t Y, c
 {
   int X2 = X + width;
   int Y2 = Y + height;
-  for (uint8_t i = 0; i < 5; i++)
+  for (uint8_t i = 0; i < (rows << 1); i++)
   {
-    screen.drawLine(X + i, Y, X2 + i, Y2, RED);
+    screen.drawLine(X2 + i, Y2, X + i, Y, RED);
   }
 }
      
@@ -1494,19 +1495,9 @@ inline void Sevensegments::slash(const coordinate_t X, const coordinate_t Y, con
   }
 }
 
-void Sevensegments::backslash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows)
-{
-}
-
 void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t size, const uint8_t rows, uint8_t bias)
 {
   uint16_t S = translateChar16(glyph);
-
-
-  // this is a bad way!
-  // JUST add in the rows, distances, etc, starting from the top.
-  // There's always 1 extra line in each direction (making it odd)
-  // So that should make it easier to do the calculations.
 
   uint8_t shorts = size >> 1;
 
@@ -1526,7 +1517,6 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
   setBias(bias);
   S = 0xFFFF;
 
-
   drawHSegment(X0, Y,  (S & SA1) ? 1 : 0);  //seg A1
   drawHSegment(X2, Y,  (S & SA2) ? 1 : 0);  //seg A2
 
@@ -1545,17 +1535,29 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
   drawVSegment(X3, Y0, (S & SB0) ? 1 : 0);  //seg B
   drawVSegment(X3, Y2, (S & SC0) ? 1 : 0);  //seg C
 
-  drawRLSegment(X + rows, Y + bias, shorts, size, rows, (S & SH0) ? 1 : 0);  //seg H
+  drawRLSegment(X +      (rows << 1) + 1 + bias, 
+                Y +      (rows << 1) + 1 + bias, 
+                shorts - (rows << 2) - 1 - bias, 
+                size   - (rows << 1) - 1 - bias, 
+                rows, (S & SH0) ? 1 : 0);  //seg H
   
-/*  
-  drawXSegment(X,                Y + size + rows +   biasA,        (S & SK0) ? 1 : 0);  //seg K
-  drawXSegment(X,                Y + rows +          bias,         (S & SL0) ? 1 : 0);  //seg L
-  drawXSegment(X,                Y + rows +          bias,         (S & SN0) ? 1 : 0);  //seg N
-*/
+  drawLRSegment(X +      (rows << 1) + 1 + bias + shorts, 
+                Y +      (rows << 1) + 1 + bias, 
+                shorts - (rows << 2) - 1 - bias, 
+                size   - (rows << 1) - 1 - bias, 
+                rows, (S & SH0) ? 1 : 0);  //seg H
 
-
-  measureV(85,100,70);
-  measureH(0,85,70);
+  drawRLSegment(X +      (rows << 1) + 1 + bias + shorts, 
+                Y1 +     (rows << 1) + 1 + bias, 
+                shorts - (rows << 2) - 1 - bias, 
+                size   - (rows << 1) - 1 - bias, 
+                rows, (S & SH0) ? 1 : 0);  //seg H
+  
+  drawLRSegment(X +      (rows << 1) + 1 + bias, 
+                Y1 +     (rows << 1) + 1 + bias, 
+                shorts - (rows << 2) - 1 - bias, 
+                size   - (rows << 1) - 1 - bias, 
+                rows, (S & SH0) ? 1 : 0);  //seg H
 }
 
 void Sevensegments::drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag)
