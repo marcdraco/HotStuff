@@ -182,7 +182,6 @@ enum semaphores : uint16_t
   RESETALL    = 0xFFFF
 };
 
-
 #define B0000000000000001 0x0001
 #define B0000000000000010 0x0002
 #define B0000000000000100 0x0004
@@ -211,7 +210,6 @@ enum
   DAILY    = B00100000,
   RESET    = B01000000,
 };
-
 
 const unsigned char symbolDry [] PROGMEM = {
 0xff, 0xff, 0xcf, 0xff, 0xff, 0xff, 0xff, 0xf0, 0xff, 0xff, 0x8f, 0xff, 0xff, 0xff, 0xff, 0xf0, 

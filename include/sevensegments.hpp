@@ -45,33 +45,67 @@ constexpr uint8_t sevenSegCodes[40] =
   #define SJ0 0x1000
   #define SK0 0x2000
   #define SL0 0x4000
-  #define SM0 0x8000
+  #define SMX 0x8000
 
+  #define X256(b,a) (unsigned int) ((a << 8) + b)
 
-constexpr uint16_t sixteenSegCodes[40] =
+constexpr uint16_t sixteenSegCodes[108] =
 {
-    '0', B11111100,     //0xfA
-    '1', B01100000,     
-    '2', B11011010,     
-    '3', B11110010,
-    '4', B01100110,
-    '5', B10110110,     
-    '6', B10111110,
-    '7', B11100000,
-    '8', B00000011 * 256 + B11111111,
-    '9', B11100110,
-    'A', B11101111,
-    'B', B00111111,
-    'C', B10011101,
-    'D', B01111011,
-    'E', B10011110,
-    'F', B10001110,
+    ' ', 0,                       //CHECK
+    '0', 0Xff+SK0+SJ0,                       //CHECK
+    '1', SI0+SL0+SD1+SD2+SA1,                // check 
+    '2', SA1+SA2+SB0+SG1+SG2+SE0+SD1+SD2,    // check   
+    '3', SA1+SA2+SB0+SC0+SD1+SD2+SG1+SG2,    // check 
+    '4', SF0+SG1+SG2+SB0+SC0,                // check 
+    '5', SA1+SA2+SH0+SG1+SG2+SC0+SD1+SD2,     // check  
+    '6', SA1+SA2+SF0+SE0+SC0+SG1+SG2+SD1+SD2, // check 
+    '7', SA1+SA2+SB0+SC0,                     // check 
+    '8', 0xff+SG1+SG2,                        // check 
+    '9', SA1+SA2+SF0+SB0+SG1+SG2+SC0,         // check 
+    'A', SA1+SA2+SF0+SB0+SE0+SC0+SG1+SG2,     // CHECK
+    'B', SA1+SA2+SI0+SL0+SB0+SC0+SG2+SD1+SD2, // check
+    'C', SA1+SA2+SF0+SE0+SD1+SD2,             // check
+    'D', SA1+SA2+SB0+SC0+SD1+SD2+SI0+SL0,     // check
+    'E', SA1+SA2+SF0+SE0+SD1+SD2+SG1,         // check
+    'F', SA1+SA2+SF0+SE0+SG1,                 // CHEK
+    'G', SA1+SA2+SF0+SE0+SD1+SD2+SC0+SG2,  
+    'H', SF0+SE0+SG1+SG2+SB0+SC0,
+    'I', SA1+SA2+SD1+SD2+SI0+SL0, //check
+    'J', SB0+SC0+SA2+SD1+SD2, //check
+    'K', SF0+SE0+SG1+SJ0+SMX, //CHECK
+    'L', SF0+SE0+SD1+SD2, //CHEC
+    'M', SF0+SE0+SB0+SC0+SH0+SJ0,// CHECK
+    'N', SF0+SE0+SB0+SC0+SH0+SMX, //CHECK
+    'O', 0xFF, //CHECK
+    'P', SF0+SE0+SA1+SA2+SB0+SG1+SG2,//CHECK
+    'Q', 0xFF+SMX,//CHECK
+    'R', SF0+SE0+SA1+SA2+SB0+SG1+SG2+SMX,//CHECK
+    'S', SA1+SA2+SF0+SG1+SG2+SC0+SD1+SD2,     // check  
+    'T', SA1+SA2+SI0+SL0,
+    'U', SF0+SE0+SB0+SC0+SD1+SD2,
+    'V', SE0+SF0+SK0+SJ0,
+    'W', SF0+SE0+SB0+SC0+SK0+SMX, //CHECK
+    'X', SH0+SJ0+SMX+SK0,
+    'Y', SH0+SJ0+SL0,
+    'Z', SA1+SA2+SD1+SD2+SJ0+SK0,
+    '*', SJ0+SK0+SH0+SMX+SI0+SL0+SG1+SG2, //CHECK
+    '[', SA1+SE0+SF0+SD1,
+    ']', SA2+SB0+SC0+SD2,
+    '\\', SH0+SMX,
+    '/', SJ0+SK0,       // CHECK    
+    '(', SJ0+SMX,
+    ')', SH0+SK0,
+    '$', SA1+SA2+SF0+SG1+SG2+SC0+SD1+SD2+SI0+SL0,
+    '&', SF0+SA1+SI0+SG1+SE0+SD1+SD2+SMX,
+    '|', SI0+SL0,
+    '!', SF0+SE0,
+    '%', SA2+SJ0+SK0+SD1,
+    '?', SA1+SA2+SB0+SG2+SL0,
+    '=', SG1+SG2+SD1+SD2,
     '-', B00000010,
     'o', B11000110,
-    'C', B00011010,
     '.', B00000001
 };
-
 
 class Sevensegments 
 {
@@ -137,7 +171,7 @@ class Sevensegments
     void slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows);
     void backslash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows);
 
-    uint8_t translateChar(const char glyph)
+    uint8_t translateChar(const uint8_t glyph)
     {
         uint8_t i = 255;    // start at -1 because the counter "pre increments" but do...while loops are faster
 
@@ -146,10 +180,10 @@ class Sevensegments
             i++;
         } while (glyph != sevenSegCodes[(i << 1)]);
 
-        return sevenSegCodes[(i << 1) +1 ];
+        return sevenSegCodes[(i << 1) +1];
     }
 
-    uint8_t translateChar16(const char glyph)
+    uint16_t translateChar16(const uint8_t glyph)
     {
         uint16_t i = 0xFFFF;
 
@@ -157,8 +191,7 @@ class Sevensegments
         {
             i++;
         } while (glyph != sixteenSegCodes[(i << 1)]);
-
-        return sixteenSegCodes[i << 1];
+        return sixteenSegCodes[(i << 1) +1];
     };
 
     void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
