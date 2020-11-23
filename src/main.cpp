@@ -235,13 +235,25 @@ void setup()
 
 void loop()
 {
-  for (int i = 'A'; i < 'Z'; i++)
+char b[80] = "  ROSE DIGITAL   ";
+int c= 0;
+do 
 {
-  segments.drawGlyph16(0,  100, i+1, 60, 4, 1);
-  segments.drawGlyph16(80, 100,  i+2, 60, 4, 1);
-  segments.drawGlyph16(160, 100, i+3, 60, 4, 1);
-  segments.drawGlyph16(240, 100, i+4, 60, 4, 1);
-}
+  // 2,0,0 is READABLE (but silly small)!
+  // 4,0,0 is READABLE!
+  // 4,0,1 is READABLE!
+  // 8,0,1
+  // 20,1,1
+  // 30,2,1
+  // 60, 3, 1
+  c++;
+  segments.drawGlyph16(0,   100, b[(c) % 14], 30, 2, 1);
+  segments.drawGlyph16(40,  100, b[(c+1) % 14], 30, 2, 1);
+  segments.drawGlyph16(80,  100, b[(c+2) % 14], 30, 2, 1);
+  segments.drawGlyph16(120, 100, b[(c+3) % 14], 30, 2, 1);
+  segments.drawGlyph16(160, 100, b[(c+4) % 14], 30, 2, 1);
+  delay(20);
+} while(1);
 
   if ( ! (isrTimings.timeInSeconds % 4))
   {
@@ -1418,26 +1430,22 @@ inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t
     screen.drawFastVLine(x, Y, m_Ylength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawLRSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag)
+inline void Sevensegments::drawRLSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
 {
-  int Y2 = Y + height;
-  int X2 = X + width;
-  for (uint8_t i = 0; i < (rows << 1); i++)
+  for (uint8_t i = (rows << 1); i > 0; --i)
   {
-    screen.drawLine(X +i , Y2, X2 + i, Y, (onFlag) ? m_lit : m_unlit);
+    fastShortLine(X, Y + i, X1, Y1 - rows + i, (onFlag) ? m_lit : m_unlit);
   }
 }
-     
-inline void Sevensegments::drawRLSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag)
+
+inline void Sevensegments::drawLRSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
 {
-  int X2 = X + width;
-  int Y2 = Y + height;
-  for (uint8_t i = 0; i < (rows << 1); i++)
+  for (uint8_t i = (rows << 1); i > 0 ; --i)
   {
-    screen.drawLine(X2 + i, Y2, X + i, Y, (onFlag) ? m_lit : m_unlit);
+    fastShortLine(X, Y + i, X1, Y1 - rows + i, (onFlag) ? m_lit : m_unlit);
   }
 }
-     
+
 void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t wide, uint8_t high, const uint8_t rows, const uint8_t bias)
 {
   wide = ((wide >> 1) << 1);
@@ -1536,32 +1544,72 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
   drawVSegment(X3, Y0, (S & SB0) ? 1 : 0);  //seg B
   drawVSegment(X3, Y2, (S & SC0) ? 1 : 0);  //seg C
 
-  drawRLSegment(X +      (rows << 1) + 1 + bias, 
-                Y +      (rows << 1) + 1 + bias, 
-                shorts - (rows << 2) - 1 - bias, 
-                size   - (rows << 1) - 1 - bias, 
-                rows, (S & SH0) ? 1 : 0);         //seg H
+  drawLRSegment(X0 + rows + 1,
+                Y  + (rows << 1) + 1 + bias, 
+                X  + shorts, 
+                Y  + size - (rows >> 1) - rows,
+                (rows << 1), (S & SH0) ? 1 : 0);
 
-  drawLRSegment(X +      (rows << 1) + 1 + bias + shorts, 
-                Y +      (rows << 1) + 1 + bias, 
-                shorts - (rows << 2) - 1 - bias, 
-                size   - (rows << 1) - 1 - bias, 
-                rows, (S & SJ0) ? 1 : 0);         //seg J
-  
-  drawLRSegment(X +      (rows << 1) + 1 + bias, 
-                Y1 +     (rows << 1) + 1 + bias, 
-                shorts - (rows << 2) - 1 - bias, 
-                size   - (rows << 1) - 1 - bias, 
-                rows, (S & SK0) ? 1 : 0);         //seg K
+  drawRLSegment(X1 + shorts,
+                Y  + (rows << 1) + 1 + bias, 
+                X2 + 1 + rows,
+                Y  + size - (rows >> 1) - rows,
+                (rows << 1), (S & SJ0) ? 1 : 0);
 
-  drawRLSegment(X +      (rows << 1) + 1 + bias + shorts, 
-                Y1 +     (rows << 1) + 1 + bias, 
-                shorts - (rows << 2) - 1 - bias, 
-                size   - (rows << 1) - 1 - bias, 
-                rows, (S & SMX) ? 1 : 0);         //seg M
+  drawRLSegment(X  + shorts, 
+                Y1 + (rows << 1) + 1 + bias, 
+                X0 + rows + 1, 
+                Y1 + size - (rows >> 1) - rows,
+                (rows << 1), (S & SK0) ? 1 : 0);
+
+  drawLRSegment(X2 + 1 + rows, 
+                Y1 + (rows << 1) + 1 + bias, 
+                X1 + shorts - 1, 
+                Y1 + size - (rows >> 1) - rows - + 1 - bias,
+                (rows << 1), (S & SMX) ? 1 : 0);
 }
 
 void Sevensegments::drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag)
 {
   screen.fillCircle(X, Y, radius, (onFlag) ? m_lit : m_unlit);
+}
+
+void Sevensegments::fastShortLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t ink) 
+{
+  int8_t steep = abs(y1 - y0) > abs(x1 - x0);
+  if (steep) 
+  {
+    _swap_int16_t(x0, y0);
+    _swap_int16_t(x1, y1);
+  }
+
+  if (x0 > x1) 
+  {
+    _swap_int16_t(x0, x1);
+    _swap_int16_t(y0, y1);
+  }
+
+  int8_t dx    = x1     - x0;
+  int8_t dy    = abs(y1 - y0);
+  int8_t error = dx >> 1;
+  int8_t ystep = (y0 < y1) ? 1 : -1;
+
+  for (; x0 <= x1; x0++) 
+  {
+    if (steep) 
+    {
+      screen.drawPixel(y0, x0, ink);
+    } 
+    else 
+    {
+      screen.drawPixel(x0, y0, ink);
+    }
+
+    error -= dy;
+    if (error < 0) 
+    {
+      y0    += ystep;
+      error += dx;
+    }
+  }
 }

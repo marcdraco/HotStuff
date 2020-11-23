@@ -5,6 +5,9 @@
 #include <inttypes.h>
 #include "types.hpp"
 
+#ifndef _swap_int16_t
+#define _swap_int16_t(a, b){int16_t t = a; a = b; b = t;}
+#endif
 
 constexpr uint8_t sevenSegCodes[40] =
 {
@@ -170,7 +173,13 @@ class Sevensegments
     void drawPercent(const coordinate_t X, const coordinate_t Y, const uint8_t size, const uint8_t rows, const uint8_t bias);
     void slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows);
     void backslash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows);
-
+    void fastShortLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t ink); 
+    void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
+    void drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
+    void drawRLSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
+    void drawLRSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
+    void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
+       
     uint8_t translateChar(const uint8_t glyph)
     {
         uint8_t i = 255;    // start at -1 because the counter "pre increments" but do...while loops are faster
@@ -194,11 +203,6 @@ class Sevensegments
         return sixteenSegCodes[(i << 1) +1];
     };
 
-    void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
-    void drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
-    void drawRLSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag);
-    void drawLRSegment(const coordinate_t X, coordinate_t Y, const uint8_t width, const uint8_t height, const uint8_t rows, const uint8_t onFlag);
-    void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
 };
 
 #endif
