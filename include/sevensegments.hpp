@@ -9,6 +9,32 @@
 #define _swap_int16_t(a, b){int16_t t = a; a = b; b = t;}
 #endif
 
+/*
+char b[80] = " {}<>-#:@\" ROSE DF   ";
+int c= 0;
+do 
+{
+  // 2,0,0 is READABLE (but silly small)!
+  // 4,0,0 is READABLE!
+  // 4,0,1 is READABLE!
+  // 8,0,1
+  // 20,1,1
+  // 30,2,1
+  // 60, 3, 1
+  c++;
+  segments.drawGlyph16(0,   100, b[(c) % 14], 30, 2, 1);
+  segments.drawGlyph16(40,  100, b[(c+1) % 14], 30, 2, 1);
+  segments.drawGlyph16(80,  100, b[(c+2) % 14], 30, 2, 1);
+  segments.drawGlyph16(120, 100, b[(c+3) % 14], 30, 2, 1);
+  segments.drawGlyph16(160, 100, b[(c+4) % 14], 30, 2, 1);
+  segments.drawGlyph16(200, 100, b[(c+5) % 14], 30, 2, 1);
+  segments.drawGlyph16(240, 100, b[(c+6) % 14], 30, 2, 1);
+  segments.drawGlyph16(280, 100, b[(c+7) % 14], 30, 2, 1);
+} while(1);
+
+
+*/
+
 constexpr uint8_t sevenSegCodes[40] =
 {
     '0', B11111100,     //0xfA
@@ -112,12 +138,11 @@ constexpr uint16_t sixteenSegCodes[120] =
     '-', SEG_G,
     '<', SEG_H + SEG_I + SEG_J,             // down arrow with tail
     '>', SEG_K + SEG_L + SEG_M,             // up arrow with tail
-    '#', SEG_A2 + SEG_B + SEG_G2 + SEG_I,    // degree symbol
+    '#', SEG_A2 + SEG_B + SEG_G2 + SEG_I,   // degree symbol
     '@', SEG_G + SEG_D + SEG_I + SEG_L,     // +/- 
     '{', SEG_H + SEG_J,                     // down arrow
     '}', SEG_K + SEG_M,                     // up arrow
-    ':', SEG_H + SEG_J + SEG_K + SEG_M     // MULTIPLY
-
+    ':', SEG_H + SEG_J + SEG_K + SEG_M      // MULTIPLY
 };
 
 class Sevensegments 
@@ -212,7 +237,6 @@ class Sevensegments
         } while (glyph != sixteenSegCodes[(i << 1)]);
         return sixteenSegCodes[(i << 1) +1];
     };
-
 };
 
 #endif

@@ -118,8 +118,8 @@ inline uint8_t* pgm_read_bitmap_ptr(const gfxfont_t* gfxFont)
 #ifndef min
   #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
-void showLCDReadsHori(void);
-void showLCDReadsVert(void);
+void showLCDReadsHorizontal(void);
+void showLCDReadsVertical(void);
 
 class Flags 
 {
@@ -271,6 +271,7 @@ class Display
 {
   colours_t m_ink {defaultInk};
   colours_t m_paper {defaultPaper};
+  colours_t m_flash {defaultInk};
   uint8_t m_rotation {0};
 
   public:
@@ -293,6 +294,11 @@ class Display
     m_ink = C;
   }
 
+  void setFlashInk(const colours_t C)
+  {
+    m_flash = C;
+  }
+
   colours_t getPaper()
   {
     return m_paper;
@@ -302,6 +308,8 @@ class Display
   {
     m_paper = C;
   }
+
+  void displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer);
 
   enum  
   {
@@ -748,8 +756,6 @@ class Reading
    * 
    */
   
-
-  static void showReadings();
 
   /**
    * @brief Calls bufferReading with the current X,Y positions

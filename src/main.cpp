@@ -116,7 +116,7 @@ Fonts fonts;
 Environmental environment;
 Flags flags;
 Messages messages;
-Sevensegments segments(RED, DEEPRED);
+Sevensegments segments(defaultInk, DEEPBLUE);
 
 // convert KNOWN Y coords to 8-bit only for a hair more speed.
 // start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
@@ -136,54 +136,6 @@ struct globalVariables
   uint16_t g_semaphores = 0;
 } globals;
 
-void pause()
-{
-  if (digitalRead(BUTTON_PIN) == HIGH)
-  {
-    while (digitalRead(BUTTON_PIN) == HIGH)
-    {
-
-    }    
-  }
-  delay(100);
-};
-
-void measureH(const int X, const int Y, const int len)
-{
-    screen.drawFastHLine(X, Y, len, RED);
-    screen.drawFastVLine(X, Y - 10, 20, RED);
-    screen.drawFastVLine(X + len, Y - 10, 20, RED);
-
-    for (int i = 0; i < len; i += 10)
-    {
-      screen.drawFastVLine(X + i, Y,  10, RED);
-    } 
-
-    for (int i = 0; i < len; i += 5)
-    {
-      screen.drawFastVLine(X+ i, Y, 10, RED);
-    } 
-}
-
-void measureV(const int X, const int Y, const int len)
-{
-    screen.drawFastVLine(X, Y, len, RED);
-    screen.drawFastHLine(X - 15, Y,  30, RED);
-    screen.drawFastHLine(X - 15, Y + len, 30, RED);    
-
-    for (int i = 0; i < len; i += 10)
-    {
-      screen.drawFastHLine(X - 10, Y+ i,  10, RED);
-    } 
-
-    for (int i = 0; i < len; i += 5)
-    {
-      screen.drawFastHLine(X, Y+ i, 10, WHITE);
-    } 
-
-
-}
-
 void setup()
 {
   Serial.begin(9600);
@@ -201,7 +153,7 @@ void setup()
   humidity.setTrace(AZURE);    // humidity graph line
   temperature.setTrace(YELLOW);   // temperature graph line
 
-  fonts.setFont(static_cast<const gfxfont_t *>(&HOTLARGE));
+  fonts.setFont(static_cast<const gfxfont_t *>(&HOTSMALL));
 
 #ifdef USE_METRIC
   flags.set(USEMETRIC);
@@ -219,8 +171,7 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  fonts.setFont(&HOTSMALL);
-  //screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
+  screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
 
   pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
   pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
@@ -230,7 +181,7 @@ void setup()
   pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
   readings_t read;
-  
+  graph.initGraph();
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
@@ -238,46 +189,36 @@ void setup()
 
 void loop()
 {
-char b[80] = " {}<>-#:@\" ROSE DF   ";
-int c= 0;
-do 
-{
-  // 2,0,0 is READABLE (but silly small)!
-  // 4,0,0 is READABLE!
-  // 4,0,1 is READABLE!
-  // 8,0,1
-  // 20,1,1
-  // 30,2,1
-  // 60, 3, 1
-  c++;
-  segments.drawGlyph16(0,   100, b[(c) % 14], 30, 2, 1);
-  segments.drawGlyph16(40,  100, b[(c+1) % 14], 30, 2, 1);
-  segments.drawGlyph16(80,  100, b[(c+2) % 14], 30, 2, 1);
-  segments.drawGlyph16(120, 100, b[(c+3) % 14], 30, 2, 1);
-  segments.drawGlyph16(160, 100, b[(c+4) % 14], 30, 2, 1);
-  segments.drawGlyph16(200, 100, b[(c+5) % 14], 30, 2, 1);
-  segments.drawGlyph16(240, 100, b[(c+6) % 14], 30, 2, 1);
-  segments.drawGlyph16(280, 100, b[(c+7) % 14], 30, 2, 1);
-} while(1);
-
-  if ( ! (isrTimings.timeInSeconds % 4))
+  if (flags.isSet(UPDATEREADS))
   {
     Reading::takeReadings();
-    //Reading::showReadings();
-    showLCDReadsHori();
-    
+    flags.clear(UPDATEREADS);
+    showLCDReadsHorizontal();
   }
   //messages.showMinMax();
+  //graph.drawGraph();
   //messages.showUptime();
-  //alarm.checkButton();
+  alarm.checkButton();
+  
+  display.displaySmallBitmap(180, 120, 60, 60, (uint8_t *) symbolDamp);
+
   if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))     
   {
-    (flags.isSet(FLASH)) ? digitalWrite(ALARM_PIN, HIGH) : digitalWrite(ALARM_PIN, LOW);
-  }
+    if (flags.isSet(FLASH))
+    {
+      digitalWrite(ALARM_PIN, HIGH);
+      display.setFlashInk(defaultInk);
+    }
+    else
+    {
+      display.setFlashInk(defaultPaper);
+      digitalWrite(ALARM_PIN, LOW);
+    }
 
+  }
 }
 
-void showLCDReadsVert(void)
+void showLCDReadsVertical()
 {
   char b[5];
   int16_t r = temperature.getReading() * 10;
@@ -296,7 +237,7 @@ void showLCDReadsVert(void)
   segments.drawPercent(190, 265, 12, 1, 1);
 }
 
-void showLCDReadsHori(void)
+void showLCDReadsHorizontal()
 {
   char b[5];
   int16_t r = temperature.getReading() * 10;
@@ -325,13 +266,13 @@ void Graph::drawGraph()
     screen.fillRect(GRAPH_LEFT + 1, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
     drawReticles(6, 6);
 
-    for (auto i {1}; i < 7; ++i)
+    for (uint8_t i {1}; i < 7; ++i)
     {
       const colours_t ink  = temperature.getTrace();
       const int8_t scale   = 2;
-      const int read       = static_cast<int8_t>(round(temperature.getCMA()));
-      const int min        = temperature.getMinRead(i);
-      const int max        = temperature.getMaxRead(i);
+      const int8_t read       = static_cast<int8_t>(round(temperature.getCMA()));
+      const int8_t min        = temperature.getMinRead(i);
+      const int8_t max        = temperature.getMaxRead(i);
       if (max > 100)
       {
         continue;
@@ -339,13 +280,13 @@ void Graph::drawGraph()
       drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink, true);           
     }
 
-    for (auto i {1}; i < 7; ++i)
+    for (uint8_t i {1}; i < 7; ++i)
     {
       const colours_t ink  = humidity.getTrace();
       const int8_t scale   = 1;
-      const int read       = static_cast<int8_t>(round(humidity.getCMA()));
-      const int min        = humidity.getMinRead(i);
-      const int max        = humidity.getMaxRead(i);
+      const uint8_t read       = static_cast<int8_t>(round(humidity.getCMA()));
+      const uint8_t min        = humidity.getMinRead(i);
+      const uint8_t max        = humidity.getMaxRead(i);
       if (max > 100)
       {
         continue;
@@ -453,7 +394,6 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 void Graph::initGraph(void)
 {
   fonts.setFont(&HOTSMALL);
-  //setGraphWidth(TFT_WIDTH - ((2 * fonts.getYstep()) + (8 * fonts.getXstep())));
   screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.getPaper());
   drawGraphScaleMarks();
   drawReticles(6, 6); 
@@ -485,7 +425,7 @@ void Graph::drawGraphScaleMarks(void)
     fonts.setRotation(0);
 
     // temp scale
-    for (auto i{0}; i < 60; i += 10)
+    for (int8_t i{0}; i < 60; i += 10)
     {
         fonts.setFont(&HOTSMALL);
         const int yShift = fonts.getYstep() / 2;
@@ -500,7 +440,7 @@ void Graph::drawGraphScaleMarks(void)
     }
     
     // humidity scale
-    for (auto i{0}; i < 120; i += 20)
+    for (int8_t i{0}; i < 120; i += 20)
     {
         fonts.setFont(&HOTSMALL);
         const int X = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
@@ -526,15 +466,13 @@ void Reading::takeReadings(void)
   readings_t R;
   UniversalDHT::Response reading = dht22.read(&R.H, &R.T);
 
-  if (reading.error != 0)
+  if (reading.error)
   {
     alarm.sensorFailed(reading);
   }
 
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
-
-return;
 
   if (flags.isSet(REDRAWGRAPH))
   {
@@ -563,20 +501,6 @@ void Reading::updateReading(const reading_t reading)
   m_read[m_readPtr] = m_currRead;
   ++m_readPtr;
   m_readPtr %= HOURS;
-}
-
-void Reading::showReadings(void)
-{
-  fonts.setFont(&HOTLARGE);
-  display.setInk(defaultInk);
-  char buffer[10];
-  fonts.setFont(&HOTLARGE);
-  fonts.setBufferDimensions(FONT_BUFF_WIDTH, FONT_BUFF_HEIGHT);
-  temperature.bufferReading(temperature.getReading(), buffer, (flags.isSet(USEMETRIC)) ? METRIC : IMPERIAL);  
-  fonts.print(0, 20, buffer);
-  
-  temperature.bufferReading(humidity.getReading(), buffer, HUMIDITY);
-  fonts.print(TFT_WIDTH / 2, 20, buffer);
 }
 
 void Reading::bufferReading(const reading_t reading, char* buffer, const semaphore_t flags)
@@ -640,6 +564,13 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   flags.flip(FLASH); // flip the boolean for flashing items
 
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
+  ++isrTimings.timeToRead;
+
+  if (isrTimings.timeToRead == 3)
+  {
+    isrTimings.timeToRead = 0;
+    flags.set(UPDATEREADS);
+  }
 
   if (isrTimings.timeInSeconds == 60)
   {
@@ -960,7 +891,7 @@ void Fonts::print(const int X, const int Y, char* buffer)
 
     if (! m_pixelBuffer)
     {
-      screen.fillRect(X, Y, m_bufferWidth, m_bufferHeight, RED);
+      screen.fillRect(X, Y, m_bufferWidth, m_bufferHeight, defaultInk);
       STOP
     }
     else
@@ -1045,7 +976,7 @@ uint8_t Fonts::bufferImgGlyph(const glyph_t glyph)
   return thisGlyph.xAdvance;
 }
 
-void displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer)
+void Display::displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer)
 {
   // Tweaked by MD from the orginal by Limor "Lady Ada" Fried. 
   // 8-bits are used in preference to 16 where possible because these are faster on  
@@ -1068,12 +999,11 @@ void displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, 
       }
       if (! (byte & 0x80))
       {
-        screen.writePixel(X + i, Y, RED);
+        screen.writePixel(X + i, Y, m_flash);
       }
     }
   }
   screen.endWrite();
-  return;
 }
 
 uint8_t Fonts::drawImgGlyph(const glyph_t glyph)
@@ -1158,9 +1088,7 @@ dimensions_t Fonts::getGlyphDimensions(const glyph_t glyph)
 {
     glyphdata_t G;
     glyph_t code = findGlyphCode(glyph);
-
     prepImgGlyph(code, &G);
-
     return {G.dimensions.W, G.dimensions.W};
 }
 
@@ -1276,11 +1204,11 @@ void Messages::showMinMax(void)
 
   display.setColours(defaultPaper, GREY);  
   fonts.setFont(&HOTSMALL);
-  uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
+//  uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
   //uint8_t margin = (TFT_WIDTH - width) / 2;
 
   fonts.setBufferDimensions(TFT_WIDTH, 18);
-  fonts.print(0, 0, msg);
+  fonts.print(0, TFT_HEIGHT-16, msg);
   display.setColours(defaultInk, defaultPaper); 
   free(msg);
 }
@@ -1503,10 +1431,7 @@ void Sevensegments::drawPercent(coordinate_t X, coordinate_t Y, const uint8_t si
 
 inline void Sevensegments::slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows)
 {
-  // insert dope Saul Hudson gag here...
-
-  displaySmallBitmap(180, 180, 60, 60, (uint8_t *) symbolDamp);
-  
+  // insert dope Saul Hudson gag here...  
   for (int i = 0; i < rows; ++i)
   {
     screen.drawLine(X + i, Y, X + i - wide, Y + high, m_lit);

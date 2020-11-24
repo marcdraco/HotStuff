@@ -92,8 +92,10 @@ UniversalDHT::Response UniversalDHT::read(float* ptemperature, float* phumidity)
 {
   RawReading reading;
   Response ret = sample(&reading);
-  if (ret.error) return ret;
-
+  if (ret.error) 
+  {
+    return ret;
+  }
 
   uint8_t expect = reading.humidity16 + reading.humidity8 + reading.temperature16 + reading.temperature8;
   if (reading.checksum != expect) 
@@ -171,7 +173,6 @@ UniversalDHT::Response UniversalDHT::sample(RawReading *reading)
     return ret;
   }
 
-
   // DHTxx data transmission:
   //    1. 1bit start, PULL LOW 50us
   //    2. PULL HIGH:
@@ -209,13 +210,12 @@ UniversalDHT::Response UniversalDHT::sample(RawReading *reading)
 
   // DHT11 EOF:
   //    1. PULL LOW 50us.
-  waitWhileValue(pin, LOW);                     // 1.
+  waitWhileValue(pin, LOW);  
   t = advance(lf, nf);
   if (t < 24) 
   {                           // specs say: 50us
     ret.time = t;
     ret.error = Response::errDataEOF;
   }
-
   return ret;
 }
