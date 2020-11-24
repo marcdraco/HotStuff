@@ -116,7 +116,11 @@ Fonts fonts;
 Environmental environment;
 Flags flags;
 Messages messages;
-Sevensegments segments(defaultInk, DEEPGREEN);
+Sevensegments segments(RED, DEEPRED);
+
+
+// convert KNOWN Y coords to 8-bit only for a hair more speed.
+// start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
 
 /*
  * Nasty global variable...
@@ -252,7 +256,10 @@ do
   segments.drawGlyph16(80,  100, b[(c+2) % 14], 30, 2, 1);
   segments.drawGlyph16(120, 100, b[(c+3) % 14], 30, 2, 1);
   segments.drawGlyph16(160, 100, b[(c+4) % 14], 30, 2, 1);
-  delay(20);
+  segments.drawGlyph16(200, 100, b[(c+5) % 14], 30, 2, 1);
+  segments.drawGlyph16(240, 100, b[(c+6) % 14], 30, 2, 1);
+  segments.drawGlyph16(280, 100, b[(c+7) % 14], 30, 2, 1);
+  delay(2000);
 } while(1);
 
   if ( ! (isrTimings.timeInSeconds % 4))
@@ -265,6 +272,11 @@ do
   //messages.showMinMax();
   //messages.showUptime();
   //alarm.checkButton();
+  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))     
+  {
+    (flags.isSet(FLASH)) ? digitalWrite(ALARM_PIN, HIGH) : digitalWrite(ALARM_PIN, LOW);
+  }
+
 }
 
 void showLCDReadsVert(void)
@@ -626,12 +638,8 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 {
   TCNT1 = UPDATER;     // preload timer
 
+  // this SHOULD use a MACRO (and a global variable for speed on embedded systems)
   flags.flip(FLASH); // flip the boolean for flashing items
-
-  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))     // this SHOULD be a MACRO (and a global variable for speed on embedded systems)
-  {
-    (flags.isSet(FLASH)) ? digitalWrite(ALARM_PIN, HIGH) : digitalWrite(ALARM_PIN, LOW);
-  }
 
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
 
@@ -1430,19 +1438,21 @@ inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t
     screen.drawFastVLine(x, Y, m_Ylength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawRLSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
+inline void Sevensegments::drawRLSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
 {
+  Y1 -= rows;
   for (uint8_t i = (rows << 1); i > 0; --i)
   {
-    fastShortLine(X, Y + i, X1, Y1 - rows + i, (onFlag) ? m_lit : m_unlit);
+    fastShortLine(X, Y + i, X1, Y1 + i, (onFlag) ? m_lit : m_unlit);
   }
 }
 
-inline void Sevensegments::drawLRSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
+inline void Sevensegments::drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
 {
+  Y1 -= rows;  
   for (uint8_t i = (rows << 1); i > 0 ; --i)
   {
-    fastShortLine(X, Y + i, X1, Y1 - rows + i, (onFlag) ? m_lit : m_unlit);
+    fastShortLine(X, Y + i, X1, Y1 + i, (onFlag) ? m_lit : m_unlit);
   }
 }
 
@@ -1526,47 +1536,47 @@ void Sevensegments::drawGlyph16(const coordinate_t X, const coordinate_t Y, cons
   setRows(rows);
   setBias(bias);
   
-  drawHSegment(X0, Y,  (S & SA1) ? 1 : 0);  //seg A1
-  drawHSegment(X2, Y,  (S & SA2) ? 1 : 0);  //seg A2
+  drawHSegment(X0, Y,  (S & SEG_A1) ? 1 : 0);  //seg A1
+  drawHSegment(X2, Y,  (S & SEG_A2) ? 1 : 0);  //seg A2
 
-  drawHSegment(X0, Y1, (S & SG1) ? 1 : 0);  //seg G1 
-  drawHSegment(X2, Y1, (S & SG2) ? 1 : 0);  //seg G2 
+  drawHSegment(X0, Y1, (S & SEG_G1) ? 1 : 0);  //seg G1 
+  drawHSegment(X2, Y1, (S & SEG_G2) ? 1 : 0);  //seg G2 
 
-  drawVSegment(X,  Y0, (S & SF0) ? 1 : 0);  //seg F 
-  drawVSegment(X,  Y2, (S & SE0) ? 1 : 0);  //seg E 
+  drawVSegment(X,  Y0, (S & SEG_F) ? 1 : 0);  //seg F 
+  drawVSegment(X,  Y2, (S & SEG_E) ? 1 : 0);  //seg E 
 
-  drawHSegment(X0, Y3, (S & SD1) ? 1 : 0);  //seg D1 
-  drawHSegment(X2, Y3, (S & SD2) ? 1 : 0);  //seg D2 
+  drawHSegment(X0, Y3, (S & SEG_D1) ? 1 : 0);  //seg D1 
+  drawHSegment(X2, Y3, (S & SEG_D2) ? 1 : 0);  //seg D2 
 
-  drawVSegment(X1, Y0, (S & SI0) ? 1 : 0);  //seg I
-  drawVSegment(X1, Y2, (S & SL0) ? 1 : 0);  //seg L
+  drawVSegment(X1, Y0, (S & SEG_I) ? 1 : 0);  //seg I
+  drawVSegment(X1, Y2, (S & SEG_L) ? 1 : 0);  //seg L
 
-  drawVSegment(X3, Y0, (S & SB0) ? 1 : 0);  //seg B
-  drawVSegment(X3, Y2, (S & SC0) ? 1 : 0);  //seg C
+  drawVSegment(X3, Y0, (S & SEG_B) ? 1 : 0);  //seg B
+  drawVSegment(X3, Y2, (S & SEG_C) ? 1 : 0);  //seg C
 
   drawLRSegment(X0 + rows + 1,
                 Y  + (rows << 1) + 1 + bias, 
                 X  + shorts, 
                 Y  + size - (rows >> 1) - rows,
-                (rows << 1), (S & SH0) ? 1 : 0);
+                (rows << 1), (S & SEG_H) ? 1 : 0);
 
   drawRLSegment(X1 + shorts,
                 Y  + (rows << 1) + 1 + bias, 
                 X2 + 1 + rows,
                 Y  + size - (rows >> 1) - rows,
-                (rows << 1), (S & SJ0) ? 1 : 0);
+                (rows << 1), (S & SEG_J) ? 1 : 0);
 
   drawRLSegment(X  + shorts, 
                 Y1 + (rows << 1) + 1 + bias, 
                 X0 + rows + 1, 
                 Y1 + size - (rows >> 1) - rows,
-                (rows << 1), (S & SK0) ? 1 : 0);
+                (rows << 1), (S & SEG_K) ? 1 : 0);
 
   drawLRSegment(X2 + 1 + rows, 
                 Y1 + (rows << 1) + 1 + bias, 
                 X1 + shorts - 1, 
                 Y1 + size - (rows >> 1) - rows - + 1 - bias,
-                (rows << 1), (S & SMX) ? 1 : 0);
+                (rows << 1), (S & SEG_M) ? 1 : 0);
 }
 
 void Sevensegments::drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag)

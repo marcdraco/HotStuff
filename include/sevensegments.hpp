@@ -33,78 +33,78 @@ constexpr uint8_t sevenSegCodes[40] =
     '.', B00000001
 };
 
-  #define SA1 0x0001
-  #define SA2 0x0002
-  #define SB0 0x0004
-  #define SC0 0x0008
-  #define SD1 0x0010
-  #define SD2 0x0020
-  #define SE0 0x0040
-  #define SF0 0x0080
-  #define SG1 0x0100
-  #define SG2 0x0200
-  #define SH0 0x0400
-  #define SI0 0x0800
-  #define SJ0 0x1000
-  #define SK0 0x2000
-  #define SL0 0x4000
-  #define SMX 0x8000
+  constexpr uint16_t  SEG_A1 =0x0001;
+  constexpr uint16_t  SEG_A2 =0x0002;
+  constexpr uint16_t  SEG_B =0x0004;
+  constexpr uint16_t  SEG_C =0x0008;
+  constexpr uint16_t  SEG_D1 =0x0010;
+  constexpr uint16_t  SEG_D2 =0x0020;
+  constexpr uint16_t  SEG_E =0x0040;
+  constexpr uint16_t  SEG_F =0x0080;
+  constexpr uint16_t  SEG_G1 =0x0100;
+  constexpr uint16_t  SEG_G2 =0x0200;
+  constexpr uint16_t  SEG_H =0x0400;
+  constexpr uint16_t  SEG_I =0x0800;
+  constexpr uint16_t  SEG_J =0x1000;
+  constexpr uint16_t  SEG_K =0x2000;
+  constexpr uint16_t  SEG_L =0x4000;
+  constexpr uint16_t  SEG_M =0x8000;
 
   #define X256(b,a) (unsigned int) ((a << 8) + b)
 
 constexpr uint16_t sixteenSegCodes[108] =
 {
-    ' ', 0,                       //CHECK
-    '0', 0Xff+SK0+SJ0,                       //CHECK
-    '1', SI0+SL0+SD1+SD2+SA1,                // check 
-    '2', SA1+SA2+SB0+SG1+SG2+SE0+SD1+SD2,    // check   
-    '3', SA1+SA2+SB0+SC0+SD1+SD2+SG1+SG2,    // check 
-    '4', SF0+SG1+SG2+SB0+SC0,                // check 
-    '5', SA1+SA2+SH0+SG1+SG2+SC0+SD1+SD2,     // check  
-    '6', SA1+SA2+SF0+SE0+SC0+SG1+SG2+SD1+SD2, // check 
-    '7', SA1+SA2+SB0+SC0,                     // check 
-    '8', 0xff+SG1+SG2,                        // check 
-    '9', SA1+SA2+SF0+SB0+SG1+SG2+SC0,         // check 
-    'A', SA1+SA2+SF0+SB0+SE0+SC0+SG1+SG2,     // CHECK
-    'B', SA1+SA2+SI0+SL0+SB0+SC0+SG2+SD1+SD2, // check
-    'C', SA1+SA2+SF0+SE0+SD1+SD2,             // check
-    'D', SA1+SA2+SB0+SC0+SD1+SD2+SI0+SL0,     // check
-    'E', SA1+SA2+SF0+SE0+SD1+SD2+SG1,         // check
-    'F', SA1+SA2+SF0+SE0+SG1,                 // CHEK
-    'G', SA1+SA2+SF0+SE0+SD1+SD2+SC0+SG2,  
-    'H', SF0+SE0+SG1+SG2+SB0+SC0,
-    'I', SA1+SA2+SD1+SD2+SI0+SL0, //check
-    'J', SB0+SC0+SA2+SD1+SD2, //check
-    'K', SF0+SE0+SG1+SJ0+SMX, //CHECK
-    'L', SF0+SE0+SD1+SD2, //CHEC
-    'M', SF0+SE0+SB0+SC0+SH0+SJ0,// CHECK
-    'N', SF0+SE0+SB0+SC0+SH0+SMX, //CHECK
-    'O', 0xFF, //CHECK
-    'P', SF0+SE0+SA1+SA2+SB0+SG1+SG2,//CHECK
-    'Q', 0xFF+SMX,//CHECK
-    'R', SF0+SE0+SA1+SA2+SB0+SG1+SG2+SMX,//CHECK
-    'S', SA1+SA2+SF0+SG1+SG2+SC0+SD1+SD2,     // check  
-    'T', SA1+SA2+SI0+SL0,
-    'U', SF0+SE0+SB0+SC0+SD1+SD2,
-    'V', SE0+SF0+SK0+SJ0,
-    'W', SF0+SE0+SB0+SC0+SK0+SMX, //CHECK
-    'X', SH0+SJ0+SMX+SK0,
-    'Y', SH0+SJ0+SL0,
-    'Z', SA1+SA2+SD1+SD2+SJ0+SK0,
-    '*', SJ0+SK0+SH0+SMX+SI0+SL0+SG1+SG2, //CHECK
-    '[', SA1+SE0+SF0+SD1,
-    ']', SA2+SB0+SC0+SD2,
-    '\\', SH0+SMX,
-    '/', SJ0+SK0,       // CHECK    
-    '(', SJ0+SMX,
-    ')', SH0+SK0,
-    '$', SA1+SA2+SF0+SG1+SG2+SC0+SD1+SD2+SI0+SL0,
-    '&', SF0+SA1+SI0+SG1+SE0+SD1+SD2+SMX,
-    '|', SI0+SL0,
-    '!', SF0+SE0,
-    '%', SA2+SJ0+SK0+SD1,
-    '?', SA1+SA2+SB0+SG2+SL0,
-    '=', SG1+SG2+SD1+SD2,
+    ' ', 0,                      
+    '0', 0Xff + SEG_K + SEG_J,                      
+    '1', SEG_I + SEG_L + SEG_D1 + SEG_D2 + SEG_A1,                
+    '2', SEG_A1 + SEG_A2 + SEG_B + SEG_G1 + SEG_G2 + SEG_E + SEG_D1 + SEG_D2,      
+    '3', SEG_A1 + SEG_A2 + SEG_B + SEG_C + SEG_D1 + SEG_D2 + SEG_G1 + SEG_G2,    
+    '4', SEG_F + SEG_G1 + SEG_G2 + SEG_B + SEG_C,                
+    '5', SEG_A1 + SEG_A2 + SEG_H + SEG_G1 + SEG_G2 + SEG_C + SEG_D1 + SEG_D2,      
+    '6', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_C + SEG_G1 + SEG_G2 + SEG_D1 + SEG_D2, 
+    '7', SEG_A1 + SEG_A2 + SEG_B + SEG_C,                     
+    '8', 0xff + SEG_G1 + SEG_G2,                        
+    '9', SEG_A1 + SEG_A2 + SEG_F + SEG_B + SEG_G1 + SEG_G2 + SEG_C,         
+    'A', SEG_A1 + SEG_A2 + SEG_F + SEG_B + SEG_E + SEG_C + SEG_G1 + SEG_G2,     
+    'B', SEG_A1 + SEG_A2 + SEG_I + SEG_L + SEG_B + SEG_C + SEG_G2 + SEG_D1 + SEG_D2, 
+    'C', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_D1 + SEG_D2,             
+    'D', SEG_A1 + SEG_A2 + SEG_B + SEG_C + SEG_D1 + SEG_D2 + SEG_I + SEG_L,     
+    'E', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_D1 + SEG_D2 + SEG_G1,         
+    'F', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_G1,                 
+    'G', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_D1 + SEG_D2 + SEG_C + SEG_G2,  
+    'H', SEG_F + SEG_E + SEG_G1 + SEG_G2 + SEG_B + SEG_C,
+    'I', SEG_A1 + SEG_A2 + SEG_D1 + SEG_D2 + SEG_I + SEG_L,
+    'J', SEG_B + SEG_C + SEG_A2 + SEG_D1 + SEG_D2,
+    'K', SEG_F + SEG_E + SEG_G1 + SEG_J + SEG_M,
+    'L', SEG_F + SEG_E + SEG_D1 + SEG_D2,
+    'M', SEG_F + SEG_E + SEG_B + SEG_C + SEG_H + SEG_J,
+    'N', SEG_F + SEG_E + SEG_B + SEG_C + SEG_H + SEG_M,
+    'O', 0xFF,
+    'P', SEG_F + SEG_E + SEG_A1 + SEG_A2 + SEG_B + SEG_G1 + SEG_G2,
+    'Q', 0xFF + SEG_M,
+    'R', SEG_F + SEG_E + SEG_A1 + SEG_A2 + SEG_B + SEG_G1 + SEG_G2 + SEG_M,
+    'S', SEG_A1 + SEG_A2 + SEG_F + SEG_G1 + SEG_G2 + SEG_C + SEG_D1 + SEG_D2,      
+    'T', SEG_A1 + SEG_A2 + SEG_I + SEG_L,
+    'U', SEG_F + SEG_E + SEG_B + SEG_C + SEG_D1 + SEG_D2,
+    'V', SEG_E + SEG_F + SEG_K + SEG_J,
+    'W', SEG_F + SEG_E + SEG_B + SEG_C + SEG_K + SEG_M,
+    'X', SEG_H + SEG_J + SEG_M + SEG_K,
+    'Y', SEG_H + SEG_J + SEG_L,
+    'Z', SEG_A1 + SEG_A2 + SEG_D1 + SEG_D2 + SEG_J + SEG_K,
+    '*', SEG_J + SEG_K + SEG_H + SEG_M + SEG_I + SEG_L + SEG_G1 + SEG_G2,
+    '[', SEG_A1 + SEG_E + SEG_F + SEG_D1,
+    ']', SEG_A2 + SEG_B + SEG_C + SEG_D2,
+    '\\', SEG_H + SEG_M,
+    '/', SEG_J + SEG_K,          
+    '(', SEG_J + SEG_M,
+    ')', SEG_H + SEG_K,
+    '$', SEG_A1 + SEG_A2 + SEG_F + SEG_G1 + SEG_G2 + SEG_C + SEG_D1 + SEG_D2 + SEG_I + SEG_L,
+    '&', SEG_F + SEG_A1 + SEG_I + SEG_G1 + SEG_E + SEG_D1 + SEG_D2 + SEG_M,
+    '|', SEG_I + SEG_L,
+    '!', SEG_F + SEG_E,
+    '%', SEG_A2 + SEG_J + SEG_K + SEG_D1,
+    '?', SEG_A1 + SEG_A2 + SEG_B + SEG_G2 + SEG_L,
+    '=', SEG_G1 + SEG_G2 + SEG_D1 + SEG_D2,
     '-', B00000010,
     'o', B11000110,
     '.', B00000001
@@ -176,8 +176,8 @@ class Sevensegments
     void fastShortLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t ink); 
     void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
     void drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
-    void drawRLSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
-    void drawLRSegment(const coordinate_t X, coordinate_t Y, const coordinate_t X1, const coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
+    void drawRLSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
+    void drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
     void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
        
     uint8_t translateChar(const uint8_t glyph)
