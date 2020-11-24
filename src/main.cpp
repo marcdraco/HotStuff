@@ -118,7 +118,6 @@ Flags flags;
 Messages messages;
 Sevensegments segments(RED, DEEPRED);
 
-
 // convert KNOWN Y coords to 8-bit only for a hair more speed.
 // start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
 
@@ -239,7 +238,7 @@ void setup()
 
 void loop()
 {
-char b[80] = "  ROSE DIGITAL   ";
+char b[80] = " {}<>-#:@\" ROSE DF   ";
 int c= 0;
 do 
 {
@@ -259,7 +258,6 @@ do
   segments.drawGlyph16(200, 100, b[(c+5) % 14], 30, 2, 1);
   segments.drawGlyph16(240, 100, b[(c+6) % 14], 30, 2, 1);
   segments.drawGlyph16(280, 100, b[(c+7) % 14], 30, 2, 1);
-  delay(2000);
 } while(1);
 
   if ( ! (isrTimings.timeInSeconds % 4))
@@ -1049,7 +1047,7 @@ uint8_t Fonts::bufferImgGlyph(const glyph_t glyph)
 
 void displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer)
 {
-  // Tweaked by MD from the orginal by Limor Freid. 
+  // Tweaked by MD from the orginal by Limor "Lady Ada" Fried. 
   // 8-bits are used in preference to 16 where possible because these are faster on  
   screen.startWrite();
 

@@ -35,79 +35,89 @@ constexpr uint8_t sevenSegCodes[40] =
 
   constexpr uint16_t  SEG_A1 =0x0001;
   constexpr uint16_t  SEG_A2 =0x0002;
-  constexpr uint16_t  SEG_B =0x0004;
-  constexpr uint16_t  SEG_C =0x0008;
+  constexpr uint16_t  SEG_B  =0x0004;
+  constexpr uint16_t  SEG_C  =0x0008;
   constexpr uint16_t  SEG_D1 =0x0010;
   constexpr uint16_t  SEG_D2 =0x0020;
-  constexpr uint16_t  SEG_E =0x0040;
-  constexpr uint16_t  SEG_F =0x0080;
+  constexpr uint16_t  SEG_E  =0x0040;
+  constexpr uint16_t  SEG_F  =0x0080;
   constexpr uint16_t  SEG_G1 =0x0100;
   constexpr uint16_t  SEG_G2 =0x0200;
-  constexpr uint16_t  SEG_H =0x0400;
-  constexpr uint16_t  SEG_I =0x0800;
-  constexpr uint16_t  SEG_J =0x1000;
-  constexpr uint16_t  SEG_K =0x2000;
-  constexpr uint16_t  SEG_L =0x4000;
-  constexpr uint16_t  SEG_M =0x8000;
+  constexpr uint16_t  SEG_H  =0x0400;
+  constexpr uint16_t  SEG_I  =0x0800;
+  constexpr uint16_t  SEG_J  =0x1000;
+  constexpr uint16_t  SEG_K  =0x2000;
+  constexpr uint16_t  SEG_L  =0x4000;
+  constexpr uint16_t  SEG_M  =0x8000;
+  constexpr uint16_t  SEG_A  = SEG_A1 + SEG_A2;
+  constexpr uint16_t  SEG_D  = SEG_D1 + SEG_D2;
+  constexpr uint16_t  SEG_G  = SEG_G1 + SEG_G2;
+
 
   #define X256(b,a) (unsigned int) ((a << 8) + b)
 
-constexpr uint16_t sixteenSegCodes[108] =
+constexpr uint16_t sixteenSegCodes[120] =
 {
     ' ', 0,                      
     '0', 0Xff + SEG_K + SEG_J,                      
-    '1', SEG_I + SEG_L + SEG_D1 + SEG_D2 + SEG_A1,                
-    '2', SEG_A1 + SEG_A2 + SEG_B + SEG_G1 + SEG_G2 + SEG_E + SEG_D1 + SEG_D2,      
-    '3', SEG_A1 + SEG_A2 + SEG_B + SEG_C + SEG_D1 + SEG_D2 + SEG_G1 + SEG_G2,    
-    '4', SEG_F + SEG_G1 + SEG_G2 + SEG_B + SEG_C,                
-    '5', SEG_A1 + SEG_A2 + SEG_H + SEG_G1 + SEG_G2 + SEG_C + SEG_D1 + SEG_D2,      
-    '6', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_C + SEG_G1 + SEG_G2 + SEG_D1 + SEG_D2, 
-    '7', SEG_A1 + SEG_A2 + SEG_B + SEG_C,                     
-    '8', 0xff + SEG_G1 + SEG_G2,                        
-    '9', SEG_A1 + SEG_A2 + SEG_F + SEG_B + SEG_G1 + SEG_G2 + SEG_C,         
-    'A', SEG_A1 + SEG_A2 + SEG_F + SEG_B + SEG_E + SEG_C + SEG_G1 + SEG_G2,     
-    'B', SEG_A1 + SEG_A2 + SEG_I + SEG_L + SEG_B + SEG_C + SEG_G2 + SEG_D1 + SEG_D2, 
-    'C', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_D1 + SEG_D2,             
-    'D', SEG_A1 + SEG_A2 + SEG_B + SEG_C + SEG_D1 + SEG_D2 + SEG_I + SEG_L,     
-    'E', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_D1 + SEG_D2 + SEG_G1,         
-    'F', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_G1,                 
-    'G', SEG_A1 + SEG_A2 + SEG_F + SEG_E + SEG_D1 + SEG_D2 + SEG_C + SEG_G2,  
-    'H', SEG_F + SEG_E + SEG_G1 + SEG_G2 + SEG_B + SEG_C,
-    'I', SEG_A1 + SEG_A2 + SEG_D1 + SEG_D2 + SEG_I + SEG_L,
-    'J', SEG_B + SEG_C + SEG_A2 + SEG_D1 + SEG_D2,
+    '1', SEG_I + SEG_L + SEG_D + SEG_A1,                
+    '2', SEG_A + SEG_B + SEG_G + SEG_E + SEG_D,      
+    '3', SEG_A + SEG_B + SEG_C + SEG_D + SEG_G,    
+    '4', SEG_F + SEG_G + SEG_B + SEG_C,                
+    '5', SEG_A + SEG_H + SEG_G + SEG_C + SEG_D,      
+    '6', SEG_A + SEG_F + SEG_E + SEG_C + SEG_G + SEG_D, 
+    '7', SEG_A + SEG_B + SEG_C,                     
+    '8', 0xff + SEG_G,                        
+    '9', SEG_A + SEG_F + SEG_B + SEG_G + SEG_C,         
+    'A', SEG_A + SEG_F + SEG_B + SEG_E + SEG_C + SEG_G,     
+    'B', SEG_A + SEG_I + SEG_L + SEG_B + SEG_C + SEG_G2 + SEG_D, 
+    'C', SEG_A + SEG_F + SEG_E + SEG_D,             
+    'D', SEG_A + SEG_B + SEG_C + SEG_D + SEG_I + SEG_L,     
+    'E', SEG_A + SEG_F + SEG_E + SEG_D + SEG_G1,         
+    'F', SEG_A + SEG_F + SEG_E + SEG_G1,                 
+    'G', SEG_A + SEG_F + SEG_E + SEG_D + SEG_C + SEG_G2,  
+    'H', SEG_F + SEG_E + SEG_G + SEG_B + SEG_C,
+    'I', SEG_A + SEG_D + SEG_I + SEG_L,
+    'J', SEG_B + SEG_C + SEG_A2 + SEG_D,
     'K', SEG_F + SEG_E + SEG_G1 + SEG_J + SEG_M,
-    'L', SEG_F + SEG_E + SEG_D1 + SEG_D2,
+    'L', SEG_F + SEG_E + SEG_D,
     'M', SEG_F + SEG_E + SEG_B + SEG_C + SEG_H + SEG_J,
     'N', SEG_F + SEG_E + SEG_B + SEG_C + SEG_H + SEG_M,
     'O', 0xFF,
-    'P', SEG_F + SEG_E + SEG_A1 + SEG_A2 + SEG_B + SEG_G1 + SEG_G2,
+    'P', SEG_F + SEG_E + SEG_A + SEG_B + SEG_G,
     'Q', 0xFF + SEG_M,
-    'R', SEG_F + SEG_E + SEG_A1 + SEG_A2 + SEG_B + SEG_G1 + SEG_G2 + SEG_M,
-    'S', SEG_A1 + SEG_A2 + SEG_F + SEG_G1 + SEG_G2 + SEG_C + SEG_D1 + SEG_D2,      
-    'T', SEG_A1 + SEG_A2 + SEG_I + SEG_L,
-    'U', SEG_F + SEG_E + SEG_B + SEG_C + SEG_D1 + SEG_D2,
+    'R', SEG_F + SEG_E + SEG_A + SEG_B + SEG_G + SEG_M,
+    'S', SEG_A + SEG_F + SEG_G + SEG_C + SEG_D,      
+    'T', SEG_A + SEG_I + SEG_L,
+    'U', SEG_F + SEG_E + SEG_B + SEG_C + SEG_D,
     'V', SEG_E + SEG_F + SEG_K + SEG_J,
     'W', SEG_F + SEG_E + SEG_B + SEG_C + SEG_K + SEG_M,
     'X', SEG_H + SEG_J + SEG_M + SEG_K,
     'Y', SEG_H + SEG_J + SEG_L,
-    'Z', SEG_A1 + SEG_A2 + SEG_D1 + SEG_D2 + SEG_J + SEG_K,
-    '*', SEG_J + SEG_K + SEG_H + SEG_M + SEG_I + SEG_L + SEG_G1 + SEG_G2,
+    'Z', SEG_A + SEG_D + SEG_J + SEG_K,
+    '*', SEG_J + SEG_K + SEG_H + SEG_M + SEG_I + SEG_L + SEG_G,
     '[', SEG_A1 + SEG_E + SEG_F + SEG_D1,
     ']', SEG_A2 + SEG_B + SEG_C + SEG_D2,
     '\\', SEG_H + SEG_M,
     '/', SEG_J + SEG_K,          
     '(', SEG_J + SEG_M,
     ')', SEG_H + SEG_K,
-    '$', SEG_A1 + SEG_A2 + SEG_F + SEG_G1 + SEG_G2 + SEG_C + SEG_D1 + SEG_D2 + SEG_I + SEG_L,
-    '&', SEG_F + SEG_A1 + SEG_I + SEG_G1 + SEG_E + SEG_D1 + SEG_D2 + SEG_M,
+    '$', SEG_A + SEG_F + SEG_G + SEG_C + SEG_D + SEG_I + SEG_L,
+    '&', SEG_F + SEG_A1 + SEG_I + SEG_G1 + SEG_E + SEG_D + SEG_M,
     '|', SEG_I + SEG_L,
     '!', SEG_F + SEG_E,
     '%', SEG_A2 + SEG_J + SEG_K + SEG_D1,
-    '?', SEG_A1 + SEG_A2 + SEG_B + SEG_G2 + SEG_L,
-    '=', SEG_G1 + SEG_G2 + SEG_D1 + SEG_D2,
-    '-', B00000010,
-    'o', B11000110,
-    '.', B00000001
+    '?', SEG_A + SEG_B + SEG_G2 + SEG_L,
+    '=', SEG_G + SEG_D,
+    '-', SEG_G,
+    '<', SEG_H + SEG_I + SEG_J,             // down arrow with tail
+    '>', SEG_K + SEG_L + SEG_M,             // up arrow with tail
+    '#', SEG_A2 + SEG_B + SEG_G2 + SEG_I,    // degree symbol
+    '@', SEG_G + SEG_D + SEG_I + SEG_L,     // +/- 
+    '{', SEG_H + SEG_J,                     // down arrow
+    '}', SEG_K + SEG_M,                     // up arrow
+    ':', SEG_H + SEG_J + SEG_K + SEG_M     // MULTIPLY
+
 };
 
 class Sevensegments 

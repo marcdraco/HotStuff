@@ -35,11 +35,13 @@ using angle_t       = int16_t;
 using glyph_t       = uint8_t;
 using ucoordinate_t = uint16_t;
 using coordinate_t  = int16_t;
+
 using reading_t     = float;
 using reading_int_t = int16_t;
 using isrtiming_t   = uint8_t;
 using byte_t        = uint8_t;
-  
+
+
 using coordinates_t  = struct 
 {
   coordinate_t X; 
@@ -51,6 +53,16 @@ using ucoordinates_t  = struct
   ucoordinate_t X; 
   ucoordinate_t Y;
 };
+
+
+/*
+*  Highly optimised types SPECIFIC to small screens (<255 pixels in either dimension)
+*  Sounds crazy, but smaller Arduinos are optimised for 8 bit operations.
+*  and every last clock cycle we can save is a bonus, particularly in tight loops!
+*/
+
+using short_coordinateX_t = uint8_t;
+using short_coordinateY_t = uint8_t;
 
 using dimensions_t = struct 
 {
