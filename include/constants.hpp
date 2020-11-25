@@ -95,14 +95,13 @@ constexpr int FONT_BUFF_HEIGHT   {40};  // The size of this is crucial because i
 
 #define RGB(r, g, b) (((r&0xF8)<<8)|((g&0xFC)<<3)|(b>>3))
 
-constexpr uint16_t  LIGHTGREY = RGB(200, 200, 200);
-constexpr uint16_t  GREY      = RGB(128, 128, 128);
-constexpr uint16_t  DARKGREY  = RGB(64, 64, 64);
-constexpr uint16_t  DARKGRAY  = RGB(64, 64, 64);
-constexpr uint16_t  DEEPGREY  = RGB(16, 16, 16);
-constexpr uint16_t  DEEPGRAY  = RGB(16, 16, 16);
-constexpr uint16_t  DEEPBLUE  = RGB(0,0,16);
-
+constexpr uint16_t LIGHTGREY = RGB(200, 200, 200);
+constexpr uint16_t GREY      = RGB(128, 128, 128);
+constexpr uint16_t DARKGREY  = RGB(64, 64, 64);
+constexpr uint16_t DARKGRAY  = RGB(64, 64, 64);
+constexpr uint16_t DEEPGREY  = RGB(16, 16, 16);
+constexpr uint16_t DEEPGRAY  = RGB(16, 16, 16);
+constexpr uint16_t DEEPBLUE  = RGB(0,0,16);
 constexpr uint16_t DEEPGREEN = RGB(0, 16, 0);
 constexpr uint16_t DEEPRED   = RGB(16, 0, 0);
 constexpr uint16_t DARKRED   = RGB(24, 0, 0);
@@ -114,7 +113,6 @@ constexpr uint16_t AZURE     = RGB(0, 128, 255);
 constexpr uint16_t ORANGE    = RGB(255, 128, 64);
 constexpr uint16_t BROWNISH  = RGB(0x2e, 0x2d, 0x0);
 constexpr uint16_t PURPLEISH = RGB(0x2f, 0x00, 0x2d);
-
 constexpr uint16_t BLACK   = 0x0000;
 constexpr uint16_t BLUE    = 0x001F;
 constexpr uint16_t RED     = 0xF800;
@@ -128,7 +126,8 @@ constexpr uint16_t defaultPaper  = BLACK;
 constexpr uint16_t defaultInk    = CYAN;
 constexpr uint16_t reticleColour = DEEPGREY;
 
-constexpr uint8_t HOURS = 7;
+constexpr uint8_t  HOURS = 7;
+
 
 /*
   Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful!

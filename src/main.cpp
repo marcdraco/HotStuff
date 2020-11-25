@@ -302,35 +302,17 @@ void showLCDReadsHorizontal()
 
 void Graph::drawGraph()
 {
-    screen.fillRect(GRAPH_LEFT + 1, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
-    drawReticles(6, 6);
-    for (uint8_t i {1}; i < 7; ++i)
-    {
-      const colours_t ink   = temperature.getTrace();
-      const int8_t    scale = 2;
-      const int8_t    read  = static_cast<int8_t>(round(temperature.getCMA()));
-      const int8_t    min   = temperature.getMinRead(i);
-      const int8_t    max   = temperature.getMaxRead(i);
-      if (max > 100)
-      {
-        continue;
-      }
-      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink, true);           
-    }
+  screen.fillRect(GRAPH_LEFT + 1, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
+  drawReticles(6, 6);
+  const colours_t tInk = temperature.getTrace();
+  const colours_t hInk = humidity.getTrace();
 
-    for (uint8_t i {1}; i < 7; ++i)
-    {
-      const colours_t ink   = humidity.getTrace();
-      const int8_t    scale = 1;
-      const uint8_t   read  = static_cast<int8_t>(round(humidity.getCMA()));
-      const uint8_t   min   = humidity.getMinRead(i);
-      const uint8_t   max   = humidity.getMaxRead(i);
-      if (max > 100)
-      {
-        continue;
-      }
-      drawIBar((xStep * i) + GRAPH_LEFT, read, min, max, scale, ink, false); 
-    }
+  for (uint8_t i {1}; i < GRAPH_WIDTH -1; ++i)
+  {
+    const int8_t    scale = 2;
+    screen.drawPixel(GRAPH_LEFT + 1 + i, 120, tInk);
+    screen.drawPixel(GRAPH_LEFT + 1 + i, 150, hInk);
+  }
 }
 
 void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer)

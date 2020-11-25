@@ -297,9 +297,11 @@ class Graph
     const int GRAPH_HEIGHT {100};
     const int GRAPH_LEFT    {63};
     const int xStep         {27};
-    const int yStep        {20};
+    const int yStep         {20};
     const int GRAPH_Y      {130};
     const int BASE {GRAPH_Y + FSD};
+    
+    uint8_t m_circular       {0};
   
   public:
 
@@ -356,6 +358,11 @@ class Graph
    * 
    */
   void drawRadials();
+
+  uint8_t getCircular()
+  {
+    return m_circular;
+  }
 
   int getGraphX()
   {
