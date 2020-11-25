@@ -35,14 +35,14 @@ do
 
 */
 
-constexpr uint8_t sevenSegCodes[40] =
+constexpr uint8_t sevenSegCodes[44] =
 {
-    '0', B11111100,     //0xfA
-    '1', B01100000,     //0x60
-    '2', B11011010,     //0xDA
+    '0', B11111100,
+    '1', B01100000,    
+    '2', B11011010,    
     '3', B11110010,
     '4', B01100110,
-    '5', B10110110,     //0XB6
+    '5', B10110110,     
     '6', B10111110,
     '7', B11100000,
     '8', B11111111,
@@ -56,7 +56,9 @@ constexpr uint8_t sevenSegCodes[40] =
     '-', B00000010,
     'o', B11000110,
     'C', B00011010,
-    '.', B00000001
+    '.', B00000001,
+    '/', B11111110,
+    ' ', B00000000
 };
 
   constexpr uint16_t  SEG_A1 =0x0001;
@@ -214,7 +216,8 @@ class Sevensegments
     void drawRLSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
     void drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
     void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
-       
+    int segmentedString(coordinate_t X, coordinate_t Y, char * b, uint8_t size, uint8_t rows, uint8_t bias, uint8_t step);
+
     uint8_t translateChar(const uint8_t glyph)
     {
         uint8_t i = 255;    // start at -1 because the counter "pre increments" but do...while loops are faster
@@ -238,5 +241,7 @@ class Sevensegments
         return sixteenSegCodes[(i << 1) +1];
     };
 };
+
+
 
 #endif

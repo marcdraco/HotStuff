@@ -26,44 +26,11 @@
 #define __DRACO_HOTSTUFF_H
 
 // remove this line to have the unit read in fahrenheit
-//#define USE_METRIC                   
-
-
-
-/*
-
-BUG: CMA display is not working
-BUG: Min/Max is not working either - could be the "ALL TIME min/max needs a separate variable"
-
-? BUG - write better code to flip that LED per the helicopter dude
-
-*/
-
-
-
+#define USE_METRIC                   
 
 #include <Arduino.h>
 #include "types.hpp"
 
-/*
-void SerialBar(char *b)
-{
-  for (int n = 0; n < 25; n++)
-  {
-    Serial.print("=");
-  }
-
-  Serial.print(b);
-
-  for (int n = 0; n < 25; n++)
-  {
-    Serial.print("=");
-  }
-  Serial.println("");
-}
-*/
-
- 
 // Many (but maybe not all) non-AVR board installs define macros
 // for compatibility with existing PROGMEM-reading AVR code.
 // Do our own checks and defines here for good measure...
@@ -325,13 +292,13 @@ class Graph
 {
   private:
     
-    const int FSD {100};
-    const int GRAPH_WIDTH {189};
-    const int GRAPH_HEIGHT {120};
-    const int GRAPH_LEFT {63};
-    const int xStep {27};
-    const int yStep {20};
-    const int GRAPH_Y {110};
+    const int FSD          {100};
+    const int GRAPH_WIDTH  {189};
+    const int GRAPH_HEIGHT {100};
+    const int GRAPH_LEFT    {63};
+    const int xStep         {27};
+    const int yStep        {20};
+    const int GRAPH_Y      {130};
     const int BASE {GRAPH_Y + FSD};
   
   public:
@@ -349,8 +316,8 @@ class Graph
   void rotate(triangle_t* polygon, const angle_t theta);
   void rotate(quadrilateral_t* polygon, const angle_t theta);
 
-  void    drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer);
-  void  drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
+  void drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer);
+  void drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
   void drawDiamond(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
   void drawTarget(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
 
@@ -392,7 +359,7 @@ class Graph
 
   int getGraphX()
   {
-    return (TFT_WIDTH - GRAPH_WIDTH) / 2;
+    return ((TFT_WIDTH - GRAPH_WIDTH) >> 1);
   }
 };
 
@@ -402,8 +369,7 @@ class Messages
 
   enum
   {
-    c, f, damp, dry, 
-    frost, temperatureScale, humidityScale, work1, 
+    c, f, temperatureScale, humidityScale, work1, 
     work2, caution, xcaution, danger, xdanger
   };
 
@@ -417,9 +383,6 @@ class Messages
     translations[c]        = F("c");
     translations[f]        = F("f");
     translations[caution]  = F("Extreme CAUTION");
-    translations[damp]     = F("DAMP");
-    translations[dry]      = F("DRY");
-    translations[frost]    = F("FROST");
     translations[temperatureScale] = F("Temperature in ");
     translations[humidityScale] = F("Relative Humidity");
     translations[work1]    = F("High temp & humidity!");
@@ -541,28 +504,16 @@ class Alarm
 
 class Environmental
 {
-  const int CAUTION        {32};     // Three watermarks (32,41,54)
-  const int WARNING        {41};     // per Steadman "safe" for working temperatures
-  const int RISK           {54};     // Above 54c is very bad
-  const float FROST_WATERSHED {4.0}; // ice can appear/persist around this temp
+  const int  CAUTION          {32};     // Three watermarks (32,41,54)
+  const int  WARNING          {41};     // per Steadman "safe" for working temperatures
+  const int  RISK             {54};     // Above 54c is very bad
+  const float FROST_WATERSHED {4.0};    // ice can appear/persist around this temp
 
   const float DRY_AIR_WATERSHED  {45.0};
   const float DAMP_AIR_WATERSHED {65.0};
   
   const float MIN_COMFORT_TEMP  {18.0};      // the minium temperature considered "normal"
   const float MAX_COMFORT_TEMP  {24.0};     // the maxium temperature considered "normal"
-
-  const int DRY_WARN_X  {0};
-  const int DAMP_WARN_X {100};
-  const int FROSTWARN_X {200};
-  const int DRY_WARN_Y  {80};
-  const int FROSTWARN_Y {80};
-  const int DAMP_WARN_Y {80};
-
-  const int LOW_TEMP_X  {42};
-  const int LOW_TEMP_Y  {100};
-  const int HIGHTEMP_y  {LOW_TEMP_Y};
-  const int LOWHUMID_Y  {LOW_TEMP_Y};
 
   public:
   /**
@@ -705,11 +656,12 @@ class Reading
 
   void initReads(const reading_t R)
   {
+    Serial.println(R);
     m_cumulativeMovingAverage = R;
     m_maxRead = R;
     m_minRead = R;
 
-    for (auto i {0}; i < HOURS; ++i)
+    for (uint8_t i {0}; i < HOURS; ++i)
     {        
       m_max[i]  = R;
       m_min[i]  = R;

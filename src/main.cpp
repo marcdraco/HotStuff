@@ -139,10 +139,8 @@ struct globalVariables
 void setup()
 {
   Serial.begin(9600);
-  const int BUTTON_PIN  {10};      // the acknowlegement button to stop alerts for ice, damp etc.
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
-  const int ALARM_PIN   {13};      // LED or a high-impedance buzzer
   uint16_t ID{screen.readID()};
 
   if (ID == 0xD3D3)
@@ -152,7 +150,6 @@ void setup()
   screen.begin(ID);
   humidity.setTrace(AZURE);    // humidity graph line
   temperature.setTrace(YELLOW);   // temperature graph line
-
   fonts.setFont(static_cast<const gfxfont_t *>(&HOTSMALL));
 
 #ifdef USE_METRIC
@@ -171,17 +168,13 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  screen.fillRect(0, TFT_HEIGHT - 16, TFT_WIDTH, 16, GREY); //just that little Uptime display, a nod to *nix.
-
-  pinMode(BUTTON_PIN, INPUT);         // Our last spare pin (phew) is going to be dual purpose!
-  pinMode(BUTTON_PIN, INPUT_PULLUP);  // Hold it high so it goes active LOW when pressed.
-  pinMode(ALARM_PIN, OUTPUT);         // This is usually pin 13 (the board LED)
   pinMode(DHT22_POWER, OUTPUT);       // cheeky way to power the DHT22, but it only requires 1.5mA
   digitalWrite(DHT22_POWER, HIGH);    // and saves wiring from the ICSP ports on UNO with a TFT shield
   pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
   readings_t read;
   graph.initGraph();
+  delay(3000);
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
@@ -194,27 +187,68 @@ void loop()
     Reading::takeReadings();
     flags.clear(UPDATEREADS);
     showLCDReadsHorizontal();
+    messages.showMinMax();
+    graph.drawGraph();
   }
-  //messages.showMinMax();
-  //graph.drawGraph();
-  //messages.showUptime();
-  alarm.checkButton();
-  
-  display.displaySmallBitmap(180, 120, 60, 60, (uint8_t *) symbolDamp);
+
+  if (flags.isSet(UPDATEGRAPH))
+  {
+    flags.clear(UPDATEGRAPH);
+    graph.drawGraph();
+  }
+
+  (flags.isSet(FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);
+
+  if (flags.isSet(CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
+  {
+    display.setFlashInk(defaultPaper);
+
+    if (flags.isSet(CLEARDAMP))
+    {
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolDamp);
+      flags.clear(CLEARDAMP);
+    }
+
+    if (flags.isSet(CLEARFROST))
+    {
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolIce);
+      flags.clear(CLEARFROST);
+    }
+
+    if (flags.isSet(CLEARDRY))
+    {
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolDry);
+      flags.clear(CLEARDRY);
+    }
+
+    if (flags.isSet(CLEARHOT))
+    {
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolHot);
+      flags.clear(CLEARHOT);
+    }
+  } 
 
   if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))     
   {
-    if (flags.isSet(FLASH))
+    if (flags.isSet(DAMP))
     {
-      digitalWrite(ALARM_PIN, HIGH);
-      display.setFlashInk(defaultInk);
-    }
-    else
-    {
-      display.setFlashInk(defaultPaper);
-      digitalWrite(ALARM_PIN, LOW);
+      display.displaySmallBitmap(140, 50, 40, 40, (uint8_t *) symbolDamp);
     }
 
+    if (flags.isSet(FROST))
+    {
+      display.displaySmallBitmap(140, 50, 40, 40, (uint8_t *) symbolIce);
+    }
+
+    if (flags.isSet(DRY))
+    {
+      display.displaySmallBitmap(140, 50, 40, 40, (uint8_t *) symbolDry);
+    }
+
+    if (flags.isSet(OVERTEMP))
+    {
+      display.displaySmallBitmap(140, 50, 40, 54, (uint8_t *) symbolHot);
+    }
   }
 }
 
@@ -240,10 +274,11 @@ void showLCDReadsVertical()
 void showLCDReadsHorizontal()
 {
   char b[5];
-  int16_t r = temperature.getReading() * 10;
-  sprintf(b, "%d", r);
+
+  int r = (flags.isSet(USEMETRIC)) ?  temperature.getReading() * 10: toFahrenheit(temperature.getReading() * 10);
+  sprintf(b, "%3d", r);
   constexpr uint8_t L1 = 30;
-  constexpr uint8_t T1 = 14;
+  constexpr uint8_t T1 = 10;
   constexpr uint8_t S1 = 8;
   constexpr uint8_t ROWS1 = 3;
   constexpr uint8_t ROWS2 = 1;
@@ -251,11 +286,15 @@ void showLCDReadsHorizontal()
 
   segments.drawGlyph(0,   0, b[0], L1, L1, ROWS1, BIAS1);
   segments.drawGlyph(50,  0, b[1], L1, L1, ROWS1, BIAS1);
-  segments.drawGlyph(100, 0, b[2], T1, T1, ROWS2, 1);
-  segments.drawGlyph(130, 0, 'C',  S1, S1, 1, 1);
+
+  if (flags.isSet(USEMETRIC))
+  {
+    segments.drawGlyph(100, 0, b[2], T1, T1, ROWS2, 1);
+  }
+  segments.drawGlyph(130, 0, (flags.isSet(USEMETRIC)) ? 'C' : 'F',  S1, S1, 1, 1);
 
   r = round(humidity.getReading());
-  sprintf(b, "%d", r);
+  sprintf(b, "%2d", r);
   segments.drawGlyph(190,   0, b[0], L1, L1, ROWS1, BIAS1);
   segments.drawGlyph(240,   0, b[1], L1, L1, ROWS1, BIAS1);
   segments.drawPercent(290, 0, S1, 1, 1);
@@ -265,14 +304,13 @@ void Graph::drawGraph()
 {
     screen.fillRect(GRAPH_LEFT + 1, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
     drawReticles(6, 6);
-
     for (uint8_t i {1}; i < 7; ++i)
     {
-      const colours_t ink  = temperature.getTrace();
-      const int8_t scale   = 2;
-      const int8_t read       = static_cast<int8_t>(round(temperature.getCMA()));
-      const int8_t min        = temperature.getMinRead(i);
-      const int8_t max        = temperature.getMaxRead(i);
+      const colours_t ink   = temperature.getTrace();
+      const int8_t    scale = 2;
+      const int8_t    read  = static_cast<int8_t>(round(temperature.getCMA()));
+      const int8_t    min   = temperature.getMinRead(i);
+      const int8_t    max   = temperature.getMaxRead(i);
       if (max > 100)
       {
         continue;
@@ -282,11 +320,11 @@ void Graph::drawGraph()
 
     for (uint8_t i {1}; i < 7; ++i)
     {
-      const colours_t ink  = humidity.getTrace();
-      const int8_t scale   = 1;
-      const uint8_t read       = static_cast<int8_t>(round(humidity.getCMA()));
-      const uint8_t min        = humidity.getMinRead(i);
-      const uint8_t max        = humidity.getMaxRead(i);
+      const colours_t ink   = humidity.getTrace();
+      const int8_t    scale = 1;
+      const uint8_t   read  = static_cast<int8_t>(round(humidity.getCMA()));
+      const uint8_t   min   = humidity.getMinRead(i);
+      const uint8_t   max   = humidity.getMaxRead(i);
       if (max > 100)
       {
         continue;
@@ -370,17 +408,17 @@ void Graph::drawDiamond(const ucoordinate_t x, const reading_t reading, const ui
 
 void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 {
-  for (auto i {0}; i < 7; ++i)    
+  for (uint8_t i {0}; i < 7; ++i)    
   {
     screen.drawFastVLine(GRAPH_LEFT + xStep * i, BASE - GRAPH_HEIGHT, GRAPH_HEIGHT, reticleColour);
   }
 
-  for (auto i {1}; i < 6; ++i)
+  for (uint8_t i {1}; i < 6; ++i)
   {
     screen.drawFastHLine(GRAPH_LEFT, BASE - GRAPH_HEIGHT + i * yStep, GRAPH_WIDTH, reticleColour);
   }
 
-  for (auto i {1}; i < 7; ++i)
+  for (uint8_t i {0}; i < 7; ++i)
   {
     screen.drawFastHLine(GRAPH_LEFT - 5, BASE - GRAPH_HEIGHT + i * yStep, 5, defaultInk);
     screen.drawFastHLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + i * yStep, 5, defaultInk);
@@ -395,14 +433,13 @@ void Graph::initGraph(void)
 {
   fonts.setFont(&HOTSMALL);
   screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.getPaper());
+
   drawGraphScaleMarks();
   drawReticles(6, 6); 
 };
 
 void Graph::drawGraphScaleMarks(void)
 {
-    const int AXIS_Y_POSITION {30};
-
     fonts.setRotation(3);
     fonts.setFont(&HOTSMALL);
     screen.setTextColor(defaultInk);
@@ -427,13 +464,10 @@ void Graph::drawGraphScaleMarks(void)
     // temp scale
     for (int8_t i{0}; i < 60; i += 10)
     {
-        fonts.setFont(&HOTSMALL);
         const int yShift = fonts.getYstep() / 2;
         const int X = getGraphX() - (fonts.getXstep() * 3);
         screen.setCursor(X, BASE - (i * 2) + yShift);
-
         reading_int_t value = (flags.isSet(USEMETRIC)) ? i : static_cast<reading_int_t>(toFahrenheit(i));
-
         char b[6];
         sprintf(b, "%3d", value);
         fonts.print(b);
@@ -442,11 +476,9 @@ void Graph::drawGraphScaleMarks(void)
     // humidity scale
     for (int8_t i{0}; i < 120; i += 20)
     {
-        fonts.setFont(&HOTSMALL);
         const int X = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
         const int yShift = fonts.getYstep() / 2;
         screen.setCursor(X, BASE - i + yShift);
-
         char b[6];
         sprintf(b, "%3d", i);
         fonts.print(b);
@@ -473,15 +505,6 @@ void Reading::takeReadings(void)
 
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
-
-  if (flags.isSet(REDRAWGRAPH))
-  {
-    flags.clear(REDRAWGRAPH);
-    humidity.setMinMax();
-    temperature.setMinMax();
-    graph.drawGraph();
-  }
-
   environment.checkHumidityConditions();
   environment.checkTemperatureConditions();
   environment.checkHeatIndex(R);  
@@ -540,22 +563,6 @@ void Reading::bufferReading(const reading_t reading, char* buffer, const semapho
   }
 }
 
-void Environmental::setColour(const reading_t value, const limits_t limits)
-{
-  if (value < static_cast<reading_t>(limits.lower))
-  {
-    display.setInk(LOW_LIMIT_EXCEEDED);
-    return;
-  }
-  else if (value > static_cast<reading_t>(limits.upper))
-  {
-    display.setInk(HIGH_LIMIT_EXCEEDED);
-    return;
-  }
-  display.setInk(defaultInk);
-  return;
-}
-
 ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 {
   TCNT1 = UPDATER;     // preload timer
@@ -576,13 +583,13 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   {
     isrTimings.timeInSeconds = 0;
     ++isrTimings.timeInMinutes;
-    flags.set(REDRAWGRAPH);
+    flags.set(UPDATEGRAPH);
 
     if (isrTimings.timeInMinutes == 60)
     {
       isrTimings.timeInMinutes = 0;
       ++isrTimings.timeInHours;
-      flags.set(REDRAWGRAPH);
+      flags.set(UPDATEGRAPH);
 
       if (isrTimings.timeInHours == 24)
       {
@@ -603,32 +610,31 @@ void Environmental::checkHumidityConditions(void)
 {
   if (humidity.getCMA() > DAMP_AIR_WATERSHED)
   {
-    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.execute(Messages::damp);      
     flags.set(DAMP);
   }
       
   if (humidity.getCMA() <= DAMP_AIR_WATERSHED)
   {
-    flags.clear(DAMP);
-    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.clear(Messages::damp);
+    if (flags.isSet(DAMP))
+    {
+      flags.set(CLEARDAMP);
+      flags.clear(DAMP);
+    }
   }
 
-  if (humidity.getCMA() > DRY_AIR_WATERSHED)
+  if (humidity.getCMA() < DRY_AIR_WATERSHED)
   {
-    flags.clear(DRY);
-    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.clear(Messages::dry);
+      flags.set(DRY);
   }
 
-  if (humidity.getCMA() <= DRY_AIR_WATERSHED)
+  if (humidity.getCMA() >= DRY_AIR_WATERSHED)
   {
-    flags.set(DRY);
-    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.execute(Messages::dry);
+    if (flags.isSet(DRY))
+    {
+      flags.set(CLEARDRY);
+      flags.clear(DRY);
+    }
   }
-
 }
 
 void Environmental::checkTemperatureConditions(void)
@@ -636,17 +642,15 @@ void Environmental::checkTemperatureConditions(void)
   if (temperature.getReading() <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
   {
     flags.set(FROST);          // start das-blinky-flashun light
-    flags.set(ALARMFROST);     // true prevents re-firing
-    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.execute(Messages::frost);
   }
 
   if (temperature.getCMA() > FROST_WATERSHED)
   {
-    flags.clear(FROST);          // start das-blinky-flashun light
-    flags.clear(ALARMFROST);     // true prevents re-firing
-    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.clear(Messages::frost);
+    if (flags.isSet(FROST))
+    { 
+      flags.clear(FROST);     //Stop the frost warn flashing
+      flags.set(CLEARFROST);  // for clean up
+    }
   }
 }
 
@@ -699,7 +703,6 @@ void Environmental::checkHeatIndex(const readings_t readings)
 
 void Environmental::unsafeTempWarnings(const reading_t T)
 {
-  screen.setTextSize(3);
 
     messages.execute(messages.work1);
     messages.execute(messages.work2);
@@ -749,80 +752,56 @@ float Environmental::magnusDewpoint(const readings_t readings)
   return static_cast<reading_t>(b * (r + c) / (a - (r + c)));
 }
 
-void Alarm::checkButton(void)
-{
-  if (digitalRead(BUTTON_PIN) == LOW)
-  {
-      STOP
-  }
-}
-
 void Alarm::sensorFailed(UniversalDHT::Response response)
 {
   // He's dead Jim! He's DEAD!
 
 #ifdef SENSOR_MISSING_OR_BUSTED
-  return;
+ return;
 #endif
   screen.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
   
-  screen.print(F(" -Sensor Fail-"));
-  screen.print(F("             Y  M  D  HH:MM:SS"));
-  screen.print(F("Sensor age: "));
+  screen.setCursor(20, 120);
+  screen.print(F("-Sensor Fail-"));
+  screen.setCursor(20, 135);
 
-  char printable[60];
-  
-  sprintf(printable, "%2d %2d %2d  %02d:%02d:%02d", 
-                      isrTimings.timeInYears,
-                      isrTimings.timeInWeeks,
-                      isrTimings.timeInDays,
-                      isrTimings.timeInHours,
-                      isrTimings.timeInMinutes,
-                      isrTimings.timeInSeconds);
-  
-  screen.print(printable);
-
-  // High 8bits are time duration (not shown)
-  // Low 8bits are error code.
-  // @see https://github.com/winlinvip/SimpleDHT/issues/25
-
-  screen.setCursor(LEFTMARGIN, 160);
   switch (response.error)
   {
     case SimpleDHTErrStartLow:
 
-      screen.print(F("Start came too early ("));
+      screen.print(F("Start signal arrived early ("));
       screen.print(response.time);
-      screen.print(F(") microseconds"));
+      screen.print(F(" microseconds)"));
       break;
 
     case SimpleDHTErrStartHigh:
       screen.print(F("Start high came too soon ("));
       screen.print(response.time);
-      screen.print(F(") microseconds"));
+      screen.print(F(" microseconds)"));
       break;
 
     case SimpleDHTErrDataLow:
       screen.print(F("Start datalow came too soon ("));
       screen.print(response.time);
-      screen.print(F(") microseconds"));
+      screen.print(F(" microseconds)"));
       break;
 
     case SimpleDHTErrDataEOF:
       screen.print(F("timeout on data EOF signal ("));
       screen.print(response.time);
-      screen.print(F(") microseconds"));
+      screen.print(F(" microseconds)"));
       break;
 
     case SimpleDHTErrDataHigh:
       screen.print(F("Data high failed ("));
       screen.print(response.time);
-      screen.print(F(") microseconds"));
+      screen.print(F(" microseconds)"));
       break;
 
     case SimpleDHTErrDataChecksum:
       screen.print(F("failure validating checksum"));
       break;
+
     case SimpleDHTSuccess: ;  // shuts up the compiler warning
   }
   STOP // loop until re-set.
@@ -867,21 +846,6 @@ void Fonts::print(char* b)
     drawImgGlyph(b[i]);
     ++i;
   }
-}
-
-void Fonts::print(char* b, const bool switchFloats)
-{
-  int i{0};
-  while (b[i])
-  {
-    if ( static_cast<char> (b[i]) == '.' && switchFloats)
-    {
-      setFont(&HOTSMALL);
-    }
-    drawImgGlyph(b[i]);
-    ++i;
-  }
-  setFont((gfxfont_t*) &HOTLARGE);
 }
 
 void Fonts::print(const int X, const int Y, char* buffer)
@@ -983,11 +947,11 @@ void Display::displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, ui
   screen.startWrite();
 
   int16_t byteWidth = (W + 7) >> 3;
-  uint8_t byte = 0;
+  uint8_t byte {0};
 
-  for (int8_t j = 0; j < H; j++, Y++) 
+  for (int8_t j {0}; j < H; j++, Y++) 
   {
-    for (int8_t i = 0; i < W ; i++) 
+    for (int8_t i {0}; i < W ; i++) 
     {
       if (i & 7)
       {
@@ -1115,12 +1079,6 @@ void Fonts::printPixel(coordinate_t X, coordinate_t Y, colours_t ink)
   screen.writePixel(X, Y, ink);
 }
 
-void Messages::execute(const char* buffer)
-{
-  display.setColours(defaultInk, defaultPaper);
-  fonts.print((char *)(buffer));
-}
-
 void Messages::execute(const uint8_t M)
 {
   String text = translations[M];
@@ -1130,8 +1088,8 @@ void Messages::execute(const uint8_t M)
 uint16_t Messages::textWidth(char* message)
 {
   int x{0};
-  unsigned int i{0};
- 
+  uint8_t i{0};
+
   while (message[i++])
   {
     glyphdata_t data;
@@ -1182,35 +1140,31 @@ void Messages::showUptime(void)
 
 void Messages::showMinMax(void)
 {  
-  char* msg = static_cast<char *> (malloc(80));
+  char b[10]; 
 
   int min = temperature.getMinRead();
   int max = temperature.getMaxRead();
-  int cma = temperature.getMinRead();
 
   if (flags.isClear(USEMETRIC))
   {
     min = static_cast<int>(toFahrenheit(temperature.getMinRead()));
     max = static_cast<int>(toFahrenheit(temperature.getMaxRead()));
-    cma = static_cast<int>(toFahrenheit(temperature.getMinRead()));
   }
 
-  sprintf(msg, "Temperature: %d / %d / %d  Humidity: %d / %d / %d", 
-          min, max, cma,
-          humidity.getMinRead(),
-          static_cast<int>(humidity.getCMA()),
-          humidity.getMaxRead()
-          );
+  sprintf(b,"%d", min);
+  segments.segmentedString(100, 38, b, 6, 0, 1, 12);
 
-  display.setColours(defaultPaper, GREY);  
-  fonts.setFont(&HOTSMALL);
-//  uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
-  //uint8_t margin = (TFT_WIDTH - width) / 2;
+  sprintf(b,"%d", max);
+  segments.segmentedString(100, 58, b, 6, 0, 1, 12);
 
-  fonts.setBufferDimensions(TFT_WIDTH, 18);
-  fonts.print(0, TFT_HEIGHT-16, msg);
-  display.setColours(defaultInk, defaultPaper); 
-  free(msg);
+  min = humidity.getMinRead();
+  max = humidity.getMaxRead();
+
+  sprintf(b,"%d", min);
+  segments.segmentedString(HUMIDITY_X, 38, b, 6, 0, 1, 14);
+
+  sprintf(b,"%d", max);
+  segments.segmentedString(HUMIDITY_X, 58, b, 6, 0, 1, 14);
 }
 
 void Messages::debugger(const int X, const int Y, char* msg)
@@ -1254,16 +1208,16 @@ void Graph::rotate(quadrilateral_t* quad, const int16_t rotation)
 
 void Graph::translate(triangle_t* triangle, const coordinates_t cords)
 {
-  for (auto i{0}; i < 4; ++i)
+  for (auto i {0}; i < 4; ++i)
   {
     triangle->cords[i].X += cords.X;
     triangle->cords[i].Y += cords.Y;
   }
 }
 
-void Graph::translate(quadrilateral_t* polygon, const coordinates_t cords)
+void Graph::translate(quadrilateral_t* polygon, const coordinates_t cords)//  uint8_t width = (textWidth(msg) / 4) * 4; // Polish off any slight font width weirdness.
 {
-  for (auto i{0}; i < 4; ++i)
+  for (auto i {0}; i < 4; ++i)
   {
     polygon->cords[i].X += cords.X;
     polygon->cords[i].Y += cords.Y;
@@ -1392,6 +1346,11 @@ void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, const 
   setRows(rows);
   setBias(bias);
   uint8_t S = translateChar(glyph);
+  if (S == B11111110)
+  {
+    slash(X, Y, wide, high*2, 2);
+    return;
+  }
 
   uint8_t biasA = bias << 1;
   
@@ -1427,6 +1386,16 @@ void Sevensegments::drawPercent(coordinate_t X, coordinate_t Y, const uint8_t si
   drawVSegment(X + size + biasA, Y + rows +        bias,         1);  //seg B
   drawVSegment(X,                Y + rows +        bias,         1);  //seg F
   slash(X, Y - m_Xlength, m_Xlength, (m_Xlength << 1), 4);
+}
+
+int Sevensegments::segmentedString(coordinate_t X, coordinate_t Y, char * b, uint8_t size, uint8_t rows, uint8_t bias, uint8_t step)
+{
+  uint8_t i {0};
+  while (*b)
+  {
+    segments.drawGlyph(X + (step * i++), Y, *b++, size, size, rows, bias);
+  }
+  return X + step * (i -1);
 }
 
 inline void Sevensegments::slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows)
