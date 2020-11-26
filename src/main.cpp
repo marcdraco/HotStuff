@@ -274,7 +274,7 @@ void showLCDReadsHorizontal()
 {
   char b[5];
 
-  int r = (flags.isSet(USEMETRIC)) ?  temperature.getReading() * 10: toFahrenheit(temperature.getReading() * 10);
+  int r = (flags.isSet(USEMETRIC)) ?  temperature.getReading() * 10: (toFahrenheit(temperature.getReading()) * 10);
   sprintf(b, "%3d", r);
   constexpr uint8_t L1 = 30;
   constexpr uint8_t T1 = 10;
@@ -390,25 +390,29 @@ void Graph::drawDiamond(const ucoordinate_t x, const reading_t reading, const ui
 
 void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 {
-  for (uint8_t i {0}; i < 7; ++i)    
+  for (uint8_t i {0}; i < 7; ++i)    // vertical divisions
   {
-    screen.drawFastVLine(GRAPH_LEFT + xStep * i, BASE - GRAPH_HEIGHT, GRAPH_HEIGHT, reticleColour);
+    screen.drawFastVLine(GRAPH_LEFT + m_xStep * i, BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT, reticleColour);
   }
 
-  for (uint8_t i {1}; i < 6; ++i)
+  for (uint8_t i {1}; i < 8; ++i)   // horizontal divisions
   {
-    screen.drawFastHLine(GRAPH_LEFT, BASE - GRAPH_HEIGHT + i * yStep, GRAPH_WIDTH, reticleColour);
+    screen.drawFastHLine(GRAPH_LEFT,               BASE - GRAPH_HEIGHT + i * m_yStep,    GRAPH_WIDTH, reticleColour);
   }
 
-  for (uint8_t i {0}; i < 7; ++i)
+  for (uint8_t i {1}; i < 7; ++i)   // humidity ticks
   {
-    screen.drawFastHLine(GRAPH_LEFT - 5, BASE - GRAPH_HEIGHT + i * yStep, 5, defaultInk);
-    screen.drawFastHLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + i * yStep, 5, defaultInk);
+    screen.drawFastHLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + i * m_yStep, 5, defaultInk);
   }
 
-  screen.drawFastHLine(GRAPH_LEFT,     BASE,  GRAPH_WIDTH,    defaultInk);
-  screen.drawFastVLine(GRAPH_LEFT,     BASE - GRAPH_HEIGHT, GRAPH_HEIGHT + 5, defaultInk);
-  screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT, GRAPH_HEIGHT + 5, defaultInk);
+  for (int8_t i {1}; i < 8; ++i)   // temp ticks
+  {
+    screen.drawFastHLine(GRAPH_LEFT - 5, BASE - GRAPH_HEIGHT + (i * m_yStep), 5, defaultInk);
+  }
+
+  screen.drawFastHLine(GRAPH_LEFT,               BASE,                GRAPH_WIDTH,       defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT,               BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT + 5, defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT + 5, defaultInk);
 }
 
 void Graph::initGraph(readings_t read)
@@ -448,25 +452,27 @@ void Graph::drawGraphScaleMarks(void)
     fonts.setRotation(0);
 
     // temp scale
-    for (int8_t i{0}; i < 60; i += 10)
+    for (int8_t i {-1}; i < 6; i++)
     {
         const int yShift = fonts.getYstep() / 2;
         const int X = getGraphX() - (fonts.getXstep() * 3);
-        screen.setCursor(X, BASE - (i * 2) + yShift);
-        reading_int_t value = (flags.isSet(USEMETRIC)) ? i : static_cast<reading_int_t>(toFahrenheit(i));
+        screen.setCursor(X, BASE - (i * m_temperatureStep * m_temperatureScale) + yShift);
+        reading_int_t value = (flags.isSet(USEMETRIC)) ? 
+                            i * m_temperatureStep : 
+                            static_cast<reading_int_t>(toFahrenheit(i * m_temperatureStep));
         char b[6];
         sprintf(b, "%3d", value);
         fonts.print(b);
     }
     
     // humidity scale
-    for (int8_t i{0}; i < 120; i += 20)
+    for (uint8_t i {0}; i < 6; i++)
     {
         const int X = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
         const int yShift = fonts.getYstep() / 2;
-        screen.setCursor(X, BASE - i + yShift);
+        screen.setCursor(X, BASE - (i * m_humidityStep) + yShift);
         char b[6];
-        sprintf(b, "%3d", i);
+        sprintf(b, "%3d", (i * m_humidityStep));
         fonts.print(b);
     }
 }

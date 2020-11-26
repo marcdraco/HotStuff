@@ -75,7 +75,7 @@ constexpr int OUTER_RADIUS   { 70};
 
 constexpr int TEMPERATURE_X  {290};
 constexpr int HUMIDITY_X     {290};
-constexpr int AXIS_Y_POSITION {10};
+constexpr int AXIS_Y_POSITION {20};
 
 constexpr int TFT_WIDTH      {320};
 constexpr int TFT_HEIGHT     {240};
@@ -122,12 +122,11 @@ constexpr uint16_t MAGENTA   {0xF81F};
 constexpr uint16_t YELLOW    {0xFFE0};
 constexpr uint16_t WHITE     {0xFFFF};
 
-constexpr int GRAPH_WIDTH    {189};
-constexpr int GRAPH_HEIGHT   {100};
-constexpr int GRAPH_LEFT     {63};
-constexpr int FSD            {100};
-constexpr int GRAPH_Y        {130};
-constexpr int BASE         {GRAPH_Y + FSD};
+constexpr int GRAPH_WIDTH  {189};
+constexpr int GRAPH_HEIGHT {120};
+constexpr int GRAPH_LEFT   {63};
+constexpr int GRAPH_Y      {90};
+constexpr int BASE         {GRAPH_Y + GRAPH_HEIGHT};
 
 constexpr uint16_t defaultPaper  {BLACK};
 constexpr uint16_t defaultInk    {CYAN};

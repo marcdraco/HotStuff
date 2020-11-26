@@ -26,7 +26,7 @@
 #define __DRACO_HOTSTUFF_H
 
 // remove this line to have the unit read in fahrenheit
-#define USE_METRIC                   
+//#define USE_METRIC                   
 
 #include <Arduino.h>
 #include "types.hpp"
@@ -292,12 +292,19 @@ class Graph
 {
   private:
     
-    const int xStep      {27};
-    const int yStep      {20};
-    uint8_t   m_circular  {0};
-    
-    int8_t    m_temperature[GRAPH_WIDTH];
-    int8_t    m_humidity[GRAPH_WIDTH];
+    uint8_t m_xStep            {27}; // X - reticle
+    uint8_t m_yStep            {20}; // Y reticle
+    uint8_t m_humidityStep     {20}; // Nominal stepping
+    uint8_t m_humidityMax     {100}; // Max opening value
+    uint8_t m_humidityBase      {0}; // Min opening value
+    uint8_t m_humidityScale     {1}; // Scale multplier
+    uint8_t m_temperatureStep  {10};
+    int8_t  m_temperatureBase   {0}; // signed because temps can go sub 0!
+    int8_t  m_temperatureMax   {50};
+    uint8_t m_temperatureScale  {2};
+    uint8_t m_circular          {0};
+    int8_t  m_temperature[GRAPH_WIDTH];
+    int8_t  m_humidity[GRAPH_WIDTH];
   
   public:
 
@@ -390,7 +397,7 @@ class Messages
     translations[f]        = F("f");
     translations[caution]  = F("Extreme CAUTION");
     translations[temperatureScale] = F("Temperature in ");
-    translations[humidityScale] = F("Relative Humidity");
+    translations[humidityScale] = F("Relative Humidity %");
     translations[work1]    = F("High temp & humidity!");
     translations[work2]    = F("Temp Equivalent: ");
     translations[caution]  = F("CAUTION");
