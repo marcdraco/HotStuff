@@ -88,6 +88,88 @@ inline uint8_t* pgm_read_bitmap_ptr(const gfxfont_t* gfxFont)
 void showLCDReadsHorizontal(void);
 void showLCDReadsVertical(void);
 
+class Trig
+{
+  private:
+
+  /*
+
+  int r = random(360);
+
+  Serial.println(Trig::getSin(r));
+  Serial.println(sin((radians(r)))* 32767);
+
+  Serial.println(Trig::getSin(r));
+  Serial.println(sin((radians(r)))* 32767);
+
+  Serial.println(Trig::getSin(r));
+  Serial.println(sin((radians(r)))* 32767);
+
+  Serial.println(Trig::getSin(r));
+  Serial.println(sin((radians(r)))* 32767);
+
+  Serial.println(Trig::getCos(r));
+  Serial.println(cos((radians(r)))* 32767);
+
+  Serial.println(Trig::getCos(r));
+  Serial.println(cos((radians(r)))* 32767);
+
+  Serial.println(Trig::getCos(r));
+  Serial.println(cos((radians(r)))* 32767);
+
+  Serial.println(Trig::getCos(r));
+  Serial.println(cos((radians(r)))* 32767);
+
+  */
+
+  public: 
+  int16_t static getSin(int16_t theta)
+  {
+    if (theta < 90)
+    {
+      return pgm_read_word(&sinTable[theta]);      
+    }
+
+    if (theta >=90 && theta < 180)
+    {
+      return pgm_read_word(&sinTable[90 - (theta-90)]);      
+    }
+
+    if (theta >=180 && theta < 270)
+    {
+      return -(pgm_read_word(&sinTable[(theta - 180)]));            
+    }
+
+    if (theta >=270 && theta < 360)
+    {
+      return -(pgm_read_word(&sinTable[90 - (theta - 270)]));
+    }      
+  }
+
+  int16_t static getCos(int16_t theta)
+  {
+    if (theta < 90)
+    {
+      return pgm_read_word(&sinTable[90 - theta]);      
+    }
+
+    if (theta >=90 && theta < 180)
+    {
+      return -(pgm_read_word(&sinTable[(theta-90)]));      
+    }
+
+    if (theta >=180 && theta < 270)
+    {
+      return -(pgm_read_word(&sinTable[90 - (theta - 180)]));            
+    }
+    
+    if (theta >=270 && theta < 360)
+    {
+      return (pgm_read_word(&sinTable[(theta - 270)]));
+    }      
+  }
+};
+
 class Flags 
 {
   private:
@@ -671,7 +753,7 @@ class Reading
    * 
    */
 
-  static void takeReadings();
+  static readings_t takeReadings();
 
   /**
    * @brief Post the large humidity and temperature readings

@@ -138,6 +138,7 @@ struct globalVariables
 
 void setup()
 {
+  Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -177,21 +178,27 @@ void setup()
   temperature.initReads(read.T);
   humidity.initReads(read.H);
   graph.initGraph(read);
+  graph.drawGraph();
 }
 
 void loop()
 {
+  
   if (flags.isSet(UPDATEREADS))
   {
+    
     Reading::takeReadings();
     flags.clear(UPDATEREADS);
     showLCDReadsHorizontal();
     messages.showMinMax();
-    graph.drawGraph();
   }
 
   if (flags.isSet(UPDATEGRAPH))
   {
+    readings_t R;
+    R.H = humidity.getCMA();
+    R.T = temperature.getCMA();
+    graph.postReadings(R);
     flags.clear(UPDATEGRAPH);
     graph.drawGraph();
   }
@@ -477,7 +484,7 @@ void Graph::drawGraphScaleMarks(void)
     }
 }
 
-void Reading::takeReadings(void)
+readings_t Reading::takeReadings(void)
 {
   /*
     Get the current temp and humidity from the sensor.
@@ -495,12 +502,12 @@ void Reading::takeReadings(void)
     alarm.sensorFailed(reading);
   }
 
-  graph.postReadings(R);
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
   environment.checkHumidityConditions();
   environment.checkTemperatureConditions();
   environment.checkHeatIndex(R);  
+  return R;
 }
 
 void Reading::updateReading(const reading_t reading)
@@ -566,17 +573,21 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
     flags.set(UPDATEREADS);
   }
 
+
   if (isrTimings.timeInSeconds == 60)
   {
     isrTimings.timeInSeconds = 0;
     ++isrTimings.timeInMinutes;
-    flags.set(UPDATEGRAPH);
 
+    if (isrTimings.timeInMinutes == 8 && isrTimings.timeInSeconds == 0)
+    {     
+      flags.set(UPDATEGRAPH);
+    }
+     
     if (isrTimings.timeInMinutes == 60)
     {
       isrTimings.timeInMinutes = 0;
       ++isrTimings.timeInHours;
-      flags.set(UPDATEGRAPH);
 
       if (isrTimings.timeInHours == 24)
       {
