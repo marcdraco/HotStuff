@@ -292,16 +292,12 @@ class Graph
 {
   private:
     
-    const int FSD          {100};
-    const int GRAPH_WIDTH  {189};
-    const int GRAPH_HEIGHT {100};
-    const int GRAPH_LEFT    {63};
-    const int xStep         {27};
-    const int yStep         {20};
-    const int GRAPH_Y      {130};
-    const int BASE {GRAPH_Y + FSD};
+    const int xStep      {27};
+    const int yStep      {20};
+    uint8_t   m_circular  {0};
     
-    uint8_t m_circular       {0};
+    int8_t    m_temperature[GRAPH_WIDTH];
+    int8_t    m_humidity[GRAPH_WIDTH];
   
   public:
 
@@ -351,7 +347,7 @@ class Graph
    * @brief Blanks the chart area if it's not already active 
    * 
    */
-  void initGraph();
+  void initGraph(readings_t read);
 
   /**
    * @brief draws circular plots for the analogue version
@@ -359,9 +355,12 @@ class Graph
    */
   void drawRadials();
 
-  uint8_t getCircular()
+  void postReadings(readings_t reading)
   {
-    return m_circular;
+    m_temperature[m_circular] = static_cast<int8_t>(reading.T);
+    m_humidity[m_circular]    = static_cast<int8_t>(reading.H);
+    m_circular++;
+    m_circular %= GRAPH_WIDTH;
   }
 
   int getGraphX()
@@ -606,12 +605,8 @@ class Reading
     reading_t  m_minRead {};
     reading_t  m_maxRead {};
     reading_t  m_currRead {};
-    int8_t     m_readPtr {};  // clock-like pointer to array
     colours_t  m_trace {};    // graph line colour
-    int8_t*    m_max {};      // pointer to rouned integers for the graph
-    int8_t*    m_min {};      // pointer to rouned integers for the graph
-    reading_t* m_read {};     // floating point for actual readings.
-    
+   
     public:
     
     Reading()
@@ -619,32 +614,11 @@ class Reading
       // cumulative moving averages are a form of mean that doesn't need to track every single value
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
       m_cmaCounter = 0.0;
-      m_readPtr    = 0;
       m_cumulativeMovingAverage = 0.0;
       m_correction = 0.0;
-      m_cmaCounter = 0;
-      m_trace      = 0;   // graph line colour
-      
-      // If we run out of memory here, we've got bigger problems!
-      m_min  = (int8_t *) malloc(sizeof(int8_t) * HOURS);
-      m_max  = (int8_t *) malloc(sizeof(int8_t) * HOURS);
-      m_read = (float *)  malloc(sizeof(float) * HOURS);  // floats are doubles by the looks of it!
   }
   
-  ~Reading() 
-  {
-    // this should ever be called, but it's good
-    // practise to do this even if it's not.
-    free(m_max);
-    free(m_min);
-    free(m_read);
-  }
 
-  uint8_t getPtr()
-  {
-    return m_readPtr;
-  } 
-  
   colours_t getTrace()
   {
     return m_trace;
@@ -663,17 +637,9 @@ class Reading
 
   void initReads(const reading_t R)
   {
-    Serial.println(R);
     m_cumulativeMovingAverage = R;
     m_maxRead = R;
     m_minRead = R;
-
-    for (uint8_t i {0}; i < HOURS; ++i)
-    {        
-      m_max[i]  = R;
-      m_min[i]  = R;
-      m_read[i] = 127;
-    }
   }
 
   int8_t getMinRead()
@@ -689,16 +655,6 @@ class Reading
   reading_t getReading()
   {
     return m_currRead;
-  }
-
-  int8_t getMinRead(const int i)
-  {
-    return m_min[i];
-  }
-
-  int8_t getMaxRead(const int i)
-  {
-    return m_max[i];
   }
 
   void updateReading(const reading_t reading);

@@ -138,7 +138,6 @@ struct globalVariables
 
 void setup()
 {
-  Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -173,11 +172,11 @@ void setup()
   pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
   readings_t read;
-  graph.initGraph();
   delay(3000);
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
+  graph.initGraph(read);
 }
 
 void loop()
@@ -302,16 +301,17 @@ void showLCDReadsHorizontal()
 
 void Graph::drawGraph()
 {
-  screen.fillRect(GRAPH_LEFT + 1, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
-  drawReticles(6, 6);
   const colours_t tInk = temperature.getTrace();
   const colours_t hInk = humidity.getTrace();
 
-  for (uint8_t i {1}; i < GRAPH_WIDTH -1; ++i)
+  screen.fillRect(GRAPH_LEFT, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
+  drawReticles(6, 6);
+
+  int16_t X = 1 + GRAPH_LEFT;
+  for (uint8_t i {1}; i < GRAPH_WIDTH - 1; ++i)
   {
-    const int8_t    scale = 2;
-    screen.drawPixel(GRAPH_LEFT + 1 + i, 120, tInk);
-    screen.drawPixel(GRAPH_LEFT + 1 + i, 150, hInk);
+    screen.drawPixel(X + i, BASE - (m_temperature[i] * 2), tInk);
+    screen.drawPixel(X + i, BASE -  m_humidity[i],         hInk);
   }
 }
 
@@ -411,13 +411,17 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
   screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT, GRAPH_HEIGHT + 5, defaultInk);
 }
 
-void Graph::initGraph(void)
-{
+void Graph::initGraph(readings_t read)
+{ 
   fonts.setFont(&HOTSMALL);
-  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, display.getPaper());
-
+  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
   drawGraphScaleMarks();
   drawReticles(6, 6); 
+  for (uint8_t i {0}; i < GRAPH_WIDTH; ++i)
+  {
+    m_temperature[i] = static_cast<int8_t>(read.T);
+    m_humidity[i]    = static_cast<int8_t>(read.H);
+  }
 };
 
 void Graph::drawGraphScaleMarks(void)
@@ -485,6 +489,7 @@ void Reading::takeReadings(void)
     alarm.sensorFailed(reading);
   }
 
+  graph.postReadings(R);
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
   environment.checkHumidityConditions();
@@ -500,12 +505,6 @@ void Reading::updateReading(const reading_t reading)
   m_maxRead  = (reading > m_maxRead) ? reading : m_maxRead;
 
   m_cumulativeMovingAverage = (m_cumulativeMovingAverage + (reading - m_cumulativeMovingAverage) / ++m_cmaCounter) + m_correction;
-
-  m_max[m_readPtr]  = static_cast<int8_t>(round(m_maxRead));
-  m_min[m_readPtr]  = static_cast<int8_t>(round(m_minRead));
-  m_read[m_readPtr] = m_currRead;
-  ++m_readPtr;
-  m_readPtr %= HOURS;
 }
 
 void Reading::bufferReading(const reading_t reading, char* buffer, const semaphore_t flags)

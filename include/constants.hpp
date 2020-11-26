@@ -113,18 +113,25 @@ constexpr uint16_t AZURE     = RGB(0, 128, 255);
 constexpr uint16_t ORANGE    = RGB(255, 128, 64);
 constexpr uint16_t BROWNISH  = RGB(0x2e, 0x2d, 0x0);
 constexpr uint16_t PURPLEISH = RGB(0x2f, 0x00, 0x2d);
-constexpr uint16_t BLACK   = 0x0000;
-constexpr uint16_t BLUE    = 0x001F;
-constexpr uint16_t RED     = 0xF800;
-constexpr uint16_t GREEN   = 0x07E0;
-constexpr uint16_t CYAN    = 0x07FF;
-constexpr uint16_t MAGENTA = 0xF81F;
-constexpr uint16_t YELLOW  = 0xFFE0;
-constexpr uint16_t WHITE   = 0xFFFF;
+constexpr uint16_t BLACK     {0x0000};
+constexpr uint16_t BLUE      {0x001F};
+constexpr uint16_t RED       {0xF800};
+constexpr uint16_t GREEN     {0x07E0};
+constexpr uint16_t CYAN      {0x07FF};
+constexpr uint16_t MAGENTA   {0xF81F};
+constexpr uint16_t YELLOW    {0xFFE0};
+constexpr uint16_t WHITE     {0xFFFF};
 
-constexpr uint16_t defaultPaper  = BLACK;
-constexpr uint16_t defaultInk    = CYAN;
-constexpr uint16_t reticleColour = DEEPGREY;
+constexpr int GRAPH_WIDTH    {189};
+constexpr int GRAPH_HEIGHT   {100};
+constexpr int GRAPH_LEFT     {63};
+constexpr int FSD            {100};
+constexpr int GRAPH_Y        {130};
+constexpr int BASE         {GRAPH_Y + FSD};
+
+constexpr uint16_t defaultPaper  {BLACK};
+constexpr uint16_t defaultInk    {CYAN};
+constexpr uint16_t reticleColour {DEEPGREY};
 
 constexpr uint8_t  HOURS = 7;
 
@@ -164,22 +171,22 @@ enum semaphores : uint16_t
   RESETALL    = 0xFFFF
 };
 
-constexpr uint16_t B0000000000000001 = 0x0001;
-constexpr uint16_t B0000000000000010 = 0x0002;
-constexpr uint16_t B0000000000000100 = 0x0004;
-constexpr uint16_t B0000000000001000 = 0x0008;
-constexpr uint16_t B0000000000010000 = 0x0010;
-constexpr uint16_t B0000000000100000 = 0x0020;
-constexpr uint16_t B0000000001000000 = 0x0040;
-constexpr uint16_t B0000000010000000 = 0x0080;
-constexpr uint16_t B0000000100000000 = 0x0100;
-constexpr uint16_t B0000001000000000 = 0x0200;
-constexpr uint16_t B0000010000000000 = 0x0400;
-constexpr uint16_t B0000100000000000 = 0x0800;
-constexpr uint16_t B0001000000000000 = 0x1000;
-constexpr uint16_t B0010000000000000 = 0x2000;
-constexpr uint16_t B0100000000000000 = 0x4000;
-constexpr uint16_t B1000000000000000 = 0x8000;
+constexpr uint16_t B0000000000000001 {0x0001};
+constexpr uint16_t B0000000000000010 {0x0002};
+constexpr uint16_t B0000000000000100 {0x0004};
+constexpr uint16_t B0000000000001000 {0x0008};
+constexpr uint16_t B0000000000010000 {0x0010};
+constexpr uint16_t B0000000000100000 {0x0020};
+constexpr uint16_t B0000000001000000 {0x0040};
+constexpr uint16_t B0000000010000000 {0x0080};
+constexpr uint16_t B0000000100000000 {0x0100};
+constexpr uint16_t B0000001000000000 {0x0200};
+constexpr uint16_t B0000010000000000 {0x0400};
+constexpr uint16_t B0000100000000000 {0x0800};
+constexpr uint16_t B0001000000000000 {0x1000};
+constexpr uint16_t B0010000000000000 {0x2000};
+constexpr uint16_t B0100000000000000 {0x4000};
+constexpr uint16_t B1000000000000000 {0x8000};
 
 // non-active semaphores used for function arguments}
 enum  
