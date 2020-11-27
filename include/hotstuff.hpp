@@ -26,7 +26,7 @@
 #define __DRACO_HOTSTUFF_H
 
 // remove this line to have the unit read in fahrenheit
-//#define USE_METRIC                   
+#define USE_METRIC                   
 
 #include <Arduino.h>
 #include "types.hpp"
@@ -374,20 +374,18 @@ class Graph
 {
   private:
     
-    uint8_t m_xStep            {27}; // X - reticle
-    uint8_t m_yStep            {20}; // Y reticle
-    uint8_t m_humidityStep     {20}; // Nominal stepping
-    uint8_t m_humidityMax     {100}; // Max opening value
-    uint8_t m_humidityBase      {0}; // Min opening value
-    uint8_t m_humidityScale     {1}; // Scale multplier
-    uint8_t m_temperatureStep  {10};
-    int8_t  m_temperatureBase   {0}; // signed because temps can go sub 0!
-    int8_t  m_temperatureMax   {50};
-    uint8_t m_temperatureScale  {2};
-    uint8_t m_circular          {0};
-    int8_t  m_temperature[GRAPH_WIDTH];
-    int8_t  m_humidity[GRAPH_WIDTH];
-  
+    uint8_t m_xStep         {27}; // X - reticle
+    uint8_t m_yStep         {20}; // Y reticle
+    uint8_t m_circular       {0};
+    int16_t m_temperature[GRAPH_WIDTH];
+    int16_t m_humidity[GRAPH_WIDTH];
+    scale_t m_scales     {10,20};  // humidty and temperature scale multipliers
+
+    int16_t m_minHumidity    {0};
+    int16_t m_maxHumidity    {0};
+    int16_t m_minTemperature {0};
+    int16_t m_maxTemperature {0};
+
   public:
 
   Graph() {};
@@ -446,15 +444,66 @@ class Graph
 
   void postReadings(readings_t reading)
   {
-    m_temperature[m_circular] = static_cast<int8_t>(reading.T);
-    m_humidity[m_circular]    = static_cast<int8_t>(reading.H);
+    m_temperature[m_circular] = static_cast<int16_t>(reading.T * READ_SCALAR);  // hide the floating point in a large integer
+    m_humidity[m_circular]    = static_cast<int16_t>(reading.H * READ_SCALAR);
     m_circular++;
     m_circular %= GRAPH_WIDTH;
+  }
+
+  reading_t getTempRange()
+  {
+    for (uint8_t i {0}; i < GRAPH_WIDTH; i++)
+    {
+      if (m_temperature[i] > m_maxTemperature)
+      {
+        m_maxTemperature = m_temperature[i];
+      }
+      
+      if (m_temperature[i] < m_minTemperature)
+      {
+        m_minTemperature = m_temperature[i];
+      }
+    }
+    reading_t min = m_minTemperature / READ_SCALAR;
+    reading_t max = m_maxTemperature / READ_SCALAR;
+
+    return (max - min < 0.5) ? 0.5 : (max - min);
+  }
+
+  reading_t getHumiRange()
+  {
+    for (uint8_t i {0}; i < GRAPH_WIDTH; i++)
+    {
+      if (m_humidity[i] > m_maxHumidity)
+      {
+        m_maxHumidity = m_humidity[i];
+      }
+
+      if (m_humidity[i] > m_maxHumidity)
+      {
+        m_maxHumidity = m_humidity[i];
+      }
+    }
+
+    reading_t min = m_minHumidity / READ_SCALAR;
+    reading_t max = m_maxHumidity / READ_SCALAR;
+    return   (max - min < 0.5) ? 0.5 : (max - min);
   }
 
   int getGraphX()
   {
     return ((TFT_WIDTH - GRAPH_WIDTH) >> 1);
+  }
+
+  scale_t getScale(void)
+  {
+    return m_scales;
+  }
+
+  void setScale(scale_t scales)
+  {
+    m_scales.humidity = scales.humidity;
+    m_scales.temperature = scales.temperature;
   }
 };
 
@@ -687,12 +736,11 @@ class Environmental
 class Reading
 {
     private:
-
+    reading_t  m_minRead {};
+    reading_t  m_maxRead {};
     float      m_cumulativeMovingAverage {};
     reading_t  m_correction {};
     reading_t  m_cmaCounter {};
-    reading_t  m_minRead {};
-    reading_t  m_maxRead {};
     reading_t  m_currRead {};
     colours_t  m_trace {};    // graph line colour
    
@@ -702,11 +750,10 @@ class Reading
     {
       // cumulative moving averages are a form of mean that doesn't need to track every single value
       // using these avoids little odd spikes from throwing the graph and smooths it out too.
-      m_cmaCounter = 0.0;
+      m_cmaCounter              = 0.0;
       m_cumulativeMovingAverage = 0.0;
-      m_correction = 0.0;
-  }
-  
+      m_correction              = 0.0;
+    }
 
   colours_t getTrace()
   {
@@ -718,12 +765,6 @@ class Reading
     m_trace = C;
   }
 
-  void setMinMax()
-  {
-    m_maxRead = m_cumulativeMovingAverage;
-    m_minRead = m_cumulativeMovingAverage;
-  }
-
   void initReads(const reading_t R)
   {
     m_cumulativeMovingAverage = R;
@@ -731,14 +772,14 @@ class Reading
     m_minRead = R;
   }
 
-  int8_t getMinRead()
+  reading_t getMinRead()
   {
-    return m_minRead;
+    return floor(m_minRead);
   }
 
-  int8_t getMaxRead()
+  reading_t getMaxRead()
   {
-    return m_maxRead;
+    return round(m_maxRead);
   }
 
   reading_t getReading()
@@ -774,7 +815,6 @@ class Reading
    */
     void bufferReading(const reading_t reading, char* buffer, const semaphore_t flags);
 
-  
     reading_t getCMA()
     {
       return m_cumulativeMovingAverage;

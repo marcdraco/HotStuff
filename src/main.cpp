@@ -119,7 +119,14 @@ Messages messages;
 Sevensegments segments(defaultInk, DEEPBLUE);
 
 // convert KNOWN Y coords to 8-bit only for a hair more speed.
+
 // start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
+
+// BUG: flashing displays don't fade correctly.
+// bug: graph looks nasty still!
+// bug: - min (temp) albeit rare, needs to go RED
+// bug: max humidity should be pegged at 99.
+// Feature: Magnus Dew Point should be included. 
 
 /*
  * Nasty global variable...
@@ -138,7 +145,7 @@ struct globalVariables
 
 void setup()
 {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -183,23 +190,23 @@ void setup()
 
 void loop()
 {
-  
+  // colour of MIN temp needs to go RED if negative (default otherwise)
+  // don't forget to do this!
   if (flags.isSet(UPDATEREADS))
-  {
-    
-    Reading::takeReadings();
+  {    
     flags.clear(UPDATEREADS);
+    Reading::takeReadings();
     showLCDReadsHorizontal();
     messages.showMinMax();
   }
 
   if (flags.isSet(UPDATEGRAPH))
   {
+    flags.clear(UPDATEGRAPH);
     readings_t R;
     R.H = humidity.getCMA();
     R.T = temperature.getCMA();
     graph.postReadings(R);
-    flags.clear(UPDATEGRAPH);
     graph.drawGraph();
   }
 
@@ -207,30 +214,34 @@ void loop()
 
   if (flags.isSet(CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
   {
-    display.setFlashInk(defaultPaper);
+      /// BUG: these do not clear correctly.
 
     if (flags.isSet(CLEARDAMP))
     {
-      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolDamp);
       flags.clear(CLEARDAMP);
+      display.setFlashInk(defaultPaper);
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolDamp);
     }
 
     if (flags.isSet(CLEARFROST))
     {
-      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolIce);
       flags.clear(CLEARFROST);
+      display.setFlashInk(defaultPaper);
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolIce);
     }
 
     if (flags.isSet(CLEARDRY))
     {
-      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolDry);
       flags.clear(CLEARDRY);
+      display.setFlashInk(defaultPaper);
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolDry);
     }
 
     if (flags.isSet(CLEARHOT))
     {
-      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolHot);
       flags.clear(CLEARHOT);
+      display.setFlashInk(defaultPaper);
+      display.displaySmallBitmap(130, 50, 40, 40, (uint8_t *) symbolHot);
     }
   } 
 
@@ -256,6 +267,34 @@ void loop()
       display.displaySmallBitmap(140, 50, 40, 54, (uint8_t *) symbolHot);
     }
   }
+}
+
+void formatQuickFloat(float value, uint8_t digits, char* b)
+{
+  // note this function truncates the least significant digit
+  char buffer[15];  // should be large enough for most cases
+  sprintf(buffer, "%d", static_cast<int> (value));
+
+  uint8_t intsize = strlen(buffer); // find how many integer digits are present.
+  sprintf(buffer, "%d", static_cast<int> (value * (pow(10, digits))));
+
+  uint8_t pos {0};
+
+  for (; pos < intsize; pos++)
+  {
+    *b++ = buffer[pos];
+  }
+
+  if (value)
+  {
+    *b++ = '.';
+  }
+
+  for (uint8_t i {0}; i < digits; i++)
+  {
+    *b++ = buffer[pos + i];
+  }
+  *b = 0; // just make damn sure this is null terminated
 }
 
 void showLCDReadsVertical()
@@ -311,14 +350,21 @@ void Graph::drawGraph()
   const colours_t tInk = temperature.getTrace();
   const colours_t hInk = humidity.getTrace();
 
-  screen.fillRect(GRAPH_LEFT, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
+ // screen.fillRect(GRAPH_LEFT, BASE - GRAPH_HEIGHT, GRAPH_WIDTH -1, GRAPH_HEIGHT, defaultPaper);
+  screen.fillRect(0, GRAPH_HEIGHT, TFT_WIDTH, 120, defaultPaper);
   drawReticles(6, 6);
+  drawGraphScaleMarks();
+ 
+  reading_t tempRange  = getTempRange();
+  reading_t humiRange  = getHumiRange();
+  reading_t minTemp    = m_minTemperature / 128;
+  reading_t minHumid   = m_minHumidity    / 128;
 
   int16_t X = 1 + GRAPH_LEFT;
   for (uint8_t i {1}; i < GRAPH_WIDTH - 1; ++i)
   {
-    screen.drawPixel(X + i, BASE - (m_temperature[i] * 2), tInk);
-    screen.drawPixel(X + i, BASE -  m_humidity[i],         hInk);
+    screen.drawPixel(X + i, BASE - (m_temperature[i] * m_scales.temperature), tInk);
+    screen.drawPixel(X + i, BASE -  m_humidity[i]    * m_scales.humidity,     hInk);
   }
 }
 
@@ -424,15 +470,13 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 
 void Graph::initGraph(readings_t read)
 { 
-  fonts.setFont(&HOTSMALL);
-  screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
-  drawGraphScaleMarks();
-  drawReticles(6, 6); 
   for (uint8_t i {0}; i < GRAPH_WIDTH; ++i)
   {
-    m_temperature[i] = static_cast<int8_t>(read.T);
-    m_humidity[i]    = static_cast<int8_t>(read.H);
+    m_temperature[i] = static_cast<int16_t>(read.T * READ_SCALAR);
+    m_humidity[i]    = static_cast<int16_t>(read.H * READ_SCALAR);
   }
+  m_minTemperature   = static_cast<int16_t>(read.T * READ_SCALAR);
+  m_minHumidity      = static_cast<int16_t>(read.H * READ_SCALAR);
 };
 
 void Graph::drawGraphScaleMarks(void)
@@ -457,29 +501,41 @@ void Graph::drawGraphScaleMarks(void)
 
     messages.execute(Messages::humidityScale);
     fonts.setRotation(0);
-
+ 
+    reading_t minTemp    = m_minTemperature / READ_SCALAR;
+    reading_t minHumid   = m_minHumidity    / READ_SCALAR;
+    reading_t tempRange  = getTempRange();
+    reading_t humiRange  = getHumiRange();
     // temp scale
-    for (int8_t i {-1}; i < 6; i++)
+    for (uint8_t i {0}; i < 6; i++) 
     {
-        const int yShift = fonts.getYstep() / 2;
-        const int X = getGraphX() - (fonts.getXstep() * 3);
-        screen.setCursor(X, BASE - (i * m_temperatureStep * m_temperatureScale) + yShift);
-        reading_int_t value = (flags.isSet(USEMETRIC)) ? 
-                            i * m_temperatureStep : 
-                            static_cast<reading_int_t>(toFahrenheit(i * m_temperatureStep));
-        char b[6];
-        sprintf(b, "%3d", value);
+        float step       = tempRange / 5;
+        float baseline   = minTemp - (tempRange / 2);
+        reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + baseline : (toFahrenheit((i * step) + baseline));
+        int yShift       = fonts.getYstep() / 2 - 2;
+        int X            = getGraphX() - (fonts.getXstep() * 3);
+    
+        char b[10];
+        formatQuickFloat(value, 1, b);
+        screen.setCursor(X, BASE - (i * 20) + yShift);
+        sprintf(b, "%s", b);
         fonts.print(b);
     }
     
     // humidity scale
     for (uint8_t i {0}; i < 6; i++)
     {
-        const int X = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
-        const int yShift = fonts.getYstep() / 2;
-        screen.setCursor(X, BASE - (i * m_humidityStep) + yShift);
-        char b[6];
-        sprintf(b, "%3d", (i * m_humidityStep));
+        float step     = humiRange / 5;
+        float baseline = minHumid - (humiRange / 2);
+        int yShift     = fonts.getYstep() / 2 - 2;
+        int X          = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
+
+        screen.setCursor(X, BASE - (i * 20) + yShift);
+        char b[10];
+        reading_t value = ((i * step) + baseline);
+        formatQuickFloat(value, 1, b);
+        screen.setCursor(X, BASE - (i * 20) + yShift);
+        sprintf(b, "%s", b);
         fonts.print(b);
     }
 }
@@ -513,11 +569,9 @@ readings_t Reading::takeReadings(void)
 void Reading::updateReading(const reading_t reading)
 {
   m_currRead = reading + m_correction;
-
-  m_minRead  = (reading < m_minRead) ? reading : m_minRead;
-  m_maxRead  = (reading > m_maxRead) ? reading : m_maxRead;
-
-  m_cumulativeMovingAverage = (m_cumulativeMovingAverage + (reading - m_cumulativeMovingAverage) / ++m_cmaCounter) + m_correction;
+  m_minRead  = (m_currRead < m_minRead) ? m_currRead : m_minRead;
+  m_maxRead  = (m_currRead > m_maxRead) ? m_currRead : m_maxRead;
+  m_cumulativeMovingAverage = (m_cumulativeMovingAverage + (m_currRead - m_cumulativeMovingAverage) / ++m_cmaCounter) + m_correction;
 }
 
 void Reading::bufferReading(const reading_t reading, char* buffer, const semaphore_t flags)
@@ -567,12 +621,12 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
   ++isrTimings.timeToRead;
 
-  if (isrTimings.timeToRead == 3)
+  if (isrTimings.timeToRead == 5)
   {
     isrTimings.timeToRead = 0;
     flags.set(UPDATEREADS);
+    flags.set(UPDATEGRAPH);
   }
-
 
   if (isrTimings.timeInSeconds == 60)
   {
@@ -741,6 +795,18 @@ float Environmental::heatIndex(const readings_t readings)
 
 float Environmental::magnusDewpoint(const readings_t readings)
 {
+  /*
+  Per WIKIPEDIA:
+  Discomfort also exists when the dew point is very low (below around −5 °C or 23 °F).
+  The drier air can cause skin to crack and become irritated more easily. 
+  It will also dry out the airways. The US Occupational Safety and Health Administration 
+  recommends indoor air be maintained at 20–24.5 °C (68–76 °F) with a 20–60% relative #
+  humidity, equivalent to a dew point of 4.0 to 15.5 °C (39 to 60 °F). Lower dew points, 
+  less than 10 °C (50 °F), correlate with lower ambient temperatures and cause the body 
+  to require less cooling. A lower dew point can go along with a high temperature only 
+  at extremely low relative humidity, allowing for relatively effective cooling. 
+  */
+
   // Magnus dew point constants
   constexpr double a = 17.62;
   constexpr double b = 243.12;
@@ -1139,24 +1205,28 @@ void Messages::showUptime(void)
 void Messages::showMinMax(void)
 {  
   char b[10]; 
-
-  int min = temperature.getMinRead();
-  int max = temperature.getMaxRead();
+  int8_t min;
+  int8_t max;
 
   if (flags.isClear(USEMETRIC))
   {
     min = static_cast<int>(toFahrenheit(temperature.getMinRead()));
     max = static_cast<int>(toFahrenheit(temperature.getMaxRead()));
   }
-
+  else
+  {
+    min = static_cast<int>(temperature.getMinRead());
+    max = static_cast<int>(temperature.getMaxRead());
+  }
+  
   sprintf(b,"%d", min);
   segments.segmentedString(100, 38, b, 6, 0, 1, 12);
 
   sprintf(b,"%d", max);
   segments.segmentedString(100, 58, b, 6, 0, 1, 12);
 
-  min = humidity.getMinRead();
-  max = humidity.getMaxRead();
+  min = static_cast<int>(humidity.getMinRead());
+  max = static_cast<int>(humidity.getMaxRead());
 
   sprintf(b,"%d", min);
   segments.segmentedString(HUMIDITY_X, 38, b, 6, 0, 1, 14);

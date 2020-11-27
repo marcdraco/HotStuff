@@ -77,6 +77,8 @@ constexpr int TEMPERATURE_X  {290};
 constexpr int HUMIDITY_X     {290};
 constexpr int AXIS_Y_POSITION {15};
 
+constexpr int READ_SCALAR    {128};
+
 constexpr int TFT_WIDTH      {320};
 constexpr int TFT_HEIGHT     {240};
 

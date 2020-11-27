@@ -41,7 +41,7 @@
 #define HOTLARGE HotStuff24
 
 //#include "fonts/sourceCodePro-6-full.h"
-#include "fonts/novaOval-6-full.h"
+#include "fonts/ubuntu-6-full.h"
 #define HOTSMALL HotStuff6
 
 #endif

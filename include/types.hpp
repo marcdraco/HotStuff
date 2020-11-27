@@ -48,6 +48,13 @@ using coordinates_t  = struct
   coordinate_t Y;
 };
 
+using scale_t = struct
+{
+  uint8_t temperature;
+  uint8_t humidity;
+};
+
+
 using ucoordinates_t  = struct 
 {
   ucoordinate_t X; 
