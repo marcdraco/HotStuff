@@ -75,7 +75,7 @@ constexpr int OUTER_RADIUS   { 70};
 
 constexpr int TEMPERATURE_X  {290};
 constexpr int HUMIDITY_X     {290};
-constexpr int AXIS_Y_POSITION {15};
+constexpr int AXIS_Y_POSITION {5};
 
 constexpr int READ_SCALAR    {128};
 
@@ -86,7 +86,7 @@ constexpr int FONT_BUFF_WIDTH    {120}; // special "offscreen" buffer for deleti
 constexpr int FONT_BUFF_HEIGHT   {40};  // The size of this is crucial because it uses a LOT of RAM.
 
 constexpr int SYMX1     {0}; 
-constexpr int SYMX2   {290};
+constexpr int SYMX2   {260};
 constexpr int SYMY     {80};
 
 
@@ -130,16 +130,14 @@ constexpr uint16_t YELLOW    {0xFFE0};
 constexpr uint16_t WHITE     {0xFFFF};
 
 constexpr int GRAPH_WIDTH  {189};
-constexpr int GRAPH_HEIGHT {120};
+constexpr int GRAPH_HEIGHT {100};
 constexpr int GRAPH_LEFT   {63};
-constexpr int GRAPH_Y      {100};
+constexpr int GRAPH_Y      {130};
 constexpr int BASE         {GRAPH_Y + GRAPH_HEIGHT};
 
 constexpr uint16_t defaultPaper  {BLACK};
 constexpr uint16_t defaultInk    {CYAN};
 constexpr uint16_t reticleColour {DEEPGREY};
-
-constexpr uint8_t  HOURS = 7;
 
 /*
   Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful!

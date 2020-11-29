@@ -194,7 +194,7 @@ void Graph::drawGraph()
   const colours_t tInk = temperature.getTrace();
   const colours_t hInk = humidity.getTrace();
 
-  screen.fillRect(0, GRAPH_HEIGHT, TFT_WIDTH, 120, defaultPaper);
+  screen.fillRect(0, GRAPH_Y, TFT_WIDTH, 120, defaultPaper);
   drawReticles(6, 6);
   drawGraphScaleMarks();
  /*
@@ -207,7 +207,7 @@ void Graph::drawGraph()
   for (uint8_t i {1}; i < GRAPH_WIDTH - 1; ++i)
   {
     screen.drawPixel(X + i, BASE - m_temperature[i], tInk);
-    screen.drawPixel(X + i, BASE -  m_humidity[i],         hInk);
+    screen.drawPixel(X + i, BASE - m_humidity[i],    hInk);
   }
 }
 
@@ -288,7 +288,7 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 {
   for (uint8_t i {1}; i < 7; ++i)    // vertical divisions
   {
-    screen.drawFastVLine(GRAPH_LEFT + m_xStep * i, BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT, reticleColour);
+    screen.drawFastVLine(GRAPH_LEFT + m_xStep * i, GRAPH_Y +20, GRAPH_HEIGHT -20, reticleColour);
   }
 
   for (uint8_t i {1}; i < 6; ++i)   // horizontal divisions
@@ -306,9 +306,9 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
     screen.drawFastHLine(GRAPH_LEFT - 5, BASE - GRAPH_HEIGHT + (i * m_yStep), 5, defaultInk);
   }
 
-  screen.drawFastHLine(GRAPH_LEFT,               BASE,                GRAPH_WIDTH,       defaultInk);
-  screen.drawFastVLine(GRAPH_LEFT,               BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT + 5, defaultInk);
-  screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT + 5, defaultInk);
+  screen.drawFastHLine(GRAPH_LEFT,               BASE,                GRAPH_WIDTH,            defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT,               BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT - 15, defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT - 15, defaultInk);
 }
 
 void Graph::initGraph(readings_t read)
@@ -318,8 +318,6 @@ void Graph::initGraph(readings_t read)
     m_temperature[i] = static_cast<int16_t>(read.T * READ_SCALAR);
     m_humidity[i]    = static_cast<int16_t>(read.H * READ_SCALAR);
   }
-  m_minTemperature   = static_cast<int16_t>(read.T * READ_SCALAR);
-  m_minHumidity      = static_cast<int16_t>(read.H * READ_SCALAR);
 };
 
 void Graph::drawGraphScaleMarks(void)
@@ -345,16 +343,18 @@ void Graph::drawGraphScaleMarks(void)
     messages.execute(Messages::humidityScale);
     fonts.setRotation(0);
  
-    reading_t minTemp    = m_minTemperature / READ_SCALAR;
-    reading_t minHumid   = m_minHumidity    / READ_SCALAR;
-    reading_t tempRange  = getTempRange();
-    reading_t humiRange  = getHumiRange();
+    int8_t minTemp       = floor(temperature.getMinRead());
+    int8_t maxTemp       = ceil(temperature.getMaxRead());
+    int8_t minHumid      = floor(humidity.getMinRead());
+    int8_t maxHumid      = ceil(humidity.getMaxRead());
+    reading_t tempRange  = (maxTemp  - minTemp  > 1) ? maxTemp - minTemp   : 1;
+    reading_t humiRange  = (maxHumid - minHumid > 1) ? maxHumid - minHumid : 1;
+ 
     // temp scale
-    for (uint8_t i {0}; i < 6; i++) 
+    for (uint8_t i {0}; i < 5; i++) 
     {
-        float step       = tempRange / 5;
-        float baseline   = minTemp - (tempRange / 2);
-        reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + baseline : (toFahrenheit((i * step) + baseline));
+        reading_t step   = tempRange / 4;
+        reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + minTemp : (toFahrenheit((i * step) + minTemp));
         int yShift       = fonts.getYstep() / 2 - 2;
         int X            = getGraphX() - (fonts.getXstep() * 3);
     
@@ -366,16 +366,15 @@ void Graph::drawGraphScaleMarks(void)
     }
     
     // humidity scale
-    for (uint8_t i {0}; i < 6; i++)
+    for (uint8_t i {0}; i < 5; i++)
     {
-        float step     = humiRange / 5;
-        float baseline = minHumid - (humiRange / 2);
+        float step     = humiRange / 4;
         int yShift     = fonts.getYstep() / 2 - 2;
         int X          = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
 
         screen.setCursor(X, BASE - (i * 20) + yShift);
         char b[10];
-        reading_t value = ((i * step) + baseline);
+        reading_t value = ((i * step) + minHumid);
         formatQuickFloat(value, 1, b);
         screen.setCursor(X, BASE - (i * 20) + yShift);
         sprintf(b, "%s", b);

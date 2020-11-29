@@ -130,6 +130,9 @@ Sevensegments segments(defaultInk, DEEPBLUE);
 
 // start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
 
+// RED (under-range) values need doing again
+// Max humidity should be pegged at 99.
+
 /*
  * Nasty global variable...
  * These flags are set/checked in an interupt service so they need to avoid

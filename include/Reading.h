@@ -30,7 +30,7 @@ class Reading
     private:
     reading_t  m_minRead {};
     reading_t  m_maxRead {};
-    float      m_cumulativeMovingAverage {};
+    reading_t  m_cumulativeMovingAverage {};
     reading_t  m_correction {};
     reading_t  m_cmaCounter {};
     reading_t  m_currRead {};

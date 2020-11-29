@@ -58,11 +58,7 @@ class Graph
     uint8_t m_circular       {0};
     int16_t m_temperature[GRAPH_WIDTH];
     int16_t m_humidity[GRAPH_WIDTH];
-    int16_t m_minHumidity    {0};
-    int16_t m_maxHumidity    {0};
-    int16_t m_minTemperature {0};
-    int16_t m_maxTemperature {0};
-
+  
   public:
 
   Graph() {};
@@ -125,46 +121,6 @@ class Graph
     m_humidity[m_circular]    = static_cast<int16_t>(reading.H * READ_SCALAR);
     m_circular++;
     m_circular %= GRAPH_WIDTH;
-  }
-
-  reading_t getTempRange()
-  {
-    for (uint8_t i {0}; i < GRAPH_WIDTH; i++)
-    {
-      if (m_temperature[i] > m_maxTemperature)
-      {
-        m_maxTemperature = m_temperature[i];
-      }
-      
-      if (m_temperature[i] < m_minTemperature)
-      {
-        m_minTemperature = m_temperature[i];
-      }
-    }
-    reading_t min = m_minTemperature / READ_SCALAR;
-    reading_t max = m_maxTemperature / READ_SCALAR;
-
-    return (max - min < 0.5) ? 0.5 : (max - min);
-  }
-
-  reading_t getHumiRange()
-  {
-    for (uint8_t i {0}; i < GRAPH_WIDTH; i++)
-    {
-      if (m_humidity[i] > m_maxHumidity)
-      {
-        m_maxHumidity = m_humidity[i];
-      }
-
-      if (m_humidity[i] > m_maxHumidity)
-      {
-        m_maxHumidity = m_humidity[i];
-      }
-    }
-
-    reading_t min = m_minHumidity / READ_SCALAR;
-    reading_t max = m_maxHumidity / READ_SCALAR;
-    return   (max - min < 0.5) ? 0.5 : (max - min);
   }
 
   int getGraphX()
