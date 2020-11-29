@@ -33,7 +33,7 @@
  * SimpleDHT is Copyright (c) 2016-2017 winlin, and is also licensed MIT
  */
 
-#include "UniversalDHT.hpp"
+#include "UniversalDHT.h"
 
 UniversalDHT::UniversalDHT(uint8_t pin) 
 {
