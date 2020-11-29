@@ -86,7 +86,7 @@ constexpr int FONT_BUFF_WIDTH    {120}; // special "offscreen" buffer for deleti
 constexpr int FONT_BUFF_HEIGHT   {40};  // The size of this is crucial because it uses a LOT of RAM.
 
 constexpr int SYMX1     {0}; 
-constexpr int SYMX2   {160};
+constexpr int SYMX2   {290};
 constexpr int SYMY     {80};
 
 
