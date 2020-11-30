@@ -357,12 +357,13 @@ void Graph::drawGraphScaleMarks(void)
         reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + minTemp : (toFahrenheit((i * step) + minTemp));
         int yShift       = fonts.getYstep() / 2 - 2;
         int X            = getGraphX() - (fonts.getXstep() * 3);
-    
+
         char b[10];
         formatQuickFloat(value, 1, b);
         screen.setCursor(X, BASE - (i * 20) + yShift);
-        sprintf(b, "%s", b);
-        fonts.print(b);
+        char buff[10];
+        sprintf(buff, "%s", b);
+        fonts.print(buff);
     }
     
     // humidity scale
@@ -373,11 +374,12 @@ void Graph::drawGraphScaleMarks(void)
         int X          = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
 
         screen.setCursor(X, BASE - (i * 20) + yShift);
-        char b[10];
         reading_t value = ((i * step) + minHumid);
+        char b[10];
         formatQuickFloat(value, 1, b);
         screen.setCursor(X, BASE - (i * 20) + yShift);
-        sprintf(b, "%s", b);
-        fonts.print(b);
+        char buff[10];
+        sprintf(buff, "%s", b);
+        fonts.print(buff);
     }
 }

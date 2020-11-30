@@ -52,10 +52,6 @@
   DON'T WORK AS INTENDED. C++ USED HERE FOR ORGANIZATIONAL PURPOSES AND TO MAKE THE
   CODE EASIER TO MAINTAIN/EXPAND. C WOULD HAVE BEEN MARGINALLY MORE EFFICIENT HOWEVER.
 
-  * #DEFINES ARE USED IN PREFERENCE TO CONSTS ON MCUS BECAUSE A CONSTEXPR REQUIRES 
-  A MEMORY LOCATION (ACCORDING TO THE MANUFACTURER'S APPLICATION NOTE) AND THAT CAN'T 
-  OPTIMIZED.
-
   * THE TARGET MCUs ARE 8-BIT. FOR THIS REASON WE ONLY USE 16, 32 OR LARGER VARIABLES 
   WHEN IT'S NOT POSSIBLE TO FIT EVERYTHING INTO 8BITS. THE USUAL WISDOM OF USING SIGNED
   INTS BECUASE "BETTER" THAN UNSIGNED, IS ESCHEWED BY MICROCHIP FOR PERFORMANCE REASONS
@@ -118,7 +114,6 @@ Display display;
 UniversalDHT dht22(DHT22_DATA);
 Flags flags;
 Graph graph;
-Alarm alarm;
 Reading humidity;
 Reading temperature;
 Fonts fonts;
@@ -132,24 +127,11 @@ Sevensegments segments(defaultInk, DEEPBLUE);
 
 // RED (under-range) values need doing again
 // Max humidity should be pegged at 99.
-
-/*
- * Nasty global variable...
- * These flags are set/checked in an interupt service so they need to avoid
- * diving in another subroutine (albetit one that could perceivably be inlined
- * by the compiler.) These macros avoids leaving to chance.
-*/  
-struct globalVariables
-{
-  #define SETBIT(flag, bit) (globals.semaphores |= (bit))      //Set bit in byte addr
-  #define CLEARBIT(flag, bit) (globals.semaphores &= (~bit))   // Clear bit in byte addr
-  #define CHECKBIT(flag, bit) (globals.semaphores & (bit))     // Check bit in byte addr
-
-  uint16_t g_semaphores = 0;
-} globals;
+globalVariables globals;
 
 void setup()
 {
+  Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -196,70 +178,72 @@ void loop()
 {
   // colour of MIN temp needs to go RED if negative (default otherwise)
   // don't forget to do this!
-  if (flags.isSet(UPDATEREADS))
+  if (CHECKBIT(UPDATEREADS))
+  
   {    
-    flags.clear(UPDATEREADS);
+    CLEARBIT(UPDATEREADS);
     Reading::takeReadings();
     showLCDReadsHorizontal();
     messages.showMinMax();
   }
 
-  if (flags.isSet(UPDATEGRAPH))
+  if (CHECKBIT(UPDATEGRAPH))
   {
-    flags.clear(UPDATEGRAPH);
+    CLEARBIT(UPDATEGRAPH);
     readings_t R;
     R.H = humidity.getCMA();
     R.T = temperature.getCMA();
     graph.postReadings(R);
     graph.drawGraph();
+    Serial.println(globals.g_semaphores, HEX);
   }
 
-  (flags.isSet(FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);
+  (CHECKBIT(FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);
 
-  if (flags.isSet(CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
+  if (CHECKBIT(CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
   {
-    if (flags.isSet(CLEARDAMP))
+    if (CHECKBIT(CLEARDAMP))
     {
-      flags.clear(CLEARDAMP);
+      CLEARBIT(CLEARDAMP);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDamp);
     }
 
-    if (flags.isSet(CLEARFROST))
+    if (CHECKBIT(CLEARFROST))
     {
-      flags.clear(CLEARFROST);
+      CLEARBIT(CLEARFROST);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolIce);
     }
 
-    if (flags.isSet(CLEARDRY))
+    if (CHECKBIT(CLEARDRY))
     {
-      flags.clear(CLEARDRY);
+      CLEARBIT(CLEARDRY);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
     }
 
-    if (flags.isSet(CLEARHOT))
+    if (CHECKBIT(CLEARHOT))
     {
-      flags.clear(CLEARHOT);
+      CLEARBIT(CLEARHOT);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolHot);
     }
   } 
 
-  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))     
+  if (CHECKBIT(FROST | DAMP | DRY | OVERTEMP))     
   {
-    if (flags.isSet(DAMP))
+    if (CHECKBIT(DAMP))
     {
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDamp);
     }
 
-    if (flags.isSet(FROST))
+    if (CHECKBIT(FROST))
     {
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolIce);
     }
 
-    if (flags.isSet(DRY))
+    if (CHECKBIT(DRY))
     {
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
     }
@@ -323,8 +307,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 {
   TCNT1 = UPDATER;     // preload timer
 
-  // this SHOULD use a MACRO (and a global variable for speed on embedded systems)
-  flags.flip(FLASH); // flip the boolean for flashing items
+  FLIPBIT(FLASH); // flip the boolean for flashing items
 
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
   ++isrTimings.timeToRead;
@@ -332,8 +315,8 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   if (isrTimings.timeToRead == 5)
   {
     isrTimings.timeToRead = 0;
-    flags.set(UPDATEREADS);
-    flags.set(UPDATEGRAPH);
+    SETBIT(UPDATEREADS);
+    SETBIT(UPDATEGRAPH);    // DEBUG ONLY!
   }
 
   if (isrTimings.timeInSeconds == 60)
@@ -343,7 +326,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 
     if (isrTimings.timeInMinutes == 8 && isrTimings.timeInSeconds == 0)
     {     
-      flags.set(UPDATEGRAPH);
+      SETBIT(UPDATEGRAPH);
     }
      
     if (isrTimings.timeInMinutes == 60)

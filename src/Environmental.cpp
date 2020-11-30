@@ -36,6 +36,7 @@
 #include "UniversalDHT.h"   // @winlinvip's DHT11/22 library functions modified by Tim Harper
 
 #include "Alarm.h"
+#include "constants.h"
 #include "Display.h"
 #include "Environmental.h"
 #include "Fonts.h"
@@ -49,33 +50,35 @@
 #include "Trig.h"
 #include "types.h"
 
+extern globalVariables globals;
+
 void Environmental::checkHumidityConditions(void)
 {
   if (humidity.getCMA() > DAMP_AIR_WATERSHED)
   {
-    flags.set(DAMP);
+    SETBIT(DAMP);
   }
       
   if (humidity.getCMA() <= DAMP_AIR_WATERSHED)
   {
-    if (flags.isSet(DAMP))
+    if (CHECKBIT(DAMP))
     {
-      flags.set(CLEARDAMP);
-      flags.clear(DAMP);
+      SETBIT(CLEARDAMP);
+      CLEARBIT(DAMP);
     }
   }
 
   if (humidity.getCMA() < DRY_AIR_WATERSHED)
   {
-      flags.set(DRY);
+      SETBIT(DRY);
   }
 
   if (humidity.getCMA() >= DRY_AIR_WATERSHED)
   {
     if (flags.isSet(DRY))
     {
-      flags.set(CLEARDRY);
-      flags.clear(DRY);
+      SETBIT(CLEARDRY);
+      CLEARBIT(DRY);
     }
   }
 }
@@ -84,20 +87,20 @@ void Environmental::checkTemperatureConditions(void)
 {
   if (temperature.getReading() <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
   {
-    flags.set(FROST);          // start das-blinky-flashun light
+    SETBIT(FROST);          // start das-blinky-flashun light
   }
 
   if (temperature.getCMA() > FROST_WATERSHED)
   {
-    if (flags.isSet(FROST))
+    if (SETBIT(FROST))
     { 
-      flags.clear(FROST);     //Stop the frost warn flashing
-      flags.set(CLEARFROST);  // for clean up
+      CLEARBIT(FROST);     //Stop the frost warn flashing
+      SETBIT(CLEARFROST);  // for clean up
     }
   }
 }
 
-void Environmental::checkHeatIndex(const readings_t readings)
+void Environmental::checkHeatIndex(readings_t readings)
 {
   reading_int_t effectiveTemperature = static_cast<reading_int_t>(heatIndex(readings));
 

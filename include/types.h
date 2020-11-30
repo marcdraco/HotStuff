@@ -41,6 +41,16 @@ using reading_int_t = int16_t;
 using isrtiming_t   = uint8_t;
 using byte_t        = uint8_t;
 
+/*
+ * Nasty global variable...
+ * These flags are set/checked in an interupt service so they need to avoid
+ * diving in another subroutine (albetit one that could perceivably be inlined
+ * by the compiler.) These macros avoids leaving to chance.
+*/  
+struct globalVariables
+{
+  uint16_t g_semaphores = 0;
+};
 
 using coordinates_t  = struct coordinates
 {
