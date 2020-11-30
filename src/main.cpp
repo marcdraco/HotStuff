@@ -131,7 +131,7 @@ globalVariables globals;
 
 void setup()
 {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -195,7 +195,6 @@ void loop()
     R.T = temperature.getCMA();
     graph.postReadings(R);
     graph.drawGraph();
-    Serial.println(globals.g_semaphores, HEX);
   }
 
   (CHECKBIT(FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);

@@ -122,13 +122,13 @@ void Messages::showMinMax(void)
   segments.segmentedString(100, 58, b, 6, 0, 1, 12);
 
   sprintf(b,"%d", dp);
-  segments.segmentedString(70, 90, b, 6, 0, 1, 12);
+  segments.segmentedString(160, 78, b, 6, 0, 1, 12);
 
   screen.setCursor(130, 53);
   fonts.print(const_cast<char *>("Min"));
   screen.setCursor(130, 73);
   fonts.print(const_cast<char *>("Max"));
-  screen.setCursor(5, 105);
+  screen.setCursor(100, 93);
   fonts.print(const_cast<char *>("Dew Point"));
 
   min = static_cast<int>(humidity.getMinRead());

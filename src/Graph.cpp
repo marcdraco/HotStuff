@@ -197,17 +197,26 @@ void Graph::drawGraph()
   screen.fillRect(0, GRAPH_Y, TFT_WIDTH, 120, defaultPaper);
   drawReticles(6, 6);
   drawGraphScaleMarks();
- /*
-  reading_t tempRange  = getTempRange();
-  reading_t humiRange  = getHumiRange();
-  reading_t minTemp    = m_minTemperature / 128;
-  reading_t minHumid   = m_minHumidity    / 128;
-*/
+
+  int16_t minTemp         = floor(temperature.getMinRead());
+  int16_t maxTemp         = ceil(temperature.getMinRead());
+  int16_t minHumid        = floor(humidity.getMinRead());
+  int16_t maxHumid        = ceil(humidity.getMaxRead());
+  float perPixTemperature = 100/(maxTemp -  minTemp); 
+  float perPixHumidity    = 100/(maxHumid - minHumid);
+
   int16_t X = 1 + GRAPH_LEFT;
+
   for (uint8_t i {1}; i < GRAPH_WIDTH - 1; ++i)
   {
-    screen.drawPixel(X + i, BASE - m_temperature[i], tInk);
-    screen.drawPixel(X + i, BASE - m_humidity[i],    hInk);
+    float temperature = m_temperature[i] / 128;   // convert from integer back to floats
+    float humidity    = m_humidity[i]    / 128;
+
+    uint8_t Y = BASE - minTemp - temperature * perPixTemperature;
+    screen.drawPixel(X + i, Y, tInk);
+
+    Y = BASE -50;;
+    screen.drawPixel(X + i, Y, hInk);
   }
 }
 
@@ -286,29 +295,29 @@ void Graph::drawDiamond(const ucoordinate_t x, const reading_t reading, const ui
 
 void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 {
-  for (uint8_t i {1}; i < 7; ++i)    // vertical divisions
+  for (uint8_t i {0}; i < 7; ++i)    // vertical divisions
   {
-    screen.drawFastVLine(GRAPH_LEFT + m_xStep * i, GRAPH_Y +20, GRAPH_HEIGHT -20, reticleColour);
+    screen.drawFastVLine(GRAPH_LEFT + m_xStep * i, GRAPH_Y, GRAPH_HEIGHT, reticleColour);
   }
 
-  for (uint8_t i {1}; i < 6; ++i)   // horizontal divisions
+  for (uint8_t i {0}; i < 6; ++i)   // horizontal divisions
   {
-    screen.drawFastHLine(GRAPH_LEFT,               BASE - GRAPH_HEIGHT + i * m_yStep,    GRAPH_WIDTH, reticleColour);
+    screen.drawFastHLine(GRAPH_LEFT, GRAPH_Y + i * m_yStep, GRAPH_WIDTH, reticleColour);
   }
 
-  for (uint8_t i {1}; i < 5; ++i)   // humidity ticks
+  for (uint8_t i {0}; i < 6; ++i)   // humidity ticks
   {
-    screen.drawFastHLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + i * m_yStep, 5, defaultInk);
+    screen.drawFastHLine(GRAPH_LEFT + GRAPH_WIDTH, GRAPH_Y + i * m_yStep, 5, defaultInk);
   }
 
-  for (int8_t i {1}; i < 5; ++i)   // temp ticks
+  for (int8_t i {0}; i < 6; ++i)   // temp ticks
   {
-    screen.drawFastHLine(GRAPH_LEFT - 5, BASE - GRAPH_HEIGHT + (i * m_yStep), 5, defaultInk);
+    screen.drawFastHLine(GRAPH_LEFT - 5,           GRAPH_Y + (i * m_yStep), 5, defaultInk);
   }
 
-  screen.drawFastHLine(GRAPH_LEFT,               BASE,                GRAPH_WIDTH,            defaultInk);
-  screen.drawFastVLine(GRAPH_LEFT,               BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT - 15, defaultInk);
-  screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, BASE - GRAPH_HEIGHT + 20, GRAPH_HEIGHT - 15, defaultInk);
+  screen.drawFastHLine(GRAPH_LEFT, GRAPH_Y + GRAPH_HEIGHT,   GRAPH_WIDTH,       defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT,               GRAPH_Y -5, GRAPH_HEIGHT + 10, defaultInk);
+  screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, GRAPH_Y -5, GRAPH_HEIGHT + 10, defaultInk);
 }
 
 void Graph::initGraph(readings_t read)
@@ -351,7 +360,7 @@ void Graph::drawGraphScaleMarks(void)
     reading_t humiRange  = (maxHumid - minHumid > 1) ? maxHumid - minHumid : 1;
  
     // temp scale
-    for (uint8_t i {0}; i < 5; i++) 
+    for (uint8_t i {0}; i < 6; i++) 
     {
         reading_t step   = tempRange / 4;
         reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + minTemp : (toFahrenheit((i * step) + minTemp));
@@ -367,7 +376,7 @@ void Graph::drawGraphScaleMarks(void)
     }
     
     // humidity scale
-    for (uint8_t i {0}; i < 5; i++)
+    for (uint8_t i {0}; i < 6; i++)
     {
         float step     = humiRange / 4;
         int yShift     = fonts.getYstep() / 2 - 2;
