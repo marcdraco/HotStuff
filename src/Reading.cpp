@@ -63,6 +63,7 @@ readings_t Reading::takeReadings(void)
 
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
+
   environment.checkHumidityConditions();
   environment.checkTemperatureConditions();
   environment.checkHeatIndex(R);  

@@ -33,7 +33,7 @@
 
 #include <Adafruit_GFX.h>     // Core graphics library by AdaFruit
 #include <MCUFRIEND_kbv.h>    // David Prentice's Hardware-specific library - your shield might vary
-#include "UniversalDHT.h"   // @winlinvip's DHT11/22 library functions modified by Tim Harper
+#include "UniversalDHT.h"     // @winlinvip's DHT11/22 library functions modified by Tim Harper
 
 #include "Fonts.h"
 #include "Flags.h"
@@ -42,6 +42,7 @@
 #include "Sevensegments.h"
 #include "types.h"
 
+#ifdef CLOCKWISE
 class Trig
 {
   private:
@@ -124,4 +125,6 @@ class Trig
   }
 };
 
-#endif
+#endif // #CLOCKWISE
+
+#endif // Guard

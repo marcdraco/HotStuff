@@ -25,9 +25,6 @@
 #ifndef __DRACO_HOTSTUFF_H
 #define __DRACO_HOTSTUFF_H
 
-// remove this line to have the unit read in fahrenheit
-#define USE_METRIC                   
-
 #include <Arduino.h>
 #include "UniversalDHT.h"
 #include "types.h"

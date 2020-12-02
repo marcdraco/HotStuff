@@ -125,13 +125,47 @@ Sevensegments segments(defaultInk, DEEPBLUE);
 
 // start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
 
-// RED (under-range) values need doing again
+// RED (under-range) values need doing again - (COMPLEMENTARY COLOUR! RED MIGHT BE USED FOR NIGHT)
 // Max humidity should be pegged at 99.
+// Max temp needs to be pegged at 37C (for this version ONLY)
+// Chart needs to center on each humidity and temp - not the "bottom" values as now.
+
+// Do a colour "dimming routine - perhaps map out the high "bits" of each colour trip?
+// Alternatively, mask them, shift and reduced before re-inserting
+
+/// CMA counter doesn't work with the bloody 8-10 minute update, stupid!
+// Initial reads look all to bollocks - probably no point keeing them, at all!
 globalVariables globals;
+
+
+/**
+ * @brief Dim a colour by a percentage 
+ * 
+ * @param C The colour value as 5-6-5 encoded.
+ * @param brightness 100% (max) to 0% (min) Steps are about 7% (so 15 levels)
+ * @return colours_t the new colour value
+ * @remarks Due to low number of bits per colour, this is ONLY approximate!
+ */
+colours_t dimmer(colours_t C, uint8_t brightness)
+{
+  // decompose from 5 - 6 - 5 RGB to separate RGB channels
+  // R and B channels are 0 -- 31 and G is 0 -- 63 
+  // The first three lines normalise them to 8 bit values
+
+  uint16_t r = ((C & 0xF800) >> 8);
+  uint16_t g = ((C & 0x07E0) >> 3);
+  uint16_t b = ((C & 0x001F) << 3);
+
+  float rLevel = r/31.0 * brightness; 
+  float gLevel = g/63.0 * brightness; 
+  float bLevel = b/31.0 * brightness; 
+
+  return RGB(static_cast<int8_t>(rLevel), static_cast<int8_t>(gLevel), static_cast<int8_t>(bLevel));
+}
 
 void setup()
 {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -166,20 +200,19 @@ void setup()
   pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
 
   readings_t read;
+  
   delay(3000);
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
-  graph.initGraph(read);
+  graph.initGraph();
   graph.drawGraph();
 }
 
 void loop()
 {
-  // colour of MIN temp needs to go RED if negative (default otherwise)
-  // don't forget to do this!
-  if (CHECKBIT(UPDATEREADS))
   
+  if (CHECKBIT(UPDATEREADS))
   {    
     CLEARBIT(UPDATEREADS);
     Reading::takeReadings();
@@ -187,7 +220,7 @@ void loop()
     messages.showMinMax();
   }
 
-  if (CHECKBIT(UPDATEGRAPH))
+  if (CHECKBIT(UPDATEGRAPH))// && ((isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY) == 0))
   {
     CLEARBIT(UPDATEGRAPH);
     readings_t R;
@@ -197,10 +230,17 @@ void loop()
     graph.drawGraph();
   }
 
-  (CHECKBIT(FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);
+  (CHECKBIT(FLASH)) ? display.setFlashInk(dimmer(defaultInk, 100)) : display.setFlashInk(defaultPaper);
 
   if (CHECKBIT(CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
   {
+    if (CHECKBIT(CLEARDRY))
+    {
+      CLEARBIT(CLEARDRY);
+      display.setFlashInk(defaultPaper);
+      display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
+    }
+
     if (CHECKBIT(CLEARDAMP))
     {
       CLEARBIT(CLEARDAMP);
@@ -208,18 +248,12 @@ void loop()
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDamp);
     }
 
+  #ifdef INCUBATOR
     if (CHECKBIT(CLEARFROST))
     {
       CLEARBIT(CLEARFROST);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolIce);
-    }
-
-    if (CHECKBIT(CLEARDRY))
-    {
-      CLEARBIT(CLEARDRY);
-      display.setFlashInk(defaultPaper);
-      display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
     }
 
     if (CHECKBIT(CLEARHOT))
@@ -228,6 +262,7 @@ void loop()
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolHot);
     }
+  #endif
   } 
 
   if (CHECKBIT(FROST | DAMP | DRY | OVERTEMP))     
@@ -237,20 +272,22 @@ void loop()
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDamp);
     }
 
-    if (CHECKBIT(FROST))
-    {
-      display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolIce);
-    }
-
     if (CHECKBIT(DRY))
     {
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
+    }
+
+  #ifdef INCUBATOR
+    if (CHECKBIT(FROST))
+    {
+      display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolIce);
     }
 
     if (flags.isSet(OVERTEMP))
     {
       display.displaySmallBitmap(SYMX1, SYMY, 40, 54, (uint8_t *) symbolHot);
     }
+  #endif
   }
 }
 
@@ -315,7 +352,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   {
     isrTimings.timeToRead = 0;
     SETBIT(UPDATEREADS);
-    SETBIT(UPDATEGRAPH);    // DEBUG ONLY!
+    SETBIT(UPDATEGRAPH);
   }
 
   if (isrTimings.timeInSeconds == 60)
@@ -323,9 +360,9 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
     isrTimings.timeInSeconds = 0;
     ++isrTimings.timeInMinutes;
 
-    if (isrTimings.timeInMinutes == 8 && isrTimings.timeInSeconds == 0)
+    if (isrTimings.timeInMinutes == 1 && isrTimings.timeInSeconds == 0)
     {     
-      SETBIT(UPDATEGRAPH);
+      SETBIT(UPDATEGRAPH);  // this is only a "hint", typically it will be about 8-10 minutes, settable
     }
      
     if (isrTimings.timeInMinutes == 60)

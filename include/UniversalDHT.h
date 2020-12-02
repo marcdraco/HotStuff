@@ -43,7 +43,7 @@ public:
        errDataLow      = 3, //
        errDataHigh     = 4, //
        errDataEOF      = 5, //
-       errDataChecksum = 6 // Checksum for read data didn't match
+       errDataChecksum = 6  // Checksum for read data didn't match
       };
 
     Error error;
@@ -64,6 +64,7 @@ public:
 private:
   int pin;
   Response sample(RawReading *reading);
+
 public:
   explicit UniversalDHT(uint8_t);
 
@@ -71,6 +72,4 @@ public:
 };
 
 extern UniversalDHT dht22;
-
-
 #endif

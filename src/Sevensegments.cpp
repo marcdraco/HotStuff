@@ -261,3 +261,4 @@ inline void Sevensegments::drawLRSegment(coordinate_t X, coordinate_t Y, coordin
     fastShortLine(X, Y + i, X1, Y1 + i, (onFlag) ? m_lit : m_unlit);
   }
 }
+

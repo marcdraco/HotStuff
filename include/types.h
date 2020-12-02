@@ -52,6 +52,12 @@ struct globalVariables
   uint16_t g_semaphores = 0;
 };
 
+using minMaxReads_t = struct  
+{
+  reading_t min;
+  reading_t max;
+};
+
 using coordinates_t  = struct coordinates
 {
   coordinate_t X; 

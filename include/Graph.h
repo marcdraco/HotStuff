@@ -58,7 +58,8 @@ class Graph
     uint8_t m_circular       {0};
     int16_t m_temperature[GRAPH_WIDTH];
     int16_t m_humidity[GRAPH_WIDTH];
-  
+
+
   public:
 
   Graph() {};
@@ -94,7 +95,6 @@ class Graph
    * 
    */  
   void drawMainAxes();
-
   void drawGraphScaleMarks();
 
   /**
@@ -104,10 +104,10 @@ class Graph
   void drawReticles(const uint8_t xDivs, const uint8_t yDivs);
 
   /**
-   * @brief Blanks the chart area if it's not already active 
+   * @brief 
    * 
    */
-  void initGraph(readings_t read);
+  void initGraph();
 
   /**
    * @brief draws circular plots for the analogue version

@@ -25,14 +25,15 @@
 
 #include <Arduino.h>
 #include "types.h"
-#include "hotstuff.h"
-#include "Display.h"
-#include "Messages.h"
-#include <MCUFRIEND_kbv.h>
 #include "Flags.h"  
 #include "Fonts.h"
 #include "fonts/ubuntu-6-full.h"
 #include "Graph.h"
+#include "hotstuff.h"
+#include "Display.h"
+#include "Messages.h"
+#include <MCUFRIEND_kbv.h>
+#include "Sevensegments.h"
 
 extern MCUFRIEND_kbv screen;
 extern Display display;
@@ -191,33 +192,48 @@ void Graph::drawRadials()
 
 void Graph::drawGraph()
 {
+  if (isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY)
+  {
+    //return;
+  }
+
   const colours_t tInk = temperature.getTrace();
   const colours_t hInk = humidity.getTrace();
 
-  screen.fillRect(0, GRAPH_Y, TFT_WIDTH, 120, defaultPaper);
+  screen.fillRect(0, GRAPH_Y-10, TFT_WIDTH, 120, defaultPaper);
   drawReticles(6, 6);
   drawGraphScaleMarks();
 
-  int16_t minTemp         = floor(temperature.getMinRead());
-  int16_t maxTemp         = ceil(temperature.getMinRead());
-  int16_t minHumid        = floor(humidity.getMinRead());
-  int16_t maxHumid        = ceil(humidity.getMaxRead());
-  float perPixTemperature = 100/(maxTemp -  minTemp); 
-  float perPixHumidity    = 100/(maxHumid - minHumid);
+  minMaxReads_t temp  {temperature.getMinRead(), temperature.getMaxRead()};
+  minMaxReads_t humid {humidity.getMinRead(),    humidity.getMaxRead()};
 
+  reading_t perPixTemperature = static_cast<float>(GRAPH_HEIGHT) / ((temp.max - temp.min > 1)   ? (temp.max - temp.min)   :  1); 
+  reading_t perPixHumidity    = static_cast<float>(GRAPH_HEIGHT) / ((humid.max - humid.min > 1) ? (humid.max - humid.min) :  1);
+ 
   int16_t X = 1 + GRAPH_LEFT;
 
-  for (uint8_t i {1}; i < GRAPH_WIDTH - 1; ++i)
+  for (uint8_t i {1}; i < temperature.getCMACount() - 1; ++i)
   {
-    float temperature = m_temperature[i] / 128;   // convert from integer back to floats
-    float humidity    = m_humidity[i]    / 128;
+    float temperature = (static_cast<float>(m_temperature[i]) - temp.min *  READ_SCALAR) / READ_SCALAR * perPixTemperature;   // convert from integer back to floats
+    float humidity    = (static_cast<float>(m_humidity[i])    - humid.min * READ_SCALAR) / READ_SCALAR * perPixHumidity;
 
-    uint8_t Y = BASE - minTemp - temperature * perPixTemperature;
+    uint8_t Y = BASE - temperature;
     screen.drawPixel(X + i, Y, tInk);
 
-    Y = BASE -50;;
+    if (Y <130)
+    {
+      Serial.println(m_temperature[i]);
+    }
+
+            Y = BASE - humidity;
     screen.drawPixel(X + i, Y, hInk);
+
+    if (Y < 130)
+    {
+      Serial.println(m_humidity[i]);
+    }
   }
+
 }
 
 void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer)
@@ -320,12 +336,12 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
   screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, GRAPH_Y -5, GRAPH_HEIGHT + 10, defaultInk);
 }
 
-void Graph::initGraph(readings_t read)
+void Graph::initGraph()
 { 
   for (uint8_t i {0}; i < GRAPH_WIDTH; ++i)
   {
-    m_temperature[i] = static_cast<int16_t>(read.T * READ_SCALAR);
-    m_humidity[i]    = static_cast<int16_t>(read.H * READ_SCALAR);
+    m_temperature[i] = 0;
+    m_humidity[i]    = 0;
   }
 };
 
@@ -352,23 +368,22 @@ void Graph::drawGraphScaleMarks(void)
     messages.execute(Messages::humidityScale);
     fonts.setRotation(0);
  
-    int8_t minTemp       = floor(temperature.getMinRead());
-    int8_t maxTemp       = ceil(temperature.getMaxRead());
-    int8_t minHumid      = floor(humidity.getMinRead());
-    int8_t maxHumid      = ceil(humidity.getMaxRead());
-    reading_t tempRange  = (maxTemp  - minTemp  > 1) ? maxTemp - minTemp   : 1;
-    reading_t humiRange  = (maxHumid - minHumid > 1) ? maxHumid - minHumid : 1;
- 
+    reading_t max = temperature.getMaxRead();
+    reading_t min = temperature.getMinRead();
+    reading_t range  = (max - min  > 1) ? max - min  : 1; 
+
+screen.drawFastHLine(0,130,320,RED);
+
     // temp scale
     for (uint8_t i {0}; i < 6; i++) 
     {
-        reading_t step   = tempRange / 4;
-        reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + minTemp : (toFahrenheit((i * step) + minTemp));
+        reading_t step   = range / 5;
+        reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + min : (toFahrenheit((i * step) + min));
         int yShift       = fonts.getYstep() / 2 - 2;
         int X            = getGraphX() - (fonts.getXstep() * 3);
 
         char b[10];
-        formatQuickFloat(value, 1, b);
+        temperature.bufferReading(value, b, METRIC);
         screen.setCursor(X, BASE - (i * 20) + yShift);
         char buff[10];
         sprintf(buff, "%s", b);
@@ -376,16 +391,20 @@ void Graph::drawGraphScaleMarks(void)
     }
     
     // humidity scale
+    max    = humidity.getMaxRead();
+    min    = humidity.getMinRead();
+    range  = (max  - min  > 1) ? max - min  : 1;
+
     for (uint8_t i {0}; i < 6; i++)
     {
-        float step     = humiRange / 4;
+        float step     = range / 5;
         int yShift     = fonts.getYstep() / 2 - 2;
         int X          = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
 
         screen.setCursor(X, BASE - (i * 20) + yShift);
-        reading_t value = ((i * step) + minHumid);
+        reading_t value = ((i * step) + min);
         char b[10];
-        formatQuickFloat(value, 1, b);
+        humidity.bufferReading(value, b, METRIC);
         screen.setCursor(X, BASE - (i * 20) + yShift);
         char buff[10];
         sprintf(buff, "%s", b);

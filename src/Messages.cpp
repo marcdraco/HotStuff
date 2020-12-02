@@ -115,13 +115,13 @@ void Messages::showMinMax(void)
     dp  = static_cast<int>(environment.magnusDewpoint());
   }
   
-  sprintf(b,"%d", min);
+  sprintf(b,"%2d", min);
   segments.segmentedString(100, 38, b, 6, 0, 1, 12);
 
-  sprintf(b,"%d", max);
+  sprintf(b,"%2d", max);
   segments.segmentedString(100, 58, b, 6, 0, 1, 12);
 
-  sprintf(b,"%d", dp);
+  sprintf(b,"%2d", dp);
   segments.segmentedString(160, 78, b, 6, 0, 1, 12);
 
   screen.setCursor(130, 53);
@@ -134,10 +134,10 @@ void Messages::showMinMax(void)
   min = static_cast<int>(humidity.getMinRead());
   max = static_cast<int>(humidity.getMaxRead());
 
-  sprintf(b,"%d", min);
+  sprintf(b,"%2d", min);
   segments.segmentedString(160, 38, b, 6, 0, 1, 12);
 
-  sprintf(b,"%d", max);
+  sprintf(b,"%2d", max);
   segments.segmentedString(160, 58, b, 6, 0, 1, 12);
 }
 

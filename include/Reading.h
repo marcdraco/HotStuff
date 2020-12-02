@@ -71,7 +71,7 @@ class Reading
 
   reading_t getMaxRead()
   {
-    return round(m_maxRead);
+    return ceil(m_maxRead);
   }
 
   reading_t getReading()
@@ -93,17 +93,12 @@ class Reading
    * 
    */
   
-
   /**
-   * @brief Calls bufferReading with the current X,Y positions
+   * @brief Converts a number into a string
    * 
-   * @param newReading The current reading
-   * @param oldReading The last reading
-   * @param metric If this reading needs conversion to imperial (option)
-   * @param metric set true when working on Celcius
-   * @param showFloats shows the floating point part (metric temp only)
-   * @param showTemp set to true when working on a metric temp
-   * 
+   * @param reading floating point reading
+   * @param buffer pre-configured buffer to hold the result
+   * @param flags indicates metric or imperial conversion
    */
     void bufferReading(const reading_t reading, char* buffer, const semaphore_t flags);
 
@@ -112,6 +107,25 @@ class Reading
       return m_cumulativeMovingAverage;
     }
 
+/**
+ * @brief returns the CMA counter UP TO the maximum graph width (plottable points) 
+ * 
+ * @return uint8_t the count from 0 -> graph's plottable width
+ * 
+ * @remarks The CMA counter can get big, really big, you just wouldn't believe how
+ * vastly mind-boggling big it can get. Listen... (apologies to Douglas Adams for 
+ * butchering his script, again). The CMA counter is a double (four byte) floating
+ * point number so it can hand numbers into the billions but this function is
+ * used to help plot the chart which is of limited width. Converting back to a byte
+ * width return helps ease the burden on the program space. Ideally this number would
+ * be in a "global" (single)value.. but hey ho, that's an optimization you might want
+ * to do..
+ */
+
+    uint8_t getCMACount()
+    {
+      return (m_cmaCounter > static_cast<reading_t>(GRAPH_WIDTH)) ? GRAPH_WIDTH : static_cast<uint8_t>(m_cmaCounter);
+    }
 };
 
 extern Reading temperature;
