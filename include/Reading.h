@@ -124,13 +124,13 @@ class Reading
   int8_t getFencedMin()
   {
     return static_cast<int>(getFencedReading(
-                            floor((m_metric) ? m_currRead : toFahrenheit(m_minRead))));
+                            floor((m_metric) ? m_minRead : toFahrenheit(m_minRead))));
   }
 
   int8_t getFencedMax()
   {
     return static_cast<int>(getFencedReading(
-                            ceil((m_metric) ? m_currRead : toFahrenheit(m_minRead))));
+                            ceil((m_metric) ? m_maxRead : toFahrenheit(m_maxRead))));
   }
 
   reading_t getRawReading()
