@@ -257,7 +257,7 @@ void loop()
 void showLCDReadsHorizontal()
 {
   char b[5];
-  int16_t r = (temperature.getFencedReading());
+  reading_t r = (temperature.getFencedReading());
 
   colours_t T;
 
@@ -273,9 +273,10 @@ void showLCDReadsHorizontal()
   else
   {
     T = defaultInk;
+    r = temperature.getReading();
   }
 
-  sprintf(b, "%3d", r * 10);
+  sprintf(b, "%3d", static_cast<int>(r * 10));
 
   constexpr uint8_t L1 = 30;
   constexpr uint8_t T1 = 10;
@@ -297,7 +298,7 @@ void showLCDReadsHorizontal()
 
   // Now the humidty, which only has an upper range stop of 99%
   r = round(humidity.getFencedReading());
-  sprintf(b, "%2d", r);
+  sprintf(b, "%2d", static_cast<int>(r));
   if (r == 99)
   {
     T = segments.setLit(RED, RED);

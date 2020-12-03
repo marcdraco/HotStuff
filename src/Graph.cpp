@@ -226,9 +226,11 @@ void Graph::drawGraph()
     uint8_t Y = BASE - humidity;
     //screen.drawFastVLine(X + i, Y, BASE-Y, hInk);   // experimental filled 
     screen.drawPixel(X + i, Y, hInk);
+    screen.drawFastVLine(X + i, Y, 2, hInk);   // experimental filled 
 
     Y = BASE - temperature;
     screen.drawPixel(X + i, Y, tInk);
+    screen.drawFastVLine(X + i, Y, 2, tInk);   // experimental filled 
   }
 
 }
