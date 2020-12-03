@@ -39,6 +39,7 @@
 extern MCUFRIEND_kbv screen;
 extern Display display;
 extern Fonts fonts;
+extern globalVariables globals;
 
 void Messages::execute(const uint8_t M)
 {
@@ -97,22 +98,17 @@ void Messages::showUptime(void)
 void Messages::showMinMax(void)
 {  
   char b[10]; 
-  int8_t min;
-  int8_t max;
+  int8_t min = temperature.getFencedMin();
+  int8_t max = temperature.getFencedMax();
   int8_t dp;
 
-  if (flags.isClear(USEMETRIC))
+  if ((CHECKBIT(globals.gp, USEMETRIC)))
   {
-    min = static_cast<int>(toFahrenheit(temperature.getMinRead()));
-    max = static_cast<int>(toFahrenheit(temperature.getMaxRead()));
-    dp  = static_cast<int>(toFahrenheit(environment.magnusDewpoint()));
-
+    dp  = static_cast<int>(environment.magnusDewpoint());
   }
   else
   {
-    min = static_cast<int>(temperature.getMinRead());
-    max = static_cast<int>(temperature.getMaxRead());
-    dp  = static_cast<int>(environment.magnusDewpoint());
+    dp  = static_cast<int>(toFahrenheit(environment.magnusDewpoint()));
   }
   
   sprintf(b,"%2d", min);
@@ -129,10 +125,17 @@ void Messages::showMinMax(void)
   screen.setCursor(130, 73);
   fonts.print(const_cast<char *>("Max"));
   screen.setCursor(100, 93);
-  fonts.print(const_cast<char *>("Dew Point"));
+  if (dp > 0)
+  {
+    fonts.print(const_cast<char *>("Dew Point"));
+  }
+  else
+  {
+    fonts.print(const_cast<char *>("Frost Pnt"));
+  }
 
-  min = static_cast<int>(humidity.getMinRead());
-  max = static_cast<int>(humidity.getMaxRead());
+  min = humidity.getFencedMin();
+  max = humidity.getFencedMax();
 
   sprintf(b,"%2d", min);
   segments.segmentedString(160, 38, b, 6, 0, 1, 12);

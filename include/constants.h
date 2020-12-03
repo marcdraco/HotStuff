@@ -40,7 +40,7 @@
  * @brief 
  * remove this line to have the unit read in fahrenheit on startup 
  */
-#define USE_METRIC                   
+//#define USE_METRIC                   
 
 
 /**
@@ -122,10 +122,10 @@ constexpr int SYMY     {80};      // flashing symbol Y positions
 #define FIXED16_TO_FLOAT(a) (static_cast<float>(a) / READ_SCALAR) // cast to ensure the compiler does floating point division!
 #endif
 
-#define SETBIT(bit)   (globals.g_semaphores |= ( bit))    //Set bit in byte addr
-#define CLEARBIT(bit) (globals.g_semaphores &= (~bit))   // Clear bit in byte addr
-#define CHECKBIT(bit) (globals.g_semaphores &  ( bit))     // Check bit in byte addr
-#define FLIPBIT(bit)  (globals.g_semaphores ^= ( bit))    // Flip a bit
+#define SETBIT(flags, bit)   (flags |= ( bit))    //Set bit in byte addr
+#define CLEARBIT(flags, bit) (flags  &= (~bit))   // Clear bit in byte addr
+#define CHECKBIT(flags, bit) (flags  &  ( bit))   // Check bit in byte addr
+#define FLIPBIT(flags, bit)  (flags ^= ( bit))    // Flip a bit
 
 
 #define STOP while (true) {}
@@ -228,12 +228,13 @@ constexpr uint16_t B1000000000000000 {0x8000};
 // non-active semaphores used for function arguments}
 enum  
 {
-  IMPERIAL = B00000001,
-  METRIC   = B00000010,
-  HUMIDITY = B00001000,
-  HOURLY   = B00010000,
-  DAILY    = B00100000,
-  RESET    = B01000000,
+  IMPERIAL    = B00000001,
+  METRIC      = B00000010,
+  HUMIDITY    = B00001000,
+  HOURLY      = B00010000,
+  DAILY       = B00100000,
+  TEMPERATURE = B01000000, 
+  RESET       = B10000000
 };
 
 

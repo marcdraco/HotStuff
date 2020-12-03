@@ -56,46 +56,46 @@ void Environmental::checkHumidityConditions(void)
 {
   if (humidity.getCMA() > DAMP_AIR_WATERSHED)
   {
-    SETBIT(DAMP);
+    SETBIT(globals.ISR, DAMP);
   }
       
   if (humidity.getCMA() <= DAMP_AIR_WATERSHED)
   {
-    if (CHECKBIT(DAMP))
+    if (CHECKBIT(globals.ISR, DAMP))
     {
-      SETBIT(CLEARDAMP);
-      CLEARBIT(DAMP);
+      SETBIT(globals.ISR, CLEARDAMP);
+      CLEARBIT(globals.ISR, DAMP);
     }
   }
 
   if (humidity.getCMA() < DRY_AIR_WATERSHED)
   {
-      SETBIT(DRY);
+      SETBIT(globals.ISR, DRY);
   }
 
   if (humidity.getCMA() >= DRY_AIR_WATERSHED)
   {
-    if (flags.isSet(DRY))
+    if (CHECKBIT(globals.gp, DRY))
     {
-      SETBIT(CLEARDRY);
-      CLEARBIT(DRY);
+      SETBIT(globals.ISR, CLEARDRY);
+      CLEARBIT(globals.ISR, DRY);
     }
   }
 }
 
 void Environmental::checkTemperatureConditions(void)
 {
-  if (temperature.getReading() <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
+  if (temperature.getRawReading() <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
   {
-    SETBIT(FROST);          // start das-blinky-flashun light
+    SETBIT(globals.ISR, FROST);          // start das-blinky-flashun light
   }
 
   if (temperature.getCMA() > FROST_WATERSHED)
   {
-    if (SETBIT(FROST))
+    if (SETBIT(globals.ISR, FROST))
     { 
-      CLEARBIT(FROST);     //Stop the frost warn flashing
-      SETBIT(CLEARFROST);  // for clean up
+      CLEARBIT(globals.ISR, FROST);     //Stop the frost warn flashing
+      SETBIT(globals.ISR, CLEARFROST);  // for clean up
     }
   }
 }
@@ -109,15 +109,15 @@ void Environmental::checkHeatIndex(readings_t readings)
                           readings.T < 26 || 
                           readings.H < 40)
   {
-    if (flags.isSet(WARNDANGER))
+    if (CHECKBIT(globals.gp, WARNDANGER))
     {
       screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
-      flags.clear(WARNDANGER);      
+      CLEARBIT(globals.gp, WARNDANGER);    
     }
     return;
   }
 
-  flags.set(WARNDANGER);
+  SETBIT(globals.gp, WARNDANGER);
 
   screen.fillRect(0, 100, TFT_WIDTH, TFT_HEIGHT - 110, defaultPaper);
 
@@ -149,7 +149,7 @@ void Environmental::unsafeTempWarnings(const reading_t T)
     messages.execute(messages.work1);
     messages.execute(messages.work2);
 
-  if (flags.isSet(USEMETRIC))
+  if (CHECKBIT(globals.gp, USEMETRIC))
   {
     screen.print(T);
     fonts.print(F(" C"));
@@ -200,7 +200,7 @@ reading_t Environmental::magnusDewpoint()
   // Magnus dew point constants
   constexpr double a = 17.62;
   constexpr double b = 243.12;
-  readings_t readings {humidity.getReading(), temperature.getReading()};
+  readings_t readings {humidity.getRawReading(), temperature.getRawReading()};
   reading_t c = (a * readings.T) / (b + readings.T);
   reading_t r = log(readings.H / 100);
 

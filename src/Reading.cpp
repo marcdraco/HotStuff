@@ -55,7 +55,6 @@ readings_t Reading::takeReadings(void)
   */
   readings_t R;
   UniversalDHT::Response reading = dht22.read(&R.H, &R.T);
-
   if (reading.error)
   {
     alarm.sensorFailed(reading);

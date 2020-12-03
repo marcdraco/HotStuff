@@ -40,6 +40,7 @@ extern Display display;
 extern Flags flags;
 extern Fonts fonts;
 extern Messages messages;
+extern globalVariables globals;
 
 void formatQuickFloat(float value, uint8_t digits, char* b)
 {
@@ -336,30 +337,20 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
   screen.drawFastVLine(GRAPH_LEFT + GRAPH_WIDTH, GRAPH_Y -5, GRAPH_HEIGHT + 10, defaultInk);
 }
 
-void Graph::initGraph()
-{ 
-  for (uint8_t i {0}; i < GRAPH_WIDTH; ++i)
-  {
-    m_temperature[i] = 0;
-    m_humidity[i]    = 0;
-  }
-};
-
 void Graph::drawGraphScaleMarks(void)
 {
     fonts.setRotation(3);
-    fonts.setFont(&HOTSMALL);
     screen.setTextColor(defaultInk);
     screen.setCursor(AXIS_Y_POSITION, fonts.getYstep());
 
-    if (flags.isSet(USEMETRIC))
+    messages.execute(Messages::temperatureScale);
+
+    if (CHECKBIT(globals.gp, USEMETRIC))
     {
-        messages.execute(Messages::temperatureScale);
         messages.execute(Messages::c);
     }
     else
     {
-        messages.execute(Messages::temperatureScale);
         messages.execute(Messages::f);
     }
 
@@ -367,47 +358,48 @@ void Graph::drawGraphScaleMarks(void)
 
     messages.execute(Messages::humidityScale);
     fonts.setRotation(0);
- 
-    reading_t max = temperature.getMaxRead();
-    reading_t min = temperature.getMinRead();
-    reading_t range  = (max - min  > 1) ? max - min  : 1; 
 
-screen.drawFastHLine(0,130,320,RED);
+    /**
+     * Much of this is optimised out, but is left for clearer code.
+     */
 
-    // temp scale
+    minmax_t T;
+    minmax_t H;
+    readings_t range;
+    readings_t step;
+
+    T.max      = temperature.getMaxRead();
+    T.min      = temperature.getMinRead();
+
+    H.max      = humidity.getMaxRead();
+    H.min      = humidity.getMinRead();
+
+    range.T    = (T.max - T.min  > 1) ? T.max - T.min  : 1; 
+    range.H    = (H.max - H.min  > 1) ? H.max - H.min  : 1; 
+
+    step.T     = range.T / 5;
+    step.H     = range.H / 5;
+
+
     for (uint8_t i {0}; i < 6; i++) 
     {
-        reading_t step   = range / 5;
-        reading_t value  = (flags.isSet(USEMETRIC)) ? i * step + min : (toFahrenheit((i * step) + min));
-        int yShift       = fonts.getYstep() / 2 - 2;
-        int X            = getGraphX() - (fonts.getXstep() * 3);
+      int yShift = (fonts.getYstep() / 2) - 2;
+      char b[10];
+      char buff[10];
 
-        char b[10];
-        temperature.bufferReading(value, b, METRIC);
-        screen.setCursor(X, BASE - (i * 20) + yShift);
-        char buff[10];
-        sprintf(buff, "%s", b);
-        fonts.print(buff);
-    }
-    
-    // humidity scale
-    max    = humidity.getMaxRead();
-    min    = humidity.getMinRead();
-    range  = (max  - min  > 1) ? max - min  : 1;
-
-    for (uint8_t i {0}; i < 6; i++)
-    {
-        float step     = range / 5;
-        int yShift     = fonts.getYstep() / 2 - 2;
-        int X          = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
-
-        screen.setCursor(X, BASE - (i * 20) + yShift);
-        reading_t value = ((i * step) + min);
-        char b[10];
-        humidity.bufferReading(value, b, METRIC);
-        screen.setCursor(X, BASE - (i * 20) + yShift);
-        char buff[10];
-        sprintf(buff, "%s", b);
-        fonts.print(buff);
+      reading_t value  = (CHECKBIT(globals.gp, USEMETRIC)) ? (i * step.T) + T.min : (toFahrenheit((i * step.T) + T.min));
+      
+      int X = getGraphX() - (fonts.getXstep() * 3);
+      screen.setCursor(X, BASE - (i * 20) + yShift);
+      temperature.bufferReading(value, b, METRIC);
+      sprintf(buff, "%s", b);
+      fonts.print(buff);
+      
+      value = ((i * step.H) + H.min);
+      X = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
+      screen.setCursor(X, BASE - (i * 20) + yShift);
+      humidity.bufferReading(value, b, METRIC);
+      sprintf(buff, "%s", b);
+      fonts.print(buff);
     }
 }

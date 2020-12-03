@@ -59,10 +59,16 @@ class Graph
     int16_t m_temperature[GRAPH_WIDTH];
     int16_t m_humidity[GRAPH_WIDTH];
 
-
   public:
 
-  Graph() {};
+  Graph() 
+  {
+    for (uint8_t i {0}; i < GRAPH_WIDTH; ++i)
+    {
+      m_temperature[i] = 0;
+      m_humidity[i]    = 0;
+    }
+  };
 
   void drawPointers();
 
@@ -102,13 +108,7 @@ class Graph
    * 
    */  
   void drawReticles(const uint8_t xDivs, const uint8_t yDivs);
-
-  /**
-   * @brief 
-   * 
-   */
-  void initGraph();
-
+  
   /**
    * @brief draws circular plots for the analogue version
    * 

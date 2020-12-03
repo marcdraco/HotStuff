@@ -49,7 +49,8 @@ using byte_t        = uint8_t;
 */  
 struct globalVariables
 {
-  uint16_t g_semaphores = 0;
+  uint16_t ISR = 0;  // interrupts
+  uint16_t gp = 0;   // general purpose
 };
 
 using minMaxReads_t = struct  
@@ -87,7 +88,7 @@ using ucoordinates_t  = struct ucoordinates
 using short_coordinateX_t = uint8_t;
 using short_coordinateY_t = uint8_t;
 
-using dimensions_t = struct dimensoions
+using dimensions_t = struct dimensions
 {
   uint16_t W;
   uint16_t H;

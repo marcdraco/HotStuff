@@ -99,7 +99,6 @@
 #include "Display.h"
 #include "Environmental.h"
 #include "Fonts.h"
-#include "Flags.h"
 #include "Graph.h"
 #include "hotstuff_fonts.h"
 #include "hotstuff.h"
@@ -112,7 +111,6 @@
 MCUFRIEND_kbv screen;
 Display display;
 UniversalDHT dht22(DHT22_DATA);
-Flags flags;
 Graph graph;
 Reading humidity;
 Reading temperature;
@@ -128,15 +126,11 @@ Sevensegments segments(defaultInk, DEEPBLUE);
 // RED (under-range) values need doing again - (COMPLEMENTARY COLOUR! RED MIGHT BE USED FOR NIGHT)
 // Max humidity should be pegged at 99.
 // Max temp needs to be pegged at 37C (for this version ONLY)
-// Chart needs to center on each humidity and temp - not the "bottom" values as now.
 
-// Do a colour "dimming routine - perhaps map out the high "bits" of each colour trip?
-// Alternatively, mask them, shift and reduced before re-inserting
+/// chart update counter should count CHART updates, not CMA updates!
 
 /// CMA counter doesn't work with the bloody 8-10 minute update, stupid!
-// Initial reads look all to bollocks - probably no point keeing them, at all!
 globalVariables globals;
-
 
 /**
  * @brief Dim a colour by a percentage 
@@ -180,7 +174,10 @@ void setup()
   fonts.setFont(static_cast<const gfxfont_t *>(&HOTSMALL));
 
 #ifdef USE_METRIC
-  flags.set(USEMETRIC);
+  SETBIT(globals.gp, USEMETRIC);
+  temperature.goMetric();
+#else
+  temperature.goImperial();
 #endif
 
   noInterrupts();                       // disable all interrupts
@@ -205,24 +202,23 @@ void setup()
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
-  graph.initGraph();
   graph.drawGraph();
 }
 
 void loop()
 {
   
-  if (CHECKBIT(UPDATEREADS))
+  if (CHECKBIT(globals.ISR,  UPDATEREADS))
   {    
-    CLEARBIT(UPDATEREADS);
+    CLEARBIT(globals.ISR,  UPDATEREADS);
     Reading::takeReadings();
     showLCDReadsHorizontal();
     messages.showMinMax();
   }
 
-  if (CHECKBIT(UPDATEGRAPH))// && ((isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY) == 0))
+  if (CHECKBIT(globals.ISR,  UPDATEGRAPH))// && ((isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY) == 0))
   {
-    CLEARBIT(UPDATEGRAPH);
+    CLEARBIT(globals.ISR,  UPDATEGRAPH);
     readings_t R;
     R.H = humidity.getCMA();
     R.T = temperature.getCMA();
@@ -230,55 +226,55 @@ void loop()
     graph.drawGraph();
   }
 
-  (CHECKBIT(FLASH)) ? display.setFlashInk(dimmer(defaultInk, 100)) : display.setFlashInk(defaultPaper);
+  (CHECKBIT(globals.ISR,  FLASH)) ? display.setFlashInk(dimmer(defaultInk, 100)) : display.setFlashInk(defaultPaper);
 
-  if (CHECKBIT(CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
+  if (CHECKBIT(globals.ISR,  CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
   {
-    if (CHECKBIT(CLEARDRY))
+    if (CHECKBIT(globals.ISR,  CLEARDRY))
     {
-      CLEARBIT(CLEARDRY);
+      CLEARBIT(globals.ISR,  CLEARDRY);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
     }
 
-    if (CHECKBIT(CLEARDAMP))
+    if (CHECKBIT(globals.ISR,  CLEARDAMP))
     {
-      CLEARBIT(CLEARDAMP);
+      CLEARBIT(globals.ISR,  CLEARDAMP);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDamp);
     }
 
   #ifdef INCUBATOR
-    if (CHECKBIT(CLEARFROST))
+    if (CHECKBIT(globals.ISR,  CLEARFROST))
     {
-      CLEARBIT(CLEARFROST);
+      CLEARBIT(globals.ISR,  CLEARFROST);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolIce);
     }
 
-    if (CHECKBIT(CLEARHOT))
+    if (CHECKBIT(globals.ISR,  CLEARHOT))
     {
-      CLEARBIT(CLEARHOT);
+      CLEARBIT(globals.ISR,  CLEARHOT);
       display.setFlashInk(defaultPaper);
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolHot);
     }
   #endif
   } 
 
-  if (CHECKBIT(FROST | DAMP | DRY | OVERTEMP))     
+  if (CHECKBIT(globals.ISR,  FROST | DAMP | DRY | OVERTEMP))     
   {
-    if (CHECKBIT(DAMP))
+    if (CHECKBIT(globals.ISR,  DAMP))
     {
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDamp);
     }
 
-    if (CHECKBIT(DRY))
+    if (CHECKBIT(globals.ISR,  DRY))
     {
       display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
     }
 
   #ifdef INCUBATOR
-    if (CHECKBIT(FROST))
+    if (CHECKBIT(globals.ISR,  FROST))
     {
       display.displaySmallBitmap(SYMX1, SYMY, 40, 40, (uint8_t *) symbolIce);
     }
@@ -294,8 +290,8 @@ void loop()
 void showLCDReadsVertical()
 {
   char b[5];
-  int16_t r = temperature.getReading() * 10;
-  sprintf(b, "%d", r);
+  int16_t r = (temperature.getFencedReading());
+  sprintf(b, "%d", r * 10);
 
   segments.drawGlyph(0, 0, b[0], 52, 52, 5, 4);
   segments.drawGlyph(90, 0, b[1], 52, 52, 5, 4);
@@ -303,7 +299,7 @@ void showLCDReadsVertical()
   segments.drawGlyph(190, 100, 'o', 12, 12, 1, 1);
   segments.drawGlyph(220, 100, 'C', 12, 12, 1, 1);
 
-  r = round(humidity.getReading());
+  r = round(humidity.getFencedReading());
   sprintf(b, "%d", r);
   segments.drawGlyph(0, 180, b[0], 52, 52, 5, 4);
   segments.drawGlyph(90, 180, b[1], 52, 52, 5, 4);
@@ -313,9 +309,9 @@ void showLCDReadsVertical()
 void showLCDReadsHorizontal()
 {
   char b[5];
+  int16_t r = (temperature.getFencedReading());
+  sprintf(b, "%3d", r * 10);
 
-  int r = (flags.isSet(USEMETRIC)) ?  temperature.getReading() * 10: (toFahrenheit(temperature.getReading()) * 10);
-  sprintf(b, "%3d", r);
   constexpr uint8_t L1 = 30;
   constexpr uint8_t T1 = 10;
   constexpr uint8_t S1 = 8;
@@ -326,13 +322,13 @@ void showLCDReadsHorizontal()
   segments.drawGlyph(0,   0, b[0], L1, L1, ROWS1, BIAS1);
   segments.drawGlyph(50,  0, b[1], L1, L1, ROWS1, BIAS1);
 
-  if (flags.isSet(USEMETRIC))
+  if (CHECKBIT(globals.gp, USEMETRIC))
   {
     segments.drawGlyph(100, 0, b[2], T1, T1, ROWS2, 1);
   }
-  segments.drawGlyph(130, 0, (flags.isSet(USEMETRIC)) ? 'C' : 'F',  S1, S1, 1, 1);
+  segments.drawGlyph(130, 0, (CHECKBIT(globals.gp, USEMETRIC)) ? 'C' : 'F',  S1, S1, 1, 1);
 
-  r = round(humidity.getReading());
+  r = round(humidity.getFencedReading());
   sprintf(b, "%2d", r);
   segments.drawGlyph(190,   0, b[0], L1, L1, ROWS1, BIAS1);
   segments.drawGlyph(240,   0, b[1], L1, L1, ROWS1, BIAS1);
@@ -343,7 +339,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 {
   TCNT1 = UPDATER;     // preload timer
 
-  FLIPBIT(FLASH); // flip the boolean for flashing items
+  FLIPBIT(globals.ISR,  FLASH); // flip the boolean for flashing items
 
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
   ++isrTimings.timeToRead;
@@ -351,8 +347,8 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   if (isrTimings.timeToRead == 5)
   {
     isrTimings.timeToRead = 0;
-    SETBIT(UPDATEREADS);
-    SETBIT(UPDATEGRAPH);
+    SETBIT(globals.ISR,  UPDATEREADS);
+    SETBIT(globals.ISR,  UPDATEGRAPH);
   }
 
   if (isrTimings.timeInSeconds == 60)
@@ -362,7 +358,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 
     if (isrTimings.timeInMinutes == 1 && isrTimings.timeInSeconds == 0)
     {     
-      SETBIT(UPDATEGRAPH);  // this is only a "hint", typically it will be about 8-10 minutes, settable
+      SETBIT(globals.ISR,  UPDATEGRAPH);  // this is only a "hint", typically it will be about 8-10 minutes, settable
     }
      
     if (isrTimings.timeInMinutes == 60)

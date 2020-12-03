@@ -25,6 +25,21 @@
 #ifndef __HOTSTUFF_READING
 #define __HOTSTUFF_READING
 
+#include "Alarm.h"
+#include "Display.h"
+#include "Environmental.h"
+#include "Fonts.h"
+#include "Flags.h"
+#include "Graph.h"
+#include "hotstuff_fonts.h"
+#include "hotstuff.h"
+#include "Messages.h"
+#include "Sevensegments.h"
+#include "Trig.h"
+#include "types.h"
+
+extern globalVariables globals;
+
 class Reading
 {
     private:
@@ -35,6 +50,8 @@ class Reading
     reading_t  m_cmaCounter {};
     reading_t  m_currRead {};
     colours_t  m_trace {};    // graph line colour
+    uint8_t    m_flashing {};
+    uint8_t    m_metric {1};
    
     public:
     
@@ -45,6 +62,36 @@ class Reading
       m_cmaCounter              = 0.0;
       m_cumulativeMovingAverage = 0.0;
       m_correction              = 0.0;
+    }
+
+
+    reading_t getFencedReading()
+    {
+      return getFencedReading(getReading());
+    }
+
+    /**
+     *  
+     * 
+     * @return reading_t 
+     */
+    reading_t getFencedReading(reading_t R)
+    {
+      if (R > 99.0)
+      {
+        R = 99.0;
+        m_flashing = 1;
+      }
+      else if (R < -9.0)
+      {
+        R = -9.0;
+        m_flashing = 1;
+      }
+      else 
+      {
+        m_flashing = 0;
+      }
+      return R;
     }
 
   colours_t getTrace()
@@ -74,9 +121,31 @@ class Reading
     return ceil(m_maxRead);
   }
 
-  reading_t getReading()
+  int8_t getFencedMin()
+  {
+    return static_cast<int>(getFencedReading(
+                            floor((m_metric) ? m_currRead : toFahrenheit(m_minRead))));
+  }
+
+  int8_t getFencedMax()
+  {
+    return static_cast<int>(getFencedReading(
+                            ceil((m_metric) ? m_currRead : toFahrenheit(m_minRead))));
+  }
+
+  reading_t getRawReading()
   {
     return m_currRead;
+  }
+
+  /**
+   * @brief Get the Reading object adjusted for metric or imperial (temperatures)
+   * 
+   * @return reading_t 
+   */
+  reading_t getReading()
+  {
+    return (m_metric) ? m_currRead : toFahrenheit(m_currRead);
   }
 
   void updateReading(const reading_t reading);
@@ -88,10 +157,6 @@ class Reading
 
   static readings_t takeReadings();
 
-  /**
-   * @brief Post the large humidity and temperature readings
-   * 
-   */
   
   /**
    * @brief Converts a number into a string
@@ -105,6 +170,16 @@ class Reading
     reading_t getCMA()
     {
       return m_cumulativeMovingAverage;
+    }
+
+    void goMetric()
+    {
+      m_metric = true;
+    }
+
+    void goImperial()
+    {
+      m_metric = false;
     }
 
 /**
