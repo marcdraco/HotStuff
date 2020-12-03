@@ -50,7 +50,7 @@ class Reading
     reading_t  m_cmaCounter {};
     reading_t  m_currRead {};
     colours_t  m_trace {};    // graph line colour
-    uint8_t    m_flashing {};
+    colours_t  m_flashing {};
     uint8_t    m_metric {1};
    
     public:
@@ -80,12 +80,12 @@ class Reading
       if (R > 99.0)
       {
         R = 99.0;
-        m_flashing = 1;
+        m_flashing = RED;
       }
       else if (R < -9.0)
       {
         R = -9.0;
-        m_flashing = 1;
+        m_flashing = BLUE;
       }
       else 
       {

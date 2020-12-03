@@ -60,6 +60,7 @@ readings_t Reading::takeReadings(void)
     alarm.sensorFailed(reading);
   }
 
+R.H=2;
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
 

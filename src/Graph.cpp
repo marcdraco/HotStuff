@@ -339,24 +339,19 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 
 void Graph::drawGraphScaleMarks(void)
 {
+    // Pop the screen sideways on for some font printing   
     fonts.setRotation(3);
-    screen.setTextColor(defaultInk);
+
+    // Puts the "Temperature in" message up.
     screen.setCursor(AXIS_Y_POSITION, fonts.getYstep());
-
     messages.execute(Messages::temperatureScale);
+    (CHECKBIT(globals.gp, USEMETRIC)) ? messages.execute(Messages::c) : messages.execute(Messages::f);
 
-    if (CHECKBIT(globals.gp, USEMETRIC))
-    {
-        messages.execute(Messages::c);
-    }
-    else
-    {
-        messages.execute(Messages::f);
-    }
-
+    // Puts the "Relative Humidity %" message up.
     screen.setCursor(AXIS_Y_POSITION, TFT_WIDTH - fonts.getYstep());
-
     messages.execute(Messages::humidityScale);
+
+    // Return rotation to normal for the rest of the printing
     fonts.setRotation(0);
 
     /**
@@ -370,6 +365,12 @@ void Graph::drawGraphScaleMarks(void)
 
     T.max      = temperature.getMaxRead();
     T.min      = temperature.getMinRead();
+
+    if (!CHECKBIT(globals.gp, USEMETRIC))
+    {
+      T.max    = toFahrenheit(T.max);
+      T.min    = toFahrenheit(T.min);
+    }
 
     H.max      = humidity.getMaxRead();
     H.min      = humidity.getMinRead();
@@ -387,8 +388,8 @@ void Graph::drawGraphScaleMarks(void)
       char b[10];
       char buff[10];
 
-      reading_t value  = (CHECKBIT(globals.gp, USEMETRIC)) ? (i * step.T) + T.min : (toFahrenheit((i * step.T) + T.min));
-      
+      reading_t value  = (i * step.T) + T.min;
+
       int X = getGraphX() - (fonts.getXstep() * 3);
       screen.setCursor(X, BASE - (i * 20) + yShift);
       temperature.bufferReading(value, b, METRIC);

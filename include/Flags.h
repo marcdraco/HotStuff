@@ -31,7 +31,6 @@ class Flags
     semaphore_t semaphore;
 
   public:
-  
   Flags()
   {
     semaphore = 0;

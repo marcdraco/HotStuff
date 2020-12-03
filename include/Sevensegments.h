@@ -169,6 +169,12 @@ class Sevensegments
         m_rows = rows;
     }
 
+    colours_t setLit(colours_t colour1, colours_t colour2)
+    {
+        setUnlit(colour2);
+        return setLit(colour1);
+    }
+
     colours_t setLit(colours_t colour)
     {
         colours_t c = m_lit;
@@ -176,9 +182,11 @@ class Sevensegments
         return    c;
     }
 
-    void setUnlit(colours_t colour)
+    colours_t setUnlit(colours_t colour)
     {
-        m_lit = colour;   
+        // NOTE returns the LIT colour! The dim colour is calculated. 
+        m_unlit = Sevensegments::dimmer(colour, 2);
+        return m_lit;
     }
 
     uint8_t translateChar(const uint8_t glyph)
@@ -216,6 +224,7 @@ class Sevensegments
     void drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
     void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
     int segmentedString(coordinate_t X, coordinate_t Y, char * b, uint8_t size, uint8_t rows, uint8_t bias, uint8_t step);
+    static colours_t dimmer(colours_t C, uint8_t brightness);
 };
 extern Sevensegments segments;
 

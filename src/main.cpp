@@ -132,31 +132,6 @@ Sevensegments segments(defaultInk, DEEPBLUE);
 /// CMA counter doesn't work with the bloody 8-10 minute update, stupid!
 globalVariables globals;
 
-/**
- * @brief Dim a colour by a percentage 
- * 
- * @param C The colour value as 5-6-5 encoded.
- * @param brightness 100% (max) to 0% (min) Steps are about 7% (so 15 levels)
- * @return colours_t the new colour value
- * @remarks Due to low number of bits per colour, this is ONLY approximate!
- */
-colours_t dimmer(colours_t C, uint8_t brightness)
-{
-  // decompose from 5 - 6 - 5 RGB to separate RGB channels
-  // R and B channels are 0 -- 31 and G is 0 -- 63 
-  // The first three lines normalise them to 8 bit values
-
-  uint16_t r = ((C & 0xF800) >> 8);
-  uint16_t g = ((C & 0x07E0) >> 3);
-  uint16_t b = ((C & 0x001F) << 3);
-
-  float rLevel = r/31.0 * brightness; 
-  float gLevel = g/63.0 * brightness; 
-  float bLevel = b/31.0 * brightness; 
-
-  return RGB(static_cast<int8_t>(rLevel), static_cast<int8_t>(gLevel), static_cast<int8_t>(bLevel));
-}
-
 void setup()
 {
   Serial.begin(9600);
@@ -226,7 +201,7 @@ void loop()
     graph.drawGraph();
   }
 
-  (CHECKBIT(globals.ISR,  FLASH)) ? display.setFlashInk(dimmer(defaultInk, 100)) : display.setFlashInk(defaultPaper);
+  (CHECKBIT(globals.ISR,  FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);
 
   if (CHECKBIT(globals.ISR,  CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
   {
@@ -270,7 +245,7 @@ void loop()
 
     if (CHECKBIT(globals.ISR,  DRY))
     {
-      display.displaySmallBitmap(SYMX2, SYMY, 40, 40, (uint8_t *) symbolDry);
+      display.displaySmallBitmap(SYMX2, SYMY, 38, 40, (uint8_t *) symbolDry);
     }
 
   #ifdef INCUBATOR
@@ -310,6 +285,23 @@ void showLCDReadsHorizontal()
 {
   char b[5];
   int16_t r = (temperature.getFencedReading());
+
+  colours_t T;
+
+  // test to make sure we're not out of range (-9 to 99)
+  if (r >= 99)
+  {
+    T = segments.setLit(RED, RED);
+  }
+  else if (r <= -9)
+  {
+    T = segments.setLit(BLUE, BLUE);
+  }
+  else
+  {
+    T = defaultInk;
+  }
+
   sprintf(b, "%3d", r * 10);
 
   constexpr uint8_t L1 = 30;
@@ -328,11 +320,20 @@ void showLCDReadsHorizontal()
   }
   segments.drawGlyph(130, 0, (CHECKBIT(globals.gp, USEMETRIC)) ? 'C' : 'F',  S1, S1, 1, 1);
 
+  segments.setLit(T, T);
+
+  // Now the humidty, which only has an upper range stop of 99%
+
   r = round(humidity.getFencedReading());
   sprintf(b, "%2d", r);
+  if (r == 99)
+  {
+    T = segments.setLit(RED, RED);
+  }
   segments.drawGlyph(190,   0, b[0], L1, L1, ROWS1, BIAS1);
   segments.drawGlyph(240,   0, b[1], L1, L1, ROWS1, BIAS1);
   segments.drawPercent(290, 0, S1, 1, 1);
+  segments.setLit(T, T);
 }
 
 ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow

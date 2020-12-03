@@ -42,6 +42,36 @@ extern MCUFRIEND_kbv screen;
 extern Display display;
 extern Sevensegments segments;
 
+
+/**
+ * @brief Dim a colour by a percentage 
+ * 
+ * @param C The colour value as 5-6-5 encoded.
+ * @param brightness 100% (max) to 0% (min) Steps are about 7% (so 15 levels)
+ * @return colours_t the new colour value
+ * @remarks Due to low number of bits per colour, this is ONLY approximate!
+ */
+
+colours_t Sevensegments::dimmer(colours_t C, uint8_t brightness)
+{
+  // decompose from 5 - 6 - 5 RGB to separate RGB channels
+  // R and B channels are 0 -- 31 and G is 0 -- 63 
+  // The first three lines normalise them to 8 bit values
+  if (brightness == 100)
+  {
+    return C; // no dimming at all
+  }
+  uint16_t r = ((C & 0xF800) >> 8);
+  uint16_t g = ((C & 0x07E0) >> 3);
+  uint16_t b = ((C & 0x001F) << 3);
+
+  float rLevel = r/31.0 * brightness; 
+  float gLevel = g/63.0 * brightness; 
+  float bLevel = b/31.0 * brightness; 
+
+  return RGB(static_cast<int8_t>(rLevel), static_cast<int8_t>(gLevel), static_cast<int8_t>(bLevel));
+}
+
 void Sevensegments::drawGlyph(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t wide, uint8_t high, const uint8_t rows, const uint8_t bias)
 {
   wide = ((wide >> 1) << 1);

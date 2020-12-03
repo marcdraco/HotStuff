@@ -97,16 +97,29 @@ void Messages::showUptime(void)
 
 void Messages::showMinMax(void)
 {  
+
+  screen.setCursor(130, 53);
+  fonts.print(const_cast<char *>("Min"));
+  screen.setCursor(130, 73);
+  fonts.print(const_cast<char *>("Max"));
+  screen.setCursor(95, 93);
+
+  int8_t dp  = static_cast<int>(environment.magnusDewpoint());
+  
+  if (dp > 0)
+  {
+    fonts.print(const_cast<char *>("Dew Point"));
+  }
+  else
+  {
+    fonts.print(const_cast<char *>("Frost Pnt"));
+  }
+
   char b[10]; 
   int8_t min = temperature.getFencedMin();
   int8_t max = temperature.getFencedMax();
-  int8_t dp;
-
-  if ((CHECKBIT(globals.gp, USEMETRIC)))
-  {
-    dp  = static_cast<int>(environment.magnusDewpoint());
-  }
-  else
+  
+  if (!(CHECKBIT(globals.gp, USEMETRIC)))
   {
     dp  = static_cast<int>(toFahrenheit(environment.magnusDewpoint()));
   }
@@ -119,20 +132,6 @@ void Messages::showMinMax(void)
 
   sprintf(b,"%2d", dp);
   segments.segmentedString(160, 78, b, 6, 0, 1, 12);
-
-  screen.setCursor(130, 53);
-  fonts.print(const_cast<char *>("Min"));
-  screen.setCursor(130, 73);
-  fonts.print(const_cast<char *>("Max"));
-  screen.setCursor(100, 93);
-  if (dp > 0)
-  {
-    fonts.print(const_cast<char *>("Dew Point"));
-  }
-  else
-  {
-    fonts.print(const_cast<char *>("Frost Pnt"));
-  }
 
   min = humidity.getFencedMin();
   max = humidity.getFencedMax();
