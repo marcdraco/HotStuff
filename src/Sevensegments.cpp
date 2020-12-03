@@ -11,6 +11,14 @@
    list of conditions and the following disclaimer in the documentation and/or other
    materials provided with the distribution.
 
+  3. Commercial use must include a per-unit donation of not less than 5% of the unit
+  margin to the "Astro Nerd" cancer fund. Non commerical users may use this software
+  without paying, but all donations to Rose's treatment are welcomed. Neither of the
+  authors are connected to Rose "DF", but it's hoped that this software, named in her
+  honour will help raise awareness and some money to help take the rough edges of her 
+  life. Cancer sucks people. It could hit any of us, at any time! Follow Rose on
+  Twitter @_Astro_Nerd_
+
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
   EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
@@ -41,7 +49,6 @@
 extern MCUFRIEND_kbv screen;
 extern Display display;
 extern Sevensegments segments;
-
 
 /**
  * @brief Dim a colour by a percentage 

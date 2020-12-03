@@ -198,6 +198,10 @@ void Graph::drawGraph()
     //return;
   }
 
+  // Bump the current plot position each time the graph is updated
+  m_circular++;
+  m_circular %= GRAPH_WIDTH;
+
   const colours_t tInk = temperature.getTrace();
   const colours_t hInk = humidity.getTrace();
 
@@ -218,21 +222,13 @@ void Graph::drawGraph()
     float temperature = (static_cast<float>(m_temperature[i]) - temp.min *  READ_SCALAR) / READ_SCALAR * perPixTemperature;   // convert from integer back to floats
     float humidity    = (static_cast<float>(m_humidity[i])    - humid.min * READ_SCALAR) / READ_SCALAR * perPixHumidity;
 
-    uint8_t Y = BASE - temperature;
-    screen.drawPixel(X + i, Y, tInk);
 
-    if (Y <130)
-    {
-      Serial.println(m_temperature[i]);
-    }
-
-            Y = BASE - humidity;
+    uint8_t Y = BASE - humidity;
+    //screen.drawFastVLine(X + i, Y, BASE-Y, hInk);   // experimental filled 
     screen.drawPixel(X + i, Y, hInk);
 
-    if (Y < 130)
-    {
-      Serial.println(m_humidity[i]);
-    }
+    Y = BASE - temperature;
+    screen.drawPixel(X + i, Y, tInk);
   }
 
 }
@@ -403,4 +399,10 @@ void Graph::drawGraphScaleMarks(void)
       sprintf(buff, "%s", b);
       fonts.print(buff);
     }
+}
+
+void Graph::postReadings()
+{
+  m_temperature[m_circular] = static_cast<int16_t>(temperature.getCMA() * READ_SCALAR);  // hide the floating point in a large integer
+  m_humidity[m_circular]    = static_cast<int16_t>(humidity.getCMA() * READ_SCALAR);
 }

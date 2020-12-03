@@ -1,5 +1,37 @@
-#ifndef __DRACO_ROSE_DIGITAL_H
-#define __DRACO_ROSE_DIGITAL_H
+/*
+  Copyright 2020, Marc Draco & Daniel Melvin
+
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright notice, this
+   list of conditions and the following disclaimer in the documentation and/or other
+   materials provided with the distribution.
+
+  3. Commercial use must include a per-unit donation of not less than 5% of the unit
+  margin to the "Astro Nerd" cancer fund. Non commerical users may use this software
+  without paying, but all donations to Rose's treatment are welcomed. Neither of the
+  authors are connected to Rose DF, but it's hoped that this software, named in her
+  honour will help raise awareness and some money to help take the rough edges of her 
+  life. Cancer sucks people. It could hit any of us, at any time!
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+  SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+
+#ifndef __DRACO_ROSE_ASTRO_NERD_DIGITAL_H
+#define __DRACO_ROSE_ASTRO_NERD_DIGITAL_H
 
 #include <Arduino.h>
 #include <inttypes.h>
@@ -138,10 +170,10 @@ class Sevensegments
 
     public:
 
-    Sevensegments(const colours_t lit, const colours_t unlit)
+    Sevensegments(const colours_t lit)
     {
         m_lit = lit;
-        m_unlit = unlit;
+        setUnlit(lit);
     }
 
     void setBias(const uint8_t bias)

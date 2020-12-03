@@ -115,13 +115,7 @@ class Graph
    */
   void drawRadials();
 
-  void postReadings(readings_t reading)
-  {
-    m_temperature[m_circular] = static_cast<int16_t>(reading.T * READ_SCALAR);  // hide the floating point in a large integer
-    m_humidity[m_circular]    = static_cast<int16_t>(reading.H * READ_SCALAR);
-    m_circular++;
-    m_circular %= GRAPH_WIDTH;
-  }
+  void postReadings();
 
   int getGraphX()
   {

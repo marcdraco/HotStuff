@@ -40,7 +40,7 @@
  * @brief 
  * remove this line to have the unit read in fahrenheit on startup 
  */
-//#define USE_METRIC                   
+#define USE_METRIC                   
 
 
 /**
@@ -105,9 +105,9 @@ constexpr int TFT_HEIGHT     {240};
 constexpr int FONT_BUFF_WIDTH    {120}; // special "offscreen" buffer for deleting and pre-rendering LARGE fonts (keep this to a div of 3)
 constexpr int FONT_BUFF_HEIGHT   {40};  // The size of this is crucial because it uses a LOT of RAM.
 
-constexpr int SYMX1     {0};      // ICE/Overheat symbol
-constexpr int SYMX2   {260};      // DAMP/DRY symbol X position
-constexpr int SYMY     {80};      // flashing symbol Y positions
+constexpr int SYMX1            {0};      // ICE/Overheat symbol
+constexpr int SYMX2          {260};      // DAMP/DRY symbol X position
+constexpr int SYMY            {80};      // flashing symbol Y positions
 
 
 #ifndef toFahrenheit

@@ -48,8 +48,7 @@ class Messages
 
   enum
   {
-    c, f, temperatureScale, humidityScale, work1, 
-    work2, caution, xcaution, danger, xdanger
+    c, f, temperatureScale, humidityScale, work1, work2, caution, xcaution, danger, xdanger
   };
 
   String translations[xdanger+1];
@@ -67,7 +66,7 @@ class Messages
     translations[work1]    = F("High temp & humidity!");
     translations[work2]    = F("Temp Equivalent: ");
     translations[caution]  = F("CAUTION");
-    translations[xcaution] = F("");
+    translations[xcaution] = F("EXTRA CAUTION");
     translations[danger]   = F("DANGER");
     translations[xdanger]  = F("-DANGER TO LIFE-");
   };

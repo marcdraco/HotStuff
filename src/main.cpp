@@ -117,19 +117,15 @@ Reading temperature;
 Fonts fonts;
 Environmental environment;
 Messages messages;
-Sevensegments segments(defaultInk, DEEPBLUE);
+Sevensegments segments(defaultInk);
 
 // convert KNOWN Y coords to 8-bit only for a hair more speed.
 
 // start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
 
-// RED (under-range) values need doing again - (COMPLEMENTARY COLOUR! RED MIGHT BE USED FOR NIGHT)
-// Max humidity should be pegged at 99.
-// Max temp needs to be pegged at 37C (for this version ONLY)
-
 /// chart update counter should count CHART updates, not CMA updates!
-
 /// CMA counter doesn't work with the bloody 8-10 minute update, stupid!
+
 globalVariables globals;
 
 void setup()
@@ -144,7 +140,7 @@ void setup()
     ID = 0x9481; //force ID if write-only screen
   }
   screen.begin(ID);
-  humidity.setTrace(AZURE);    // humidity graph line
+  humidity.setTrace(AZURE);       // humidity graph line
   temperature.setTrace(YELLOW);   // temperature graph line
   fonts.setFont(static_cast<const gfxfont_t *>(&HOTSMALL));
 
@@ -182,7 +178,6 @@ void setup()
 
 void loop()
 {
-  
   if (CHECKBIT(globals.ISR,  UPDATEREADS))
   {    
     CLEARBIT(globals.ISR,  UPDATEREADS);
@@ -194,16 +189,13 @@ void loop()
   if (CHECKBIT(globals.ISR,  UPDATEGRAPH))// && ((isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY) == 0))
   {
     CLEARBIT(globals.ISR,  UPDATEGRAPH);
-    readings_t R;
-    R.H = humidity.getCMA();
-    R.T = temperature.getCMA();
-    graph.postReadings(R);
+    graph.postReadings();
     graph.drawGraph();
   }
 
   (CHECKBIT(globals.ISR,  FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);
 
-  if (CHECKBIT(globals.ISR,  CLEARFROST | CLEARDAMP | CLEARDRY | CLEARDRY))
+  if (CHECKBIT(globals.ISR,  CLEARFROST | CLEARDAMP | CLEARDRY | CLEARHOT))
   {
     if (CHECKBIT(globals.ISR,  CLEARDRY))
     {
@@ -262,25 +254,6 @@ void loop()
   }
 }
 
-void showLCDReadsVertical()
-{
-  char b[5];
-  int16_t r = (temperature.getFencedReading());
-  sprintf(b, "%d", r * 10);
-
-  segments.drawGlyph(0, 0, b[0], 52, 52, 5, 4);
-  segments.drawGlyph(90, 0, b[1], 52, 52, 5, 4);
-  segments.drawGlyph(200, 0, b[2], 24, 24, 2, 3);
-  segments.drawGlyph(190, 100, 'o', 12, 12, 1, 1);
-  segments.drawGlyph(220, 100, 'C', 12, 12, 1, 1);
-
-  r = round(humidity.getFencedReading());
-  sprintf(b, "%d", r);
-  segments.drawGlyph(0, 180, b[0], 52, 52, 5, 4);
-  segments.drawGlyph(90, 180, b[1], 52, 52, 5, 4);
-  segments.drawPercent(190, 265, 12, 1, 1);
-}
-
 void showLCDReadsHorizontal()
 {
   char b[5];
@@ -323,7 +296,6 @@ void showLCDReadsHorizontal()
   segments.setLit(T, T);
 
   // Now the humidty, which only has an upper range stop of 99%
-
   r = round(humidity.getFencedReading());
   sprintf(b, "%2d", r);
   if (r == 99)

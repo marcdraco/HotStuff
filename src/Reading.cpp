@@ -41,7 +41,8 @@ extern Display display;
 extern Flags flags;
 extern Fonts fonts;
 extern Messages messages;
-
+extern Reading temperature;
+extern Reading humidity;
 
 readings_t Reading::takeReadings(void)
 {
@@ -60,7 +61,6 @@ readings_t Reading::takeReadings(void)
     alarm.sensorFailed(reading);
   }
 
-R.H=2;
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
 

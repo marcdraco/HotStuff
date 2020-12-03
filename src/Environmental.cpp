@@ -85,12 +85,15 @@ void Environmental::checkHumidityConditions(void)
 
 void Environmental::checkTemperatureConditions(void)
 {
-  if (temperature.getRawReading() <= 1.0)   // 1.0 degrees (C) to allow for errors in the sensor.
+#ifdef INCUBATOR
+  // This is for incubation systems. Under 35C is chilly for eggs
+  // It *could be used for normal environments, but that seems overko;;.
+  if (temperature.getRawReading() <= 35)   
   {
     SETBIT(globals.ISR, FROST);          // start das-blinky-flashun light
   }
 
-  if (temperature.getCMA() > FROST_WATERSHED)
+  if (temperature.getCMA() > 36)
   {
     if (SETBIT(globals.ISR, FROST))
     { 
@@ -98,6 +101,7 @@ void Environmental::checkTemperatureConditions(void)
       SETBIT(globals.ISR, CLEARFROST);  // for clean up
     }
   }
+#endif
 }
 
 void Environmental::checkHeatIndex(readings_t readings)
@@ -111,7 +115,6 @@ void Environmental::checkHeatIndex(readings_t readings)
   {
     if (CHECKBIT(globals.gp, WARNDANGER))
     {
-      screen.fillRect(0, 90, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
       CLEARBIT(globals.gp, WARNDANGER);    
     }
     return;
