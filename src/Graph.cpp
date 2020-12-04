@@ -203,17 +203,15 @@ void Graph::drawGraph()
 
   // Bump the current plot position each time the graph is updated
   m_circular++;
-  m_circular %= 40;// GRAPH_WIDTH;
 
-  if (m_circular == 0)
+  if (m_circular == GRAPH_WIDTH)
   {
-      Serial.println(m_circular);
-
     for (uint8_t i {1}; i < GRAPH_WIDTH; ++i)
     {
       m_temperature[i - 1] = m_temperature[i];
       m_humidity[i - 1]    = m_humidity[i];
     }
+    --m_circular;
   }
 
   const colours_t tInk = temperature.getTrace();
@@ -230,7 +228,7 @@ void Graph::drawGraph()
  
   int16_t X = 1 + GRAPH_LEFT;
 
-  for (uint8_t i {1}; i < temperature.getCMACount() - 1; ++i)
+  for (uint8_t i {1}; i < m_circular; ++i)
   {
     float temperature = (static_cast<float>(m_temperature[i]) - temp.min *  READ_SCALAR) / READ_SCALAR * perPixTemperature;   // convert from integer back to floats
     float humidity    = (static_cast<float>(m_humidity[i])    - humid.min * READ_SCALAR) / READ_SCALAR * perPixHumidity;

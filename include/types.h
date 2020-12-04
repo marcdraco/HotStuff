@@ -35,8 +35,10 @@ using angle_t       = int16_t;
 using glyph_t       = uint8_t;
 using ucoordinate_t = uint16_t;
 using coordinate_t  = int16_t;
+using yCoordinate_t = uint8_t;  // 
+using xCoordinate_t = uint8_t;  // When the display is VERY small, 8 bit is much faster.
 
-using reading_t     = float;
+using reading_t     = float;    // Actually, this is the same as a double
 using reading_int_t = int16_t;
 using isrtiming_t   = uint8_t;
 using byte_t        = uint8_t;
@@ -156,7 +158,6 @@ struct
   volatile isrtiming_t timeInHours   {0};
   volatile isrtiming_t timeInDays    {0};
   volatile isrtiming_t timeInWeeks   {0};
-  volatile isrtiming_t timeInYears   {0};
   volatile isrtiming_t timeToRead    {0};
 } isrTimings;
 

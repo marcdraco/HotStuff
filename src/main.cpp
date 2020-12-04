@@ -128,9 +128,14 @@ Sevensegments segments(defaultInk);
 
 globalVariables globals;
 
+/**
+ * @brief classic Arduino setups
+ *  
+ */
+
 void setup()
 {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -175,6 +180,11 @@ void setup()
   humidity.initReads(read.H);
   graph.drawGraph();
 }
+
+/**
+ * @brief Classic Arduino loop
+ * 
+ */
 
 void loop()
 {
@@ -253,6 +263,10 @@ void loop()
   }
 }
 
+/**
+ * @brief Show the large temperature and humidity displays
+ * 
+ */
 void showLCDReadsHorizontal()
 {
   char b[5];
@@ -307,6 +321,11 @@ void showLCDReadsHorizontal()
   segments.drawPercent(290, 0, S1, 1, 1);
   segments.setLit(T, T);
 }
+
+/**
+ * @brief Hotstuff's internal clock which ticks every second
+ * 
+ */
 
 ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 {

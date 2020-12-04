@@ -26,116 +26,11 @@
 #ifndef __HOTSTUFF_ANNUCIATOR
 #define __HOTSTUFF_ANNUCIATOR
 
-void Annuciator::annunciators(void)
-{
-  if ( flags.isSet(FROST))
-  {
-    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.execute(FROST);
-  }
-  else
-  {
-    screen.setCursor(FROSTWARN_X, FROSTWARN_Y);
-    messages.clear(FROST);
-  }
-
-  if (flags.isSet(DAMP))
-  {
-    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.execute(DAMP);
-  }
-  else
-  {
-    screen.setCursor(DAMP_WARN_X, DAMP_WARN_Y);
-    messages.clear(DAMP);
-  }
-
-  if (flags.isSet(DRY))
-  {
-    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.execute(DRY);
-  }
-  else
-  {
-    screen.setCursor(DRY_WARN_X, DRY_WARN_Y);
-    messages.clear(DRY);
-  }
-}
-
-void Annuciator::checkAlarm(void)
-{
-
-  if (flags.isClear(FROST | DAMP | DRY | OVERTEMP)) 
-  {
-    digitalWrite(ALARM_PIN, LOW);
-  }
-
-  if (flags.isSet(FROST | DAMP | DRY | OVERTEMP))
-  {
-    if (flags.isSet(FLASHING))
-    {
-      digitalWrite(ALARM_PIN, HIGH);
-    }
-    else
-    {
-      digitalWrite(ALARM_PIN, LOW);
-    }
-  }
-}
-
-void Annuciator::checkButton(void)
-{
-  if (digitalRead(BUTTON_PIN) == LOW)
-  {
-    STOP
-  }
-
-  if (digitalRead(BUTTON_PIN) == HIGH)
-  {
-    if (button.timer != 0)
-    {
- 
-      if (button.timer < SHORTPRESS) // button.shortPress)
-      {
-        flags.clear(FROST | DAMP | DRY | OVERTEMP);
-        button.timer = 0;
-        digitalWrite(ALARM_PIN, LOW);
-      }
-    }
-  }
-  else
-  {
-    if (! button.timer)
-    {
-      button.timer = 1;
-    }
-    else
-    {
-      button.timer += 1;
-    }
-  }
-
-  if (button.timer > LONGPRESS)
-  {
-    // Toggle metric/imperial
-    (flags.flip(METRIC) );
-    screen.fillRect(LOW_TEMP_X,       LOW_TEMP_Y,   72,  8,     defaultPaper);
-    screen.fillRect(LEFTMARGIN - 2, LOWHUMID_Y + 12, 20, 40, defaultPaper);
-    button.timer = 0;
-
-    temperature.showReadings();
-#ifndef TOPLESS
-    chart.drawGraphScaleMarks();
-#endif
-  }
-}
-
 void Annuciator::sensorFailed(UniversalDHT::Response response)
 {
   // He's dead Jim! He's DEAD!
 
 #ifdef SENSOR_MISSING_OR_BUSTED
-
   return;
 #endif
   screen.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, defaultPaper);

@@ -55,32 +55,15 @@ class Alarm
   public:
 
   Alarm()
-  {
-  }
+  {}
 
-  /**
-   * @brief If an alarm condition is set, this flashes the LED pin
-   * 
-   */
-  void checkAlarm();
-  
   void annunciators();
 
   /**
-  * @brief Polls for short AND long button pushes, acts accordingly
-  * @bug Can be a bit fussy resetting the alarms.
-  */
-  void checkButton();
-
-  /**
    * @brief Brings everthing to a halt if the DHT sensor breaks during use
-   * 
    * @param response response Returned 16 bit from the DHT libary
-   * @remarks  Displays warnings in the lower half of the screen to stop or reduce 
-   * activity for health and safety. 
+   * @bug not really tested properly!
    */
-
-
   void sensorFailed(UniversalDHT::Response response)
   {
     // He's dead Jim! He's DEAD!

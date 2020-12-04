@@ -168,7 +168,67 @@ class Sevensegments
     ucoordinate_t m_X;
     ucoordinate_t m_newline;
 
+
+    /**
+     * @brief A diagonal line but using 8-bit values in the rendering loop.
+     * 
+     * @param x0 
+     * @param y0 
+     * @param x1 
+     * @param y1 
+     * @param ink 
+     */
+
+    void fastShortLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t ink); 
+
+    /**
+     * @brief 
+     * 
+     * @param X 
+     * @param Y 
+     * @param onFlag 
+     */
+    void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
+    /**
+     * @brief 
+     * 
+     * @param X 
+     * @param Y 
+     * @param onFlag 
+     */
+    void drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
+
+    /**
+     * @brief 
+     * 
+     * @param X 
+     * @param Y 
+     * @param X1 
+     * @param Y1 
+     * @param rows 
+     * @param onFlag 
+     */
+    void drawRLSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
+
+    /**
+     * @brief 
+     * 
+     * @param X 
+     * @param Y 
+     * @param X1 
+     * @param Y1 
+     * @param rows 
+     * @param onFlag 
+     */
+    void drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
+
     public:
+
+    /**
+     * @brief Construct a new Sevensegments object
+     * 
+     * @param lit Colour of the lit segments (inactive segment colour is calculated)
+     */
 
     Sevensegments(const colours_t lit)
     {
@@ -176,30 +236,68 @@ class Sevensegments
         setUnlit(lit);
     }
 
+    /**
+     * @brief Set the Bias object
+     * 
+     * @param bias distance in pixels separating each segment
+     */
+
     void setBias(const uint8_t bias)
     {
         m_bias = bias;
     }
+
+    /**
+     * @brief Set the Xlen object
+     * 
+     * @param length maximum width of a segment
+     */
 
     void setXlen(const uint8_t length)
     {
         m_Xlength = length;
     }
 
+    /**
+     * @brief Set the Ylen object
+     * 
+     * @param length vertical size of a segment
+     */
+
     void setYlen(const uint8_t length)
     {
         m_Ylength = length;
     }
 
+    /**
+     * @brief Sets the X & Y segment dimensions
+     * 
+     * @param length max size of each segment
+     */
     void setXYlen(const uint8_t length)
     {
         m_XYlen = length;
     }
 
+    /**
+     * @brief Set the number of lines each side of the main line
+     * 
+     * @param rows 
+     * @remark essentially sets, the width of the segment as displayed
+     */
+
     void setRows(const uint8_t rows)
     {
         m_rows = rows;
     }
+
+    /**
+     * @brief Set the bright and dim colours overriding automatic settings
+     * 
+     * @param colour1 Colour of the lit segments for this glyph
+     * @param colour2 Colour of the unlit segments (or paper)
+     * @return colours_t the previous colour for later use
+     */
 
     colours_t setLit(colours_t colour1, colours_t colour2)
     {
@@ -207,19 +305,38 @@ class Sevensegments
         return setLit(colour1);
     }
 
+    /**
+     * @brief Sets the colour for a lit segment
+     * 
+     * @param colour the lit colour
+     * @return colours_t the colour of the segment before changing it
+     */
+
     colours_t setLit(colours_t colour)
     {
         colours_t c = m_lit;
         m_lit       = colour;
-        return    c;
+        return c;
     }
 
+    /**
+     * @brief Set colour of an unlit segment
+     * 
+     * @param colour A normal (bright) colour 
+     * @return colours_t the previous value held for that segment
+     */
     colours_t setUnlit(colours_t colour)
     {
-        // NOTE returns the LIT colour! The dim colour is calculated. 
         m_unlit = Sevensegments::dimmer(colour, 2);
         return m_lit;
     }
+
+    /**
+     * @brief finds the correct "glyph" 
+     * 
+     * @param glyph ASCII glyph
+     * @return uint8_t the a binary bitmap used to draw the actual 7-segment character 
+     */
 
     uint8_t translateChar(const uint8_t glyph)
     {
@@ -233,6 +350,13 @@ class Sevensegments
         return sevenSegCodes[(i << 1) +1];
     }
 
+    /**
+     * @brief finds the correct "glyph" 
+     * 
+     * @param glyph ASCII glyph
+     * @return uint16_t the a binary bitmap used to draw the actual 16-segment character 
+     */
+
     uint16_t translateChar16(const uint8_t glyph)
     {
         uint16_t i = 0xFFFF;
@@ -244,18 +368,98 @@ class Sevensegments
         return sixteenSegCodes[(i << 1) +1];
     };
 
-    void drawGlyph(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, const uint8_t length, const uint8_t size, const uint8_t rows, const uint8_t bias);
+    /**
+     * @brief displays a 7-segment "glyph" at X, Y 
+     * 
+     * @param X Absolute X position 
+     * @param Y Absolute Y position
+     * @param glyph ASCI character - remember these are mostly just numbers!
+     * @param wide Length of the segment (X)
+     * @param size Height of the segment (Y)
+     * @param rows Number of rows - 1 "row" is always displayed.
+     * @param bias Width of the gap between the segments
+     */
+
+    void drawGlyph(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, uint8_t wide, uint8_t high, const uint8_t rows, const uint8_t bias);
+
+    /**
+     * @brief As drawGlyph but only one size is given for squarer appearance
+     * 
+     * @param X 
+     * @param Y 
+     * @param glyph 
+     * @param size 
+     * @param rows 
+     * @param bias 
+     */
+
     void drawGlyph16(const coordinate_t X, const coordinate_t Y, const uint8_t glyph, const uint8_t size, const uint8_t rows, const uint8_t bias);
+    
+    /**
+     * @brief Specially produced "percentage" sign for the 7 segment display options
+     * 
+     * @param X 
+     * @param Y 
+     * @param size 
+     * @param rows 
+     * @param bias 
+     */
     void drawPercent(const coordinate_t X, const coordinate_t Y, const uint8_t size, const uint8_t rows, const uint8_t bias);
+
+    /**
+     * @brief A slash (solidus)
+     * 
+     * @param X 
+     * @param Y 
+     * @param wide 
+     * @param high 
+     * @param rows 
+     */
     void slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows);
+ 
+    /**
+     * @brief Backslash (reverse solidus)
+     * 
+     * @param X 
+     * @param Y 
+     * @param wide 
+     * @param high 
+     * @param rows 
+     */
     void backslash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows);
-    void fastShortLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t ink); 
-    void drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
-    void drawVSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag);
-    void drawRLSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
-    void drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag);
+ 
+    /**
+     * @brief A simple decimal point (just a circle)
+     * 
+     * @param X 
+     * @param Y 
+     * @param radius 
+     * @param onFlag 
+     */
     void drawDP(const coordinate_t X, const coordinate_t Y, const uint8_t radius, const uint8_t onFlag);
+
+    /**
+     * @brief A shortcut to print several 7-segment characters in one go
+     * 
+     * @param X 
+     * @param Y 
+     * @param b Standard C pointer to a string
+     * @param size 
+     * @param rows 
+     * @param bias 
+     * @param step 
+     * @returns the calculated position for the next chacter
+     */
     int segmentedString(coordinate_t X, coordinate_t Y, char * b, uint8_t size, uint8_t rows, uint8_t bias, uint8_t step);
+
+    /**
+     * @brief VERY approximately dims 5-6-5 (16 bit) colour values by a percentage
+     * 
+     * @param C The raw colour value
+     * @param brightness the new brightness (note, this can't increase it!) 
+     * @return colours_t the new colour value
+     * @bug It's not very accurate!
+     */
     static colours_t dimmer(colours_t C, uint8_t brightness);
 };
 extern Sevensegments segments;

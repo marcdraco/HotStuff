@@ -38,7 +38,6 @@
 
 extern MCUFRIEND_kbv screen;
 extern Display display;
-extern Flags flags;
 extern Fonts fonts;
 extern Messages messages;
 extern Reading temperature;
@@ -63,9 +62,12 @@ readings_t Reading::takeReadings(void)
 
   temperature.updateReading(R.T);
   humidity.updateReading(R.H);
-
   environment.checkHumidityConditions();
+  
+  #ifdef INCUBATOR
   environment.checkTemperatureConditions();
+  #endif
+
   environment.checkHeatIndex(R);  
   return R;
 }

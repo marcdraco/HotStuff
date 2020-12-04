@@ -54,7 +54,7 @@
  * make it up. I'm gonna slap him with a haddock at this rate.)
  */
  
-#define SENSOR_MISSING_OR_BUSTED  
+//#define SENSOR_MISSING_OR_BUSTED  
 
 /**
  * @brief TOPLESS is for the version with i2C displays (no shield, hence topless)
@@ -122,20 +122,21 @@ constexpr int SYMY            {80};      // flashing symbol Y positions
 #define FIXED16_TO_FLOAT(a) (static_cast<float>(a) / READ_SCALAR) // cast to ensure the compiler does floating point division!
 #endif
 
+// Some macros to manipulate semaphores
 #define SETBIT(flags, bit)   (flags |= ( bit))    //Set bit in byte addr
 #define CLEARBIT(flags, bit) (flags  &= (~bit))   // Clear bit in byte addr
 #define CHECKBIT(flags, bit) (flags  &  ( bit))   // Check bit in byte addr
 #define FLIPBIT(flags, bit)  (flags ^= ( bit))    // Flip a bit
 
-
 #define STOP while (true) {}
+
+//Puts RGB colours into 5-6-5 16 bit format
+#define RGB(r, g, b) (((r&0xF8)<<8)|((g&0xFC)<<3)|(b>>3))
+
 /*
    A good selection of simple colour defines
    from David Prentice's TFT library
 */
-
-#define RGB(r, g, b) (((r&0xF8)<<8)|((g&0xFC)<<3)|(b>>3))
-
 constexpr uint16_t LIGHTGREY = RGB(200, 200, 200);
 constexpr uint16_t GREY      = RGB(128, 128, 128);
 constexpr uint16_t DARKGREY  = RGB(64, 64, 64);
@@ -256,6 +257,7 @@ const uint16_t sinTable [] PROGMEM =
 };
 #endif
 
+// The "dry air" symbol bitmap
 const unsigned char symbolDry [] PROGMEM = {
 0xff, 0xf7, 0xff, 0xff, 0xff, 0xff, 0xe3, 0xff, 0xff, 0xff, 0xff, 0xe3, 0xff, 0xff, 0xff, 0xff, 
 0xe3, 0xff, 0xff, 0xff, 0xff, 0xc3, 0xff, 0xff, 0xff, 0xff, 0xc9, 0xff, 0xf7, 0xff, 0xff, 0xc9, 
@@ -271,6 +273,7 @@ const unsigned char symbolDry [] PROGMEM = {
 0xff, 0xf3, 0xff, 0xff, 0xf3, 0xff, 0xc7, 0xff, 0xff, 0xf8, 0xff, 0x0f, 0xff, 0xff, 0xfe, 0x00,
 };
 
+// The "damp air" symbol bitmap
 const unsigned char symbolDamp [] PROGMEM = {
 0xfd, 0xff, 0xff, 0xff, 0xff, 0xf9, 0xff, 0xff, 0xff, 0xff, 0xf0, 0xff, 0xff, 0xff, 0xff, 0xe0, 
 0x7f, 0xff, 0xff, 0xff, 0xe0, 0x7f, 0xff, 0xff, 0xff, 0xc0, 0x3f, 0xff, 0xff, 0xff, 0xc0, 0x1f, 

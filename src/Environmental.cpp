@@ -85,7 +85,6 @@ void Environmental::checkHumidityConditions(void)
 
 void Environmental::checkTemperatureConditions(void)
 {
-#ifdef INCUBATOR
   // This is for incubation systems. Under 35C is chilly for eggs
   // It *could be used for normal environments, but that seems overko;;.
   if (temperature.getRawReading() <= 35)   
@@ -101,7 +100,6 @@ void Environmental::checkTemperatureConditions(void)
       SETBIT(globals.ISR, CLEARFROST);  // for clean up
     }
   }
-#endif
 }
 
 void Environmental::checkHeatIndex(readings_t readings)

@@ -65,6 +65,12 @@ class Graph
   Graph() {};
 
   /**
+   * @brief Simple (line art) pointer
+   * 
+   */
+  void drawPointers();
+
+  /**
    * @brief Draw the graph lines and chart calibration markings
    * 
    */  
@@ -80,8 +86,6 @@ class Graph
    * @brief Displays the main graph
    * 
    * convert the temperature and humidity.reading readings into something that scales to the chart.
-   * the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
-   * The flag determines which "phase" we're in (clear readings or set new ones)
    */
 
   void drawGraph();
@@ -91,21 +95,106 @@ class Graph
    * 
    */  
   void drawGraphScaleMarks();
-
-  void drawPointers();
+  /**
+   * @brief draws a trianglular polygon
+   * 
+   * @param polygon  pointer to a polygon structure
+   * @param ink 
+   * @param outline 
+   */
 
   void draw(const triangle_t* polygon, const colours_t ink, const colours_t outline);
+
+  /**
+   * @brief draws a quadrilateral polygon
+   * 
+   * @param polygon  pointer to a polygon structure
+   * @param ink 
+   * @param outline 
+   */
   void draw(const quadrilateral_t* polygon, const colours_t ink, const colours_t outline);
 
+  /**
+   * @brief translates (moves) draws a trianglular polygon
+   * 
+   * @param polygon  pointer to a polygon structure
+   * @param ink 
+   * @param outline 
+   */
+
   void translate(triangle_t* polygon, const coordinates_t cords);
+  /**
+   * @brief translates (moves) a quadrilateral polygon
+   * 
+   * @param polygon  pointer to a polygon structure
+   * @param ink 
+   * @param outline 
+   */
+
   void translate(quadrilateral_t* polygon, const coordinates_t cords);
-    
+
+  /**
+   * @brief Rotates a triangular polygon
+   * 
+   * @param polygon  pointer to a polygon structure
+   * @param theta angle to rotate the shape by
+   */
+ 
   void rotate(triangle_t* polygon, const angle_t theta);
+
+  /**
+   * @brief Rotates a quadrilateral polygon
+   * 
+   * @param polygon pointer to a polygon structure
+   * @param theta angle to rotate the shape by
+   */
+  
   void rotate(quadrilateral_t* polygon, const angle_t theta);
 
+  /**
+   * @brief A simple vertial bar on the chart with maxium and minimum values
+   * 
+   * @param x 
+   * @param reading 
+   * @param minimum 
+   * @param maximum 
+   * @param scale 
+   * @param ink 
+   * @param pointer 
+   */
   void drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer);
+  /**
+   * @brief 
+   * 
+   * @param x 
+   * @param reading 
+   * @param min 
+   * @param max 
+   * @param scale 
+   * @param ink 
+   */
   void drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
+
+  /**
+   * @brief 
+   * 
+   * @param x 
+   * @param reading 
+   * @param scale 
+   * @param size 
+   * @param ink 
+   */
   void drawDiamond(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
+
+  /**
+   * @brief 
+   * 
+   * @param x 
+   * @param reading 
+   * @param scale 
+   * @param size 
+   * @param ink 
+   */
   void drawTarget(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
 };
 extern Graph graph;
