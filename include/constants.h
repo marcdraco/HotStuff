@@ -56,6 +56,15 @@
  
 //#define SENSOR_MISSING_OR_BUSTED  
 
+
+/**
+ * @brief Determines if chart function is used
+ * 
+ */
+
+#define USE_GRAPH
+
+
 /**
  * @brief TOPLESS is for the version with i2C displays (no shield, hence topless)
  */
@@ -84,9 +93,7 @@ constexpr int SimpleDHTErrDataChecksum {6};
 
 constexpr int DHT22_POWER    {11};      // pin to power the DHT22 since the power pins are covered.
 constexpr int DHT22_DATA     {12};      // The DHT 22 can be powered elsewhere leaving this free however.
-constexpr int ALARM_PIN      {13};      // LED or a high-impedance buzzer
 
-constexpr int UPTIME_Y       {228};
 constexpr int TRADIAL_X      {160};
 constexpr int TRADIAL_Y      {120};
 constexpr int HRADIAL        {160};
@@ -239,7 +246,7 @@ enum
 };
 
 
-#ifdef CLOCKWISE
+#ifndef USE_GRAPH
 /* 
 * This is 0 - 90 degrees of arc in quadrant 1
 * Flip the sign to get the relative quadrant data.

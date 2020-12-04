@@ -52,6 +52,11 @@
 
 extern globalVariables globals;
 
+/**
+ * @brief Checks damp and dry air
+ * 
+ */
+
 void Environmental::checkHumidityConditions(void)
 {
   if (humidity.getCMA() > DAMP_AIR_WATERSHED)
@@ -82,6 +87,11 @@ void Environmental::checkHumidityConditions(void)
     }
   }
 }
+
+/**
+ * @brief primarily for incubation systems 
+ * @remark under development
+ */
 
 void Environmental::checkTemperatureConditions(void)
 {

@@ -43,28 +43,34 @@ extern globalVariables globals;
 class Reading
 {
     private:
-    reading_t  m_minRead {};
-    reading_t  m_maxRead {};
-    reading_t  m_cumulativeMovingAverage {};
-    reading_t  m_correction {};
-    reading_t  m_cmaCounter {};
-    reading_t  m_currRead {};
-    colours_t  m_trace {};    // graph line colour
-    colours_t  m_flashing {};
-    uint8_t    m_metric {1};
+    reading_t m_minRead    {};
+    reading_t m_maxRead    {};
+    reading_t m_cumulativeMovingAverage {};
+    reading_t m_correction {};
+    reading_t m_cmaCounter {};
+    reading_t m_currRead   {};
+    colours_t m_trace      {};    // graph line colour
+    colours_t m_flashing   {};
+    uint8_t   m_metric    {1};
    
     public:
     
     Reading() {}
-
+    
+    /**
+     * @brief Get the fenced (-9 -> 99) ranged reading
+     * 
+     * @return reading_t 
+     */
+    
     reading_t getFencedReading()
     {
       return getFencedReading(getReading());
     }
 
     /**
-     *  
-     * 
+     * @brief Get the fenced (-9 -> 99) ranged reading
+     * @param R a reading convert to ranged reading 
      * @return reading_t 
      */
     reading_t getFencedReading(reading_t R)
@@ -86,16 +92,31 @@ class Reading
       return R;
     }
 
+  /**
+   * @brief Get the Trace object
+   * 
+   * @return colours_t 
+   */
   colours_t getTrace()
   {
     return m_trace;
   }
 
+  /**
+   * @brief Set the Trace object
+   * 
+   * @param C 
+   */
   void setTrace(const colours_t C)
   {
     m_trace = C;
   }
 
+  /**
+   * @brief 
+   * 
+   * @param R 
+   */
   void initReads(const reading_t R)
   {
     m_cumulativeMovingAverage = R;
@@ -103,28 +124,53 @@ class Reading
     m_minRead = R;
   }
 
+  /**
+   * @brief Get the Min Read object
+   * 
+   * @return reading_t 
+   */
   reading_t getMinRead()
   {
     return floor(m_minRead);
   }
 
+  /**
+   * @brief Get the Max Read object
+   * 
+   * @return reading_t 
+   */
   reading_t getMaxRead()
   {
     return ceil(m_maxRead);
   }
 
+  /**
+   * @brief Get the Fenced Min object
+   * 
+   * @return int8_t 
+   */
   int8_t getFencedMin()
   {
     return static_cast<int>(getFencedReading(
                             floor((m_metric) ? m_minRead : toFahrenheit(m_minRead))));
   }
 
+  /**
+   * @brief Get the Fenced Max object
+   * 
+   * @return int8_t 
+   */
   int8_t getFencedMax()
   {
     return static_cast<int>(getFencedReading(
                             ceil((m_metric) ? m_maxRead : toFahrenheit(m_maxRead))));
   }
 
+  /**
+   * @brief Get the Raw Reading object
+   * 
+   * @return reading_t 
+   */
   reading_t getRawReading()
   {
     return m_currRead;
@@ -140,6 +186,11 @@ class Reading
     return (m_metric) ? m_currRead : toFahrenheit(m_currRead);
   }
 
+  /**
+   * @brief 
+   * 
+   * @param reading 
+   */
   void updateReading(const reading_t reading);
 
   /**
@@ -159,36 +210,48 @@ class Reading
    */
     void bufferReading(const reading_t reading, char* buffer, const semaphore_t flags);
 
+    /**
+     * @brief get the cumulative moving average for this read
+     * 
+     * @return reading_t 
+     */
     reading_t getCMA()
     {
       return m_cumulativeMovingAverage;
     }
 
+    /**
+     * @brief switches to metric measurements
+     * 
+     */
     void goMetric()
     {
       m_metric = true;
     }
 
+    /**
+     * @brief switches to imperial measurements
+     * 
+     */
     void goImperial()
     {
       m_metric = false;
     }
 
-/**
- * @brief returns the CMA counter UP TO the maximum graph width (plottable points) 
- * 
- * @return uint8_t the count from 0 -> graph's plottable width
- * 
- * @remarks The CMA counter can get big, really big, you just wouldn't believe how
- * vastly mind-boggling big it can get. Listen... (apologies to Douglas Adams for 
- * butchering his script, again). The CMA counter is a double (four byte) floating
- * point number so it can hand numbers into the billions but this function is
- * used to help plot the chart which is of limited width. Converting back to a byte
- * width return helps ease the burden on the program space. Ideally this number would
- * be in a "global" (single)value.. but hey ho, that's an optimization you might want
- * to do..
- */
-
+  /**
+   * @brief returns the CMA counter UP TO the maximum graph width (plottable points) 
+   * 
+   * @return uint8_t the count from 0 -> graph's plottable width
+   * 
+   * @remarks The CMA counter can get big, really big, you just wouldn't believe how
+   * vastly mind-boggling big it can get. Listen... (apologies to Douglas Adams for 
+   * butchering his script, again). The CMA counter is a (four byte) floating
+   * point number so it can hand numbers into the billions but this function is
+   * used to help plot the chart which is of limited width. Converting back to a byte
+   * width return helps ease the burden on the program space. Ideally this number would
+   * be in a "global" (single)value.. but hey ho, that's an optimization you might want
+   * to do..
+  */
     uint8_t getCMACount()
     {
       return (m_cmaCounter > static_cast<reading_t>(GRAPH_WIDTH)) ? GRAPH_WIDTH : static_cast<uint8_t>(m_cmaCounter);

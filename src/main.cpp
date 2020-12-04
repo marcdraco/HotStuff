@@ -178,7 +178,9 @@ void setup()
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
   humidity.initReads(read.H);
+  #ifdef USE_GRAPH
   graph.drawGraph();
+  #endif
 }
 
 /**
@@ -195,12 +197,21 @@ void loop()
     showLCDReadsHorizontal();
     messages.showMinMax();
   }
+//graph.drawRadials();
 
+#ifdef USE_GRAPH
   if (CHECKBIT(globals.ISR,  UPDATEGRAPH))// && ((isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY) == 0))
   {
     CLEARBIT(globals.ISR,  UPDATEGRAPH);
     graph.drawGraph();
   }
+#endif
+
+
+/**
+ * @brief Following here are the annunciators
+ * 
+ */
 
   (CHECKBIT(globals.ISR,  FLASH)) ? display.setFlashInk(defaultInk) : display.setFlashInk(defaultPaper);
 

@@ -69,7 +69,7 @@ class Alarm
     // He's dead Jim! He's DEAD!
 
   #ifdef SENSOR_MISSING_OR_BUSTED
-  return;
+    return;
   #endif
     screen.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, defaultPaper);
     

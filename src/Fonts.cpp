@@ -41,6 +41,12 @@ extern MCUFRIEND_kbv screen;
 extern Display display;
 extern Fonts fonts;
 
+/**
+ * @brief 
+ * 
+ * @param flashString 
+ */
+
 void Fonts::print(const __FlashStringHelper *flashString)
 {
   PGM_P p = reinterpret_cast<PGM_P>(flashString);
@@ -50,6 +56,11 @@ void Fonts::print(const __FlashStringHelper *flashString)
   }
 }
 
+/**
+ * @brief Prints a C string 
+ * 
+ * @param b pointer to a null-terminated buffer
+ */
 void Fonts::print(char* b)
 {
   int i{0};
@@ -59,7 +70,13 @@ void Fonts::print(char* b)
     ++i;
   }
 }
-
+/**
+ * @brief 
+ * 
+ * @param X 
+ * @param Y 
+ * @param buffer 
+ */
 void Fonts::print(const int X, const int Y, char* buffer)
 {
     int size = (m_bufferWidth * m_bufferHeight) >> 3;
@@ -90,6 +107,12 @@ void Fonts::print(const int X, const int Y, char* buffer)
     }
 }
 
+/**
+ * @brief prints a C++ string type
+ * 
+ * @param string 
+ */
+
 void Fonts::print(const String &string)
 {
   for (uint8_t i{0}; i < string.length(); i++)
@@ -98,6 +121,12 @@ void Fonts::print(const String &string)
   }
 }
 
+/**
+ * @brief 
+ * 
+ * @param glyph 
+ * @return glyph_t 
+ */
 
 glyph_t Fonts::findGlyphCode(const glyph_t glyph)
 {
@@ -121,10 +150,16 @@ glyph_t Fonts::findGlyphCode(const glyph_t glyph)
   return 0;
 }
 
+/**
+ * @brief Reads the "flash" data for the glyph
+ * 
+ * @param g 
+ * @param data 
+ */
 void Fonts::prepImgGlyph(const glyph_t g, glyphdata_t* data)
 {
     const gfxfont_t*  font  = m_pFont;
-    gfxglyph_t* glyph = pgm_read_glyph_ptr(font, g);
+    gfxglyph_t* glyph  = pgm_read_glyph_ptr(font, g);
 
     data->bitmap       = pgm_read_bitmap_ptr(font);
     data->offset       = pgm_read_word(&glyph->bitmapOffset);
@@ -141,6 +176,12 @@ void Fonts::prepImgGlyph(const glyph_t g, glyphdata_t* data)
     data->colour       = display.getInk();
 }
 
+/**
+ * @brief 
+ * 
+ * @param glyph 
+ * @return uint8_t 
+ */
 uint8_t Fonts::bufferImgGlyph(const glyph_t glyph)
 {
   screen.startWrite();
@@ -173,36 +214,6 @@ uint8_t Fonts::bufferImgGlyph(const glyph_t glyph)
   screen.setCursor(m_X, m_Y);
   screen.endWrite();
   return thisGlyph.xAdvance;
-}
-
-void Display::displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer)
-{
-  // Tweaked by MD from the orginal by Limor "Lady Ada" Fried. 
-  // 8-bits are used in preference to 16 where possible because these are faster on  
-  screen.startWrite();
-
-  int16_t byteWidth = (W + 7) >> 3;
-  uint8_t byte {0};
-
-  for (int8_t j {0}; j < H; j++, Y++) 
-  {
-    for (int8_t i {0}; i < W ; i++) 
-    {
-      if (i & 7)
-      {
-        byte <<= 1;
-      }
-      else
-      {
-        byte = pgm_read_byte(&buffer[j * byteWidth + (i >> 3)]);
-      }
-      if (! (byte & 0x80))
-      {
-        screen.writePixel(X + i, Y, m_flash);
-      }
-    }
-  }
-  screen.endWrite();
 }
 
 uint8_t Fonts::drawImgGlyph(const glyph_t glyph)

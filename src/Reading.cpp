@@ -29,7 +29,6 @@
 #include "Display.h"
 #include "Messages.h"
 #include <MCUFRIEND_kbv.h>
-#include "Flags.h"  
 #include "Fonts.h"
 #include "fonts/ubuntu-6-full.h"
 #include "Graph.h"

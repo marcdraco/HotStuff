@@ -162,9 +162,8 @@ void Graph::drawPointers()
 }
 
 void Graph::drawRadials()
-
 {
- for (int t = 0; t<190; t+=10)
+ for (int t = 0; t < 190; t+=10)
   {
     quadrilateral_t tick;
     tick.cords[0] = {-80, -2};
@@ -190,6 +189,8 @@ void Graph::drawRadials()
     Graph::draw(&tick, RED, RED);
   }
 }
+
+#ifdef USE_GRAPH
 
 void Graph::drawGraph()
 {
@@ -346,6 +347,7 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 }
 
 void Graph::drawGraphScaleMarks(void)
+
 {
     // Pop the screen sideways on for some font printing   
     fonts.setRotation(3);
@@ -414,3 +416,5 @@ void Graph::drawGraphScaleMarks(void)
       fonts.print(buff);
     }
 }
+
+#endif

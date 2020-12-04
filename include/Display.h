@@ -56,6 +56,13 @@ class Display
   public:
   const uint16_t width  {TFT_WIDTH};
   const uint16_t height {TFT_HEIGHT};
+
+  /**
+   * @brief Set the Colours object
+   * 
+   * @param ink 
+   * @param paper 
+   */
   
   void setColours(const colours_t ink, const colours_t paper)
   {
@@ -63,32 +70,56 @@ class Display
     m_paper = paper;
   }
 
+  /**
+   * @brief Get the Ink object
+   * 
+   * @return colours_t 
+   */
+
   colours_t getInk()
   {
     return m_ink;
   }
 
+  /**
+   * @brief Set the Ink object
+   * 
+   * @param C 
+   */
   void setInk(const colours_t C)
   {
     m_ink = C;
   }
 
+  /**
+   * @brief Set the Flash Ink object
+   * 
+   * @param C 
+   */
   void setFlashInk(const colours_t C)
   {
     m_flash = C;
   }
 
+  /**
+   * @brief Get the Paper object
+   * 
+   * @return colours_t 
+   */
   colours_t getPaper()
   {
     return m_paper;
   }
 
+  /**
+   * @brief Set the Paper object
+   * 
+   * @param C 
+   */
   void setPaper(const colours_t C)
   {
     m_paper = C;
   }
-
-  void displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer);
 
   enum  
   {
@@ -97,6 +128,56 @@ class Display
     rotatePortraitSouth, 
     rotateLandscapeSouth
   };
+
+  /**
+   * @brief 
+   * 
+   * @param X 
+   * @param Y 
+   * @param H 
+   * @param W 
+   * @param buffer 
+   */
+
+  /**
+   * @brief 
+   * 
+   * @param X 
+   * @param Y 
+   * @param H 
+   * @param W 
+   * @param buffer 
+   */
+  void displaySmallBitmap(ucoordinate_t X, ucoordinate_t Y, uint8_t H, uint8_t W, uint8_t* buffer)
+  {
+    // Tweaked by MD from the orginal by Limor "Lady Ada" Fried. 
+    // 8-bits are used in preference to 16 where possible because these are faster on AtMegas  
+    screen.startWrite();
+
+    int16_t byteWidth = (W + 7) >> 3;
+    uint8_t byte {0};
+
+    for (int8_t j {0}; j < H; j++, Y++) 
+    {
+      for (int8_t i {0}; i < W ; i++) 
+      {
+        if (i & 7)
+        {
+          byte <<= 1;
+        }
+        else
+        {
+          byte = pgm_read_byte(&buffer[j * byteWidth + (i >> 3)]);
+        }
+        if (! (byte & 0x80))
+        {
+          screen.writePixel(X + i, Y, m_flash);
+        }
+      }
+    }
+    screen.endWrite();
+  }
+
 
 };
 

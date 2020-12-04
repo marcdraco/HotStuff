@@ -114,19 +114,39 @@ class Messages
    * @param text String of characters
    * @return uint8_t central X offset based on the screen width
    */
-    uint16_t textWidth(char* message);
   
-
-
+  uint16_t textWidth(char* message);
+  
+  /**
+   * @brief 
+   * 
+   * @param ink 
+   * @param characterSize 
+   * @param number 
+   * @param flags 
+   */
   void printNumber(const colours_t ink, const uint8_t characterSize, const uint8_t number, const semaphore_t flags);
   
+  /**
+   * @brief 
+   * 
+   * @param floaty 
+   * @param buffer 
+   * @param formatWidth 
+   * @param integralWidth 
+   */
   void rightAlign(const float floaty, const char* buffer, const uint8_t formatWidth, const uint16_t integralWidth);
+  
   /**
   * @brief A little nod to *nix systems
   * @remark Hotstuff was developed on Linux Mint due to the much faster compiler using VSCode
   */
   void showUptime();
-  
+
+  /**
+   * @brief the min/max temp and humidity display 
+   * 
+   */
   void showMinMax(void);
 
 };
