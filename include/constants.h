@@ -163,7 +163,7 @@ constexpr uint16_t MAGENTA   {0xF81F};
 constexpr uint16_t YELLOW    {0xFFE0};
 constexpr uint16_t WHITE     {0xFFFF};
 
-constexpr int GRAPH_WIDTH  {189};
+constexpr int GRAPH_WIDTH  {190};
 constexpr int GRAPH_HEIGHT {100};
 constexpr int GRAPH_LEFT   {63};
 constexpr int GRAPH_Y      {130};

@@ -55,15 +55,7 @@ class Reading
    
     public:
     
-    Reading()
-    {
-      // cumulative moving averages are a form of mean that doesn't need to track every single value
-      // using these avoids little odd spikes from throwing the graph and smooths it out too.
-      m_cmaCounter              = 0.0;
-      m_cumulativeMovingAverage = 0.0;
-      m_correction              = 0.0;
-    }
-
+    Reading() {}
 
     reading_t getFencedReading()
     {

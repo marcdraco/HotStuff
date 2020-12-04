@@ -53,22 +53,44 @@ class Graph
 {
   private:
     
-    uint8_t m_xStep         {27}; // X - reticle
-    uint8_t m_yStep         {20}; // Y reticle
-    uint8_t m_circular       {0};
-    int16_t m_temperature[GRAPH_WIDTH];
-    int16_t m_humidity[GRAPH_WIDTH];
+    uint8_t m_xStep    {27}; // X - reticle
+    uint8_t m_yStep    {20}; // Y reticle
+    uint8_t m_circular   {};  // counts the times the graph is updated
+
+    int16_t m_temperature[GRAPH_WIDTH] {};
+    int16_t m_humidity[GRAPH_WIDTH]    {};
 
   public:
 
-  Graph() 
-  {
-    for (uint8_t i {0}; i < GRAPH_WIDTH; ++i)
-    {
-      m_temperature[i] = 0;
-      m_humidity[i]    = 0;
-    }
-  };
+  Graph() {};
+
+  /**
+   * @brief Draw the graph lines and chart calibration markings
+   * 
+   */  
+  void drawReticles(const uint8_t xDivs, const uint8_t yDivs);
+  
+  /**
+   * @brief draws circular plots for the analogue version
+   * 
+   */
+  void drawRadials();
+
+  /**
+   * @brief Displays the main graph
+   * 
+   * convert the temperature and humidity.reading readings into something that scales to the chart.
+   * the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
+   * The flag determines which "phase" we're in (clear readings or set new ones)
+   */
+
+  void drawGraph();
+
+  /**
+   * @brief Puts the scales and text around the chart
+   * 
+   */  
+  void drawGraphScaleMarks();
 
   void drawPointers();
 
@@ -85,45 +107,7 @@ class Graph
   void drawMinMax(const ucoordinate_t x, const reading_t reading, const int16_t min, const int16_t max, const int8_t scale, const colours_t ink);
   void drawDiamond(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
   void drawTarget(const ucoordinate_t x, const reading_t reading, const uint16_t scale, const uint8_t size, const colours_t ink);
-
-  /**
-   * @brief Displays the main graph
-   * 
-   * convert the temperature and humidity.reading readings into something that scales to the chart.
-   * the FSD is 100 points giving a temp range of 0 - 50c (32 - 122f)
-   * The flag determines which "phase" we're in (clear readings or set new ones)
-   */
-
-  void drawGraph();
-
-  /**
-   * @brief  Overdraws the graph outline in the current foreground
-   * 
-   */  
-  void drawMainAxes();
-  void drawGraphScaleMarks();
-
-  /**
-   * @brief Draw the graph lines and chart calibration markings
-   * 
-   */  
-  void drawReticles(const uint8_t xDivs, const uint8_t yDivs);
-  
-  /**
-   * @brief draws circular plots for the analogue version
-   * 
-   */
-  void drawRadials();
-
-  void postReadings();
-
-  int getGraphX()
-  {
-    return ((TFT_WIDTH - GRAPH_WIDTH) >> 1);
-  }
-
 };
-
 extern Graph graph;
 
 #endif

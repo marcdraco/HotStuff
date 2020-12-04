@@ -189,7 +189,6 @@ void loop()
   if (CHECKBIT(globals.ISR,  UPDATEGRAPH))// && ((isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY) == 0))
   {
     CLEARBIT(globals.ISR,  UPDATEGRAPH);
-    graph.postReadings();
     graph.drawGraph();
   }
 

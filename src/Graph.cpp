@@ -198,14 +198,27 @@ void Graph::drawGraph()
     //return;
   }
 
+  m_temperature[m_circular] = static_cast<int16_t>(temperature.getCMA() * READ_SCALAR);  // hide the floating point in a large integer
+  m_humidity[m_circular]    = static_cast<int16_t>(humidity.getCMA()    * READ_SCALAR);
+
   // Bump the current plot position each time the graph is updated
   m_circular++;
-  m_circular %= GRAPH_WIDTH;
+  m_circular %= 40;// GRAPH_WIDTH;
+
+  if (m_circular == 0)
+  {
+      Serial.println(m_circular);
+
+    for (uint8_t i {1}; i < GRAPH_WIDTH; ++i)
+    {
+      m_temperature[i - 1] = m_temperature[i];
+      m_humidity[i - 1]    = m_humidity[i];
+    }
+  }
 
   const colours_t tInk = temperature.getTrace();
   const colours_t hInk = humidity.getTrace();
 
-  screen.fillRect(0, GRAPH_Y-10, TFT_WIDTH, 120, defaultPaper);
   drawReticles(6, 6);
   drawGraphScaleMarks();
 
@@ -222,17 +235,11 @@ void Graph::drawGraph()
     float temperature = (static_cast<float>(m_temperature[i]) - temp.min *  READ_SCALAR) / READ_SCALAR * perPixTemperature;   // convert from integer back to floats
     float humidity    = (static_cast<float>(m_humidity[i])    - humid.min * READ_SCALAR) / READ_SCALAR * perPixHumidity;
 
-
     uint8_t Y = BASE - humidity;
-    //screen.drawFastVLine(X + i, Y, BASE-Y, hInk);   // experimental filled 
     screen.drawPixel(X + i, Y, hInk);
-    screen.drawFastVLine(X + i, Y, 2, hInk);   // experimental filled 
-
     Y = BASE - temperature;
     screen.drawPixel(X + i, Y, tInk);
-    screen.drawFastVLine(X + i, Y, 2, tInk);   // experimental filled 
   }
-
 }
 
 void Graph::drawIBar(const ucoordinate_t x, const reading_t reading, int16_t minimum, int16_t maximum, const int8_t scale, const colours_t ink, const bool pointer)
@@ -310,6 +317,11 @@ void Graph::drawDiamond(const ucoordinate_t x, const reading_t reading, const ui
 
 void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 {
+  // This is a little harsh and causes a small flicker during the redraw
+  // We tried some more "surgical" methods but they proved to be too complex
+  // to justify the extra Flash space (even a few % is too much when you're short) 
+  screen.fillRect(GRAPH_LEFT + 1, GRAPH_Y, GRAPH_WIDTH,  BASE - GRAPH_Y, defaultPaper);
+
   for (uint8_t i {0}; i < 7; ++i)    // vertical divisions
   {
     screen.drawFastVLine(GRAPH_LEFT + m_xStep * i, GRAPH_Y, GRAPH_HEIGHT, reticleColour);
@@ -388,23 +400,19 @@ void Graph::drawGraphScaleMarks(void)
 
       reading_t value  = (i * step.T) + T.min;
 
-      int X = getGraphX() - (fonts.getXstep() * 3);
+      int X = ((TFT_WIDTH - GRAPH_WIDTH) >> 1) - (fonts.getXstep() * 3);
       screen.setCursor(X, BASE - (i * 20) + yShift);
       temperature.bufferReading(value, b, METRIC);
       sprintf(buff, "%s", b);
+      screen.fillRect(X-10, BASE - (i * 20) + yShift - 10, 35, 12, defaultPaper);   // remove the old values (messy but...)
       fonts.print(buff);
       
       value = ((i * step.H) + H.min);
-      X = getGraphX() + GRAPH_WIDTH + fonts.getXstep();
+      X = ((TFT_WIDTH - GRAPH_WIDTH) >> 1) + GRAPH_WIDTH + fonts.getXstep();
       screen.setCursor(X, BASE - (i * 20) + yShift);
       humidity.bufferReading(value, b, METRIC);
       sprintf(buff, "%s", b);
+      screen.fillRect(X, BASE - (i * 20) + yShift - 10, 25, 12, defaultPaper);      // limited Flash space means we have to compromise
       fonts.print(buff);
     }
-}
-
-void Graph::postReadings()
-{
-  m_temperature[m_circular] = static_cast<int16_t>(temperature.getCMA() * READ_SCALAR);  // hide the floating point in a large integer
-  m_humidity[m_circular]    = static_cast<int16_t>(humidity.getCMA() * READ_SCALAR);
 }
