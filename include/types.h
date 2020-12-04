@@ -80,16 +80,6 @@ using ucoordinates_t  = struct ucoordinates
   ucoordinate_t Y;
 };
 
-
-/*
-*  Highly optimised types SPECIFIC to small screens (<255 pixels in either dimension)
-*  Sounds crazy, but smaller Arduinos are optimised for 8 bit operations.
-*  and every last clock cycle we can save is a bonus, particularly in tight loops!
-*/
-
-using short_coordinateX_t = uint8_t;
-using short_coordinateY_t = uint8_t;
-
 using dimensions_t = struct dimensions
 {
   uint16_t W;
@@ -98,7 +88,7 @@ using dimensions_t = struct dimensions
 
 using segment_t = struct segments
 {
-    coordinates_t coords[12];
+  coordinates_t coords[12];
 };
 
 using readings_t = struct readings
@@ -157,7 +147,7 @@ struct
   volatile isrtiming_t timeInMinutes {0};
   volatile isrtiming_t timeInHours   {0};
   volatile isrtiming_t timeInDays    {0};
-  volatile isrtiming_t timeInWeeks   {0};
+  volatile isrtiming_t timeToGraph   {0};
   volatile isrtiming_t timeToRead    {0};
 } isrTimings;
 
@@ -169,14 +159,6 @@ enum
   FONT4, // 24 x 32
   FONT5  // 30 x 40
 };
-
-// a couple of variables to determine the button multi-functions.
-struct 
-{
-  bool          pressed    {false};
-  uint8_t       timer      {0};
-  uint8_t       lastTimer  {0};
-} button;
 
 // The failure record array gets sensor age after a "catastrophic" failure
 struct failures

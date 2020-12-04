@@ -78,8 +78,7 @@ void Messages::showUptime(void)
   */
   char* msg = static_cast<char *> (malloc(40));
 
-  sprintf(msg, "Uptime: %2d Weeks, %2d Days, %02d:%02d:%02d", 
-          isrTimings.timeInWeeks,
+  sprintf(msg, "Uptime: %2d Days, %02d:%02d:%02d", 
           isrTimings.timeInDays,
           isrTimings.timeInHours,
           isrTimings.timeInMinutes,

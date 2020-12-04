@@ -200,7 +200,7 @@ void loop()
 //graph.drawRadials();
 
 #ifdef USE_GRAPH
-  if (CHECKBIT(globals.ISR,  UPDATEGRAPH))// && ((isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY) == 0))
+  if (CHECKBIT(globals.ISR,  UPDATEGRAPH))
   {
     CLEARBIT(globals.ISR,  UPDATEGRAPH);
     graph.drawGraph();
@@ -351,7 +351,6 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   {
     isrTimings.timeToRead = 0;
     SETBIT(globals.ISR,  UPDATEREADS);
-    SETBIT(globals.ISR,  UPDATEGRAPH);
   }
 
   if (isrTimings.timeInSeconds == 60)
@@ -360,8 +359,14 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
     ++isrTimings.timeInMinutes;
 
     if (isrTimings.timeInMinutes == 1 && isrTimings.timeInSeconds == 0)
-    {     
-      SETBIT(globals.ISR,  UPDATEGRAPH);  // this is only a "hint", typically it will be about 8-10 minutes, settable
+    { 
+      ++isrTimings.timeToGraph;
+
+      if (isrTimings.timeToGraph == CHART_UPDATE_FREQUENCY)
+      {
+        SETBIT(globals.ISR, UPDATEGRAPH);
+        isrTimings.timeToGraph = 0;
+      } 
     }
      
     if (isrTimings.timeInMinutes == 60)
@@ -373,12 +378,6 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
       {
         isrTimings.timeInHours = 0;
         ++isrTimings.timeInDays;
-
-        if (isrTimings.timeInDays == 7)
-        {
-          isrTimings.timeInWeeks = 0;
-          ++isrTimings.timeInWeeks;
-        }
       }
     }
   }

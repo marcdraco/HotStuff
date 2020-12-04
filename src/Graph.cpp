@@ -194,11 +194,6 @@ void Graph::drawRadials()
 
 void Graph::drawGraph()
 {
-  if (isrTimings.timeInMinutes % CHART_UPDATE_FREQUENCY)
-  {
-    //return;
-  }
-
   m_temperature[m_circular] = static_cast<int16_t>(temperature.getCMA() * READ_SCALAR);  // hide the floating point in a large integer
   m_humidity[m_circular]    = static_cast<int16_t>(humidity.getCMA()    * READ_SCALAR);
 
