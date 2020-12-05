@@ -123,51 +123,14 @@ void Environmental::checkHeatIndex(readings_t readings)
   {
     if (CHECKBIT(globals.gp, WARNDANGER))
     {
-      CLEARBIT(globals.gp, WARNDANGER);    
+      CLEARBIT(globals.gp, WARNDANGER);
+      temperature.setEffective(heatIndex(readings));    
     }
     return;
   }
 
   SETBIT(globals.gp, WARNDANGER);
-
-  if (effectiveTemperature <= CAUTION)
-  {
-    unsafeTempWarnings(effectiveTemperature);
-  }
-
-  if (effectiveTemperature >= CAUTION && 
-      effectiveTemperature <= WARNING)
-  {
-    unsafeTempWarnings(effectiveTemperature);
-  }
-
-  if (effectiveTemperature >= WARNING  && 
-      effectiveTemperature <= RISK)
-  {
-    unsafeTempWarnings(effectiveTemperature);
-  }
-  if (effectiveTemperature >= RISK)
-  {
-    unsafeTempWarnings(effectiveTemperature);
-  }
-}
-
-void Environmental::unsafeTempWarnings(const reading_t T)
-{
-
-    messages.execute(messages.work1);
-    messages.execute(messages.work2);
-
-  if (CHECKBIT(globals.gp, USEMETRIC))
-  {
-    screen.print(T);
-    fonts.print(F(" C"));
-  }
-  else
-  {
-    screen.print(round(toFahrenheit(T)));
-    fonts.print(F(" F"));
-  }
+  temperature.setEffective(heatIndex(readings));
 }
 
 float Environmental::heatIndex(const readings_t readings)

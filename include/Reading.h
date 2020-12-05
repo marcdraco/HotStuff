@@ -49,6 +49,7 @@ class Reading
     reading_t m_correction {};
     reading_t m_cmaCounter {};
     reading_t m_currRead   {};
+    reading_t m_special    {};    // Holder when overtemp occurs (so we don't break the chart!) Not used by humidity
     colours_t m_trace      {};    // graph line colour
     colours_t m_flashing   {};
     uint8_t   m_metric    {1};
@@ -57,6 +58,27 @@ class Reading
     
     Reading() {}
     
+    /**
+     * @brief Set the special object (temperature only)
+     * 
+     * @param value - the "effective" temp
+     */
+
+    void setEffective(reading_t value)
+    {
+      m_special = value;
+    }
+
+    /**
+     * @brief Get the special object (temperature only)
+     * 
+     * @return reading_t 
+     */
+    reading_t getEffective()
+    {
+      return m_special;
+    }
+
     /**
      * @brief Get the fenced (-9 -> 99) ranged reading
      * 

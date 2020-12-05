@@ -141,7 +141,7 @@ int Sevensegments::segmentedString(coordinate_t X, coordinate_t Y, char * b, uin
   return X + step * (i -1);
 }
 
-inline void Sevensegments::slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows)
+ void Sevensegments::slash(const coordinate_t X, const coordinate_t Y, const uint8_t wide, const uint8_t high, const uint8_t rows)
 {
   // insert dope Saul Hudson gag here...  
   for (int i = 0; i < rows; ++i)
@@ -259,7 +259,7 @@ void Sevensegments::fastShortLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1
   }
 }
 
-inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag)
+ void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t Y, const uint8_t onFlag)
 {
   coordinate_t y = Y + m_rows;
   for (uint8_t i = m_rows; i != 0; --i)                       // counting DOWN to 0 is faster for time critical loops
@@ -270,7 +270,7 @@ inline void Sevensegments::drawHSegment(const coordinate_t X, const coordinate_t
     screen.drawFastHLine(X, y, m_Xlength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const  uint8_t onFlag)
+ void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t Y, const  uint8_t onFlag)
 {
  coordinate_t x = X + m_rows; 
  for (uint8_t i = m_rows; i != 0; --i)
@@ -281,7 +281,7 @@ inline void Sevensegments::drawVSegment(const coordinate_t X, const coordinate_t
     screen.drawFastVLine(x, Y, m_Ylength, (onFlag) ? m_lit : m_unlit);
 }
 
-inline void Sevensegments::drawRLSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
+ void Sevensegments::drawRLSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
 {
   Y1 -= rows;
   for (uint8_t i = (rows << 1); i > 0; --i)
@@ -290,7 +290,7 @@ inline void Sevensegments::drawRLSegment(coordinate_t X, coordinate_t Y, coordin
   }
 }
 
-inline void Sevensegments::drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
+ void Sevensegments::drawLRSegment(coordinate_t X, coordinate_t Y, coordinate_t X1, coordinate_t Y1, const uint8_t rows, uint8_t onFlag)
 {
   Y1 -= rows;  
   for (uint8_t i = (rows << 1); i > 0 ; --i)

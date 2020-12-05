@@ -37,7 +37,7 @@
  * @see READ_UPDATE_TIME.
  * 
  */
-#define CHART_UPDATE_FREQUENCY 2
+#define CHART_UPDATE_FREQUENCY 12
 
 /**
  * @brief DHT read time in seconds.
@@ -59,9 +59,10 @@
  */
 #define USE_METRIC                   
 
-constexpr int  CAUTION          {32};     // Three watermarks (32,41,54)
-constexpr int  WARNING          {41};     // per Steadman "safe" for working temperatures
-constexpr int  RISK             {54};     // Above 54c is very bad
+#define  TEMP_CAUTION  27 ... 31     // Three watermarks (32,41,54)
+#define  TEMP_WARNING  32 ... 40     // per Steadman "safe" for working temperatures
+#define  TEMP_RISK     41 ... 53     // Above 54c is very bad
+#define  TEMP_DANGER   54 ... 99     // You're going to die ... or get very, very sick!
 
 /**
  * @brief Temperature at which the ICE alarm appears.
@@ -121,7 +122,6 @@ constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature conside
  */
 
 #define USE_GRAPH
-
 
 /**
  * @brief TOPLESS is for the version with i2C displays (no shield, hence topless)
@@ -257,13 +257,13 @@ constexpr uint16_t MAGENTA   {0xF81F};
 constexpr uint16_t YELLOW    {0xFFE0};
 constexpr uint16_t WHITE     {0xFFFF};
 
-constexpr int GRAPH_WIDTH  {190};
-constexpr int GRAPH_HEIGHT {100};
-constexpr int GRAPH_LEFT   {63};
-constexpr int GRAPH_Y      {120};
-constexpr int BASE         {GRAPH_Y + GRAPH_HEIGHT};
-constexpr int XSCALE_X     {90}; // position of the X-scale text on the graph
-constexpr int XSCALE_Y     {232};
+constexpr int GRAPH_WIDTH       {190};
+constexpr int GRAPH_HEIGHT      {100};
+constexpr int GRAPH_LEFT         {63};
+constexpr int GRAPH_Y           {120};
+constexpr int BASE              {GRAPH_Y + GRAPH_HEIGHT};
+constexpr int XSCALE_X           {90}; // X - position of the X-scale text on the graph
+constexpr int XSCALE_Y          {232}; // Y - position of the X-scale text on the graph
 
 constexpr uint16_t defaultPaper  {BLACK};
 constexpr uint16_t defaultInk    {CYAN};

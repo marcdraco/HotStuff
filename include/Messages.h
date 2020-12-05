@@ -47,11 +47,10 @@ class Messages
 
   enum
   {
-    c, f, temperatureScale, humidityScale, xScale0, xScale1, xScale2, dew, frost,
-    work1, work2, caution, xcaution, danger, xdanger
+    c, f, temperatureScale, humidityScale, xScale0, xScale1, xScale2, dew, frost
   };
 
-  String translations[xdanger+1];
+  String translations[frost+1];
 
   char* pText;
 
@@ -60,7 +59,6 @@ class Messages
     pText = nullptr;
     translations[c]        = F("c");
     translations[f]        = F("f");
-    translations[caution]  = F("Extreme CAUTION");
     translations[temperatureScale] = F("Temperature in ");
     translations[humidityScale] = F("Relative Humidity %");
     translations[xScale0]  = F(" seconds per pixel");
@@ -68,12 +66,6 @@ class Messages
     translations[xScale2]  = F(" minutes per pixel");
     translations[dew]      = F("Dew Point");
     translations[frost]    = F("Frost Pnt");
-    translations[work1]    = F("High temp & humidity!");
-    translations[work2]    = F("Temp Equivalent: ");
-    translations[caution]  = F("CAUTION");
-    translations[xcaution] = F("EXTRA CAUTION");
-    translations[danger]   = F("DANGER");
-    translations[xdanger]  = F("-DANGER TO LIFE-");
   };
 
 

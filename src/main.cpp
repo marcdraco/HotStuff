@@ -135,7 +135,6 @@ globalVariables globals;
 
 void setup()
 {
-  //Serial.begin(9600);
   const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
   const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
   uint16_t ID{screen.readID()};
@@ -194,10 +193,11 @@ void loop()
   {    
     CLEARBIT(globals.ISR,  UPDATEREADS);
     Reading::takeReadings();
-    showLCDReadsHorizontal();
     messages.showMinMax();
   }
 //graph.drawRadials();
+
+showLCDReadsHorizontal();
 
 #ifdef USE_GRAPH
   if (CHECKBIT(globals.ISR,  UPDATEGRAPH))
@@ -280,7 +280,13 @@ void loop()
  */
 void showLCDReadsHorizontal()
 {
-  char b[5];
+  constexpr uint8_t L1 = 30;
+  constexpr uint8_t T1 = 10;
+  constexpr uint8_t S1 = 8;
+  constexpr uint8_t ROWS1 = 3;
+  constexpr uint8_t ROWS2 = 1;
+  constexpr uint8_t BIAS1 = 2;
+
   reading_t r = (temperature.getFencedReading());
 
   colours_t T;
@@ -300,24 +306,68 @@ void showLCDReadsHorizontal()
     r = temperature.getReading();
   }
 
-  sprintf(b, "%3d", static_cast<int>(r * 10));
 
-  constexpr uint8_t L1 = 30;
-  constexpr uint8_t T1 = 10;
-  constexpr uint8_t S1 = 8;
-  constexpr uint8_t ROWS1 = 3;
-  constexpr uint8_t ROWS2 = 1;
-  constexpr uint8_t BIAS1 = 2;
+  static float hh = 26.0;
+  hh += 0.01;
+  char b[5];
+  colours_t ink;
+  if (CHECKBIT(globals.gp, WARNDANGER))
+  {
+    r = temperature.getEffective();
+
+    switch (static_cast<int>(r))
+    {
+    case TEMP_CAUTION:
+      ink = AZURE;
+      break;
+
+    case TEMP_WARNING:
+      ink = YELLOW;
+      break;
+
+    case TEMP_RISK:
+      ink = MAGENTA;
+      break;
+
+    case TEMP_DANGER:
+      ink = RED;
+      break;
+
+    default:
+      ink = AZURE;
+      break;
+    }
+
+    if (! CHECKBIT(globals.gp, USEMETRIC))
+    {
+      r = toFahrenheit(r);
+    }
+
+    if (CHECKBIT(globals.ISR, FLASH)) 
+    {
+      segments.setLit(defaultInk);
+    }
+    else
+    {
+      segments.setLit(ink);
+    }
+  }
+  
+  sprintf(b, "%3d", static_cast<int>(r * 10));
 
   segments.drawGlyph(0,   0, b[0], L1, L1, ROWS1, BIAS1);
   segments.drawGlyph(50,  0, b[1], L1, L1, ROWS1, BIAS1);
+  segments.drawGlyph(100, 0, b[2], T1, T1, ROWS2, BIAS1);
 
   if (CHECKBIT(globals.gp, USEMETRIC))
   {
-    segments.drawGlyph(100, 0, b[2], T1, T1, ROWS2, 1);
+    segments.drawGlyph(130, 0, 'C',  S1, S1, 1, 1);
   }
-  segments.drawGlyph(130, 0, (CHECKBIT(globals.gp, USEMETRIC)) ? 'C' : 'F',  S1, S1, 1, 1);
-
+  else
+  {
+    segments.drawGlyph(130, 0, 'F',  S1, S1, 1, 1);
+  }
+  
   segments.setLit(T, T);
 
   // Now the humidty, which only has an upper range stop of 99%
