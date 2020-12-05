@@ -30,17 +30,75 @@
 
 /**
  * @brief 
- * determines how often the chart gets prodded to update its readings. Measured in minutes
- * 8 minutes gives about 24 hours of coverages with the current design.
- * Maximum value is 59 since it uses modulo the number of minutes since startup
+ * @remark determines how often the chart gets prodded to update its readings. Measured in minutes
+ * 12 "ticks" = 1 minute. gives about of three hours of coverage with the current design.
+ * Maximum value is 255 (uint) for about 21 hours per dot. 
+ * Also influenced by reading frequency.
+ * @see READ_UPDATE_TIME.
+ * 
  */
-#define CHART_UPDATE_FREQUENCY 8
+#define CHART_UPDATE_FREQUENCY 12
+
+/**
+ * @brief DHT read time in seconds.
+ * @remark Should not be less than three seconds (although the DHT22 is capable of 2.5 seconds)
+ * this also affects the update time for the main displays of temperature, humidty, dew/frost
+ * point and, of course the min - max.
+ * Due to the time taken to update the plots this is only done infrequently so users are less
+ * likely to see a flicker (which is minimal). However this has the side effect that the ranges
+ * are not adjusted until the chart is reset. Hence Min/Max values can appear to be outside the 
+ * range of the main chart.
+ * 
+ * @see CHART_UPDATE_FREQUENCY
+ */
+#define READ_UPDATE_TIME 5
 
 /**
  * @brief 
  * remove this line to have the unit read in fahrenheit on startup 
  */
 #define USE_METRIC                   
+
+constexpr int  CAUTION          {32};     // Three watermarks (32,41,54)
+constexpr int  WARNING          {41};     // per Steadman "safe" for working temperatures
+constexpr int  RISK             {54};     // Above 54c is very bad
+
+/**
+ * @brief Temperature at which the ICE alarm appears.
+ * 
+ * @remark This is produces an ice warning where used, but the temperature is variable at can be used
+ * to indicate that a unit/room/area temp has dropped below an acceptable level, perhaps a heater 
+ * failure? Frost can persist up to around 4C if used as an ice warning. For (say) an incubator
+ * this alert would be much higher - say 35C or 95F. 
+ * 
+ */
+constexpr float FROST_WATERSHED     {4.0};
+
+/**
+ * @brief 
+ * 
+ * @remark Dry air (most prevalent in the colder months) can cause respirator problems by drying out the
+ * airways and the inside of the lungs. At extremes it's difficult to breathe but around the lower limit
+ * the chances of developing sinusitis, common colds, etc. increases somewhat.
+ * 
+ * @note This value will be different for an icubator. 
+ */
+constexpr float DRY_AIR_WATERSHED  {35.0};
+
+/**
+ * @brief 
+ * 
+ * @remark Damp air is a problem all year around but particularly in summer where it encourages mold to form
+ * on surfaces throughout the home or building. Although mold is most frequently associated with damp rot
+ * it's a living organism which produces spores that can infect and irritate airways causing a number of 
+ * quite unpleasant conditions.
+ * 
+ * @note This value will be different for an icubator. 
+ */
+constexpr float DAMP_AIR_WATERSHED {65.0};
+  
+constexpr float MIN_COMFORT_TEMP   {18.0};      // the minium temperature considered "normal"
+constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature considered "normal"
 
 
 /**
@@ -102,7 +160,7 @@ constexpr int OUTER_RADIUS   { 70};
 
 constexpr int TEMPERATURE_X  {290};
 constexpr int HUMIDITY_X     {290};
-constexpr int AXIS_Y_POSITION {5};
+constexpr int AXIS_Y_POSITION {15};
 
 constexpr int READ_SCALAR    {256};
 
@@ -116,28 +174,56 @@ constexpr int SYMX1            {0};      // ICE/Overheat symbol
 constexpr int SYMX2          {260};      // DAMP/DRY symbol X position
 constexpr int SYMY            {80};      // flashing symbol Y positions
 
-
+/**
+ * @brief Macro to convert metric temperatures to Imperial values.
+ * 
+ */
 #ifndef toFahrenheit
 #define toFahrenheit(a) (a * 1.8 + 32)
 #endif
 
+/**
+ * @brief Converts a floating point number to a 16-bit signed value
+ * This is lossy compared to floats but only requires half the storage space.
+ * 
+ */
 #ifndef FLOAT_TO_FIXED16 // 328p in the Uno etc. has hardware multiply (not divide) but probably int only, sadly.
 #define FLOAT_TO_FIXED16(a) static_cast<int16_t>((static_cast<float>(a) * READ_SCALAR))   
 #endif
 
+/**
+ * @brief Converts a fixed point to a signed floating point number
+ * This is lossy compared to floats but only requires half the storage space.
+ * 
+ */
 #ifndef FIXED16_TO_FLOAT
 #define FIXED16_TO_FLOAT(a) (static_cast<float>(a) / READ_SCALAR) // cast to ensure the compiler does floating point division!
 #endif
 
-// Some macros to manipulate semaphores
+/**
+ * @brief Some macros for bit manipulation (global variable)
+ * 
+ * @remark Global variables (in a structure for clean[er] implimentation) are used for sheer speed as
+ * these are typically access by an interrupt service routine which requires ultimate speed.
+ * Non-ISR flags use the same structure to avoid repeating code uncessarily.  
+ * 
+ */
 #define SETBIT(flags, bit)   (flags |= ( bit))    //Set bit in byte addr
 #define CLEARBIT(flags, bit) (flags  &= (~bit))   // Clear bit in byte addr
 #define CHECKBIT(flags, bit) (flags  &  ( bit))   // Check bit in byte addr
 #define FLIPBIT(flags, bit)  (flags ^= ( bit))    // Flip a bit
 
+/**
+ * @brief Bring the system to a halt easily
+ * 
+ */
 #define STOP while (true) {}
 
-//Puts RGB colours into 5-6-5 16 bit format
+/**
+ * @brief Puts RGB colours into 5-6-5 16 bit format
+ * 
+ */
+
 #define RGB(r, g, b) (((r&0xF8)<<8)|((g&0xFC)<<3)|(b>>3))
 
 /*
@@ -174,27 +260,38 @@ constexpr uint16_t WHITE     {0xFFFF};
 constexpr int GRAPH_WIDTH  {190};
 constexpr int GRAPH_HEIGHT {100};
 constexpr int GRAPH_LEFT   {63};
-constexpr int GRAPH_Y      {130};
+constexpr int GRAPH_Y      {120};
 constexpr int BASE         {GRAPH_Y + GRAPH_HEIGHT};
 
 constexpr uint16_t defaultPaper  {BLACK};
 constexpr uint16_t defaultInk    {CYAN};
 constexpr uint16_t reticleColour {DEEPGREY};
 
-/*
-  Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful!
-  Consult the ISR below for further notes 
-  for exaxmple, for Timer 1 to fire every 4 seconds
-  (Adjust this if your board has a different speed!
-
-  x = 65535 - (16Mhz * 4/1024)
-  therefore x = 3035.
+/**
+ * @brief 
+ * @remark Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful! 
+ * Consult the ISR in main.c. For Timer 1 to fire every 4 seconds
+ * 
+ * (Adjust this if your board has a different speed, for example Xtal free 1Mhz!)
+ * 
+ * x = 65535 - (16Mhz * 4/1024)
+ * therefore x = 3035.
+ * 
+ * We're using 1 second ticks so:
+ * 
+ * x = 65535 - (16Mhz * 1024)
+ * therefore x = 49910.
+ * 
   https://oscarliang.com/arduino-timer-and-interrupt-tutorial/
 */
 
 constexpr uint16_t UPDATER {49910};  // one second timer. 
 
-// Active semaphores
+/**
+ * @brief Active semaphores
+ * 
+ */
+ 
 enum semaphores : uint16_t
 {
   FROST       = 0x0001, 
@@ -216,6 +313,10 @@ enum semaphores : uint16_t
   RESETALL    = 0xFFFF
 };
 
+/**
+ * @brief 16 bit binary "flags"
+ * 
+ */
 constexpr uint16_t B0000000000000001 {0x0001};
 constexpr uint16_t B0000000000000010 {0x0002};
 constexpr uint16_t B0000000000000100 {0x0004};
@@ -233,7 +334,11 @@ constexpr uint16_t B0010000000000000 {0x2000};
 constexpr uint16_t B0100000000000000 {0x4000};
 constexpr uint16_t B1000000000000000 {0x8000};
 
-// non-active semaphores used for function arguments}
+/**
+ * @brief non-active semaphores used for function arguments
+ * 
+ */
+
 enum  
 {
   IMPERIAL    = B00000001,
@@ -246,11 +351,14 @@ enum
 };
 
 
+/**
+ * @brief A simple, 1 degree fixed point trig table for Sine & Cosine
+ * 
+ * This is 0 - 90 degrees of arc in quadrant 1. Flip the sign to get the relative quadrant data.
+ * @see Trig.h for usage information
+ */
 #ifndef USE_GRAPH
-/* 
-* This is 0 - 90 degrees of arc in quadrant 1
-* Flip the sign to get the relative quadrant data.
-*/
+
 const uint16_t sinTable [] PROGMEM = 
 {
 0, 572, 1144, 1715, 2286, 2856, 3425, 3993, 4560, 5126, 5690, 6252, 6813, 
@@ -263,8 +371,11 @@ const uint16_t sinTable [] PROGMEM =
 32270, 32365, 32449, 32524, 32588, 32643, 32688, 32723, 32748, 32763, 32767
 };
 #endif
+/**
+ * @brief The "dry air" symbol bitmap
+ * 
+ */
 
-// The "dry air" symbol bitmap
 const unsigned char symbolDry [] PROGMEM = {
 0xff, 0xf7, 0xff, 0xff, 0xff, 0xff, 0xe3, 0xff, 0xff, 0xff, 0xff, 0xe3, 0xff, 0xff, 0xff, 0xff, 
 0xe3, 0xff, 0xff, 0xff, 0xff, 0xc3, 0xff, 0xff, 0xff, 0xff, 0xc9, 0xff, 0xf7, 0xff, 0xff, 0xc9, 
@@ -280,7 +391,11 @@ const unsigned char symbolDry [] PROGMEM = {
 0xff, 0xf3, 0xff, 0xff, 0xf3, 0xff, 0xc7, 0xff, 0xff, 0xf8, 0xff, 0x0f, 0xff, 0xff, 0xfe, 0x00,
 };
 
-// The "damp air" symbol bitmap
+/**
+ * @brief The "damp air" symbol bitmap
+ * 
+ */
+
 const unsigned char symbolDamp [] PROGMEM = {
 0xfd, 0xff, 0xff, 0xff, 0xff, 0xf9, 0xff, 0xff, 0xff, 0xff, 0xf0, 0xff, 0xff, 0xff, 0xff, 0xe0, 
 0x7f, 0xff, 0xff, 0xff, 0xe0, 0x7f, 0xff, 0xff, 0xff, 0xc0, 0x3f, 0xff, 0xff, 0xff, 0xc0, 0x1f, 
@@ -297,7 +412,10 @@ const unsigned char symbolDamp [] PROGMEM = {
 0x07, 0xff, 0xff, 0xff, 0xfe, 0x1f, 0xff, 0xff
 };
 
-
+/**
+ * @brief Ice symbol bitmap
+ * 
+ */
 #ifdef INCUBATOR
 const unsigned char symbolIce [] PROGMEM = {
 /*
@@ -315,6 +433,11 @@ const unsigned char symbolIce [] PROGMEM = {
 0xff, 0x81, 0xff, 0xff, 0xff, 0xff, 0x18, 0xff, 0xff, 0xff, 0xfe, 0x3c, 0x7f, 0xff, 0xff, 0xfc, 
 0x7e, 0x3f, 0xff, 0xff, 0xfe, 0xff, 0x7f, 0xff*/
 };
+
+/**
+ * @brief Overtemp symbol bitmap 
+ * 
+ */
 
 const unsigned char symbolHot [] PROGMEM = {
 0xff, 0xff, 0xff, 0xff, 0xff, 0xfc, 0xff, 0x80, 0xff, 0x9f, 0xfc, 0x7e, 0x7f, 0x7f, 0x1f, 0xfe, 

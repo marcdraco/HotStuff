@@ -1,0 +1,146 @@
+\hypertarget{classEnvironmental}{}\doxysection{Environmental Class Reference}
+\label{classEnvironmental}\index{Environmental@{Environmental}}
+
+
+{\ttfamily \#include $<$Environmental.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classEnvironmental_a66ee27b53e2df0b61fe00ab2b6f3f91c}{check\+Humidity\+Conditions}} ()
+\begin{DoxyCompactList}\small\item\em Test the humidity is within watershed (and trigger alarms) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEnvironmental_ab414d14328e150b32724dd78ab34ce95}{check\+Temperature\+Conditions}} ()
+\begin{DoxyCompactList}\small\item\em Test the temperature is within watershed (and trigger alarms) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEnvironmental_adf8b122f37a5b2b845f5d389a2f9ed25}{check\+Heat\+Index}} (const \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}} readings)
+\begin{DoxyCompactList}\small\item\em Set warning conditions if Steadman\textquotesingle{}s temp is exceeded. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEnvironmental_ab1d4ac7a94f3802ad95a912172407535}{unsafe\+Temp\+Warnings}} (const float \mbox{\hyperlink{types_8h_a3bb7dd7026aa6693d640f57f76064487}{T}})
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classDisplay}{Display}} warnings about effective working temperature. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classEnvironmental_a48296e606307b8c3d0339ba8c57531fa}{heat\+Index}} (const \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}} R)
+\begin{DoxyCompactList}\small\item\em Steadman\textquotesingle{}s 1994 approximation for heat in given humidity. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classEnvironmental_a85a15540b45e3b96993f20ea44cb7553}{magnus\+Dewpoint}} ()
+\begin{DoxyCompactList}\small\item\em Magnus\textquotesingle{} Dew Point (condensation temperature) calculation. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEnvironmental_ab9d7382d80b99971a4a277aaead494f4}{set\+Colour}} (const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} value, const \mbox{\hyperlink{types_8h_a1d5c2e0e27602ef705e90f6cc1eb5ebd}{limits\+\_\+t}} limits)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classEnvironmental_adf8b122f37a5b2b845f5d389a2f9ed25}\label{classEnvironmental_adf8b122f37a5b2b845f5d389a2f9ed25}} 
+\index{Environmental@{Environmental}!checkHeatIndex@{checkHeatIndex}}
+\index{checkHeatIndex@{checkHeatIndex}!Environmental@{Environmental}}
+\doxysubsubsection{\texorpdfstring{checkHeatIndex()}{checkHeatIndex()}}
+{\footnotesize\ttfamily void Environmental\+::check\+Heat\+Index (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}}}]{readings }\end{DoxyParamCaption})}
+
+
+
+Set warning conditions if Steadman\textquotesingle{}s temp is exceeded. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature in C \\
+\hline
+{\em H} & Relative humidity in \% \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classEnvironmental_a66ee27b53e2df0b61fe00ab2b6f3f91c}\label{classEnvironmental_a66ee27b53e2df0b61fe00ab2b6f3f91c}} 
+\index{Environmental@{Environmental}!checkHumidityConditions@{checkHumidityConditions}}
+\index{checkHumidityConditions@{checkHumidityConditions}!Environmental@{Environmental}}
+\doxysubsubsection{\texorpdfstring{checkHumidityConditions()}{checkHumidityConditions()}}
+{\footnotesize\ttfamily void Environmental\+::check\+Humidity\+Conditions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Test the humidity is within watershed (and trigger alarms) 
+
+Checks damp and dry air.\mbox{\Hypertarget{classEnvironmental_ab414d14328e150b32724dd78ab34ce95}\label{classEnvironmental_ab414d14328e150b32724dd78ab34ce95}} 
+\index{Environmental@{Environmental}!checkTemperatureConditions@{checkTemperatureConditions}}
+\index{checkTemperatureConditions@{checkTemperatureConditions}!Environmental@{Environmental}}
+\doxysubsubsection{\texorpdfstring{checkTemperatureConditions()}{checkTemperatureConditions()}}
+{\footnotesize\ttfamily void Environmental\+::check\+Temperature\+Conditions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Test the temperature is within watershed (and trigger alarms) 
+
+primarily for incubation systems
+
+\begin{DoxyRemark}{Remarks}
+under development 
+\end{DoxyRemark}
+\mbox{\Hypertarget{classEnvironmental_a48296e606307b8c3d0339ba8c57531fa}\label{classEnvironmental_a48296e606307b8c3d0339ba8c57531fa}} 
+\index{Environmental@{Environmental}!heatIndex@{heatIndex}}
+\index{heatIndex@{heatIndex}!Environmental@{Environmental}}
+\doxysubsubsection{\texorpdfstring{heatIndex()}{heatIndex()}}
+{\footnotesize\ttfamily float Environmental\+::heat\+Index (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}}}]{R }\end{DoxyParamCaption})}
+
+
+
+Steadman\textquotesingle{}s 1994 approximation for heat in given humidity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature in degrees C \\
+\hline
+{\em R} & Relative humidity in \% \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float
+\end{DoxyReturn}
+\begin{DoxyRemark}{Remarks}
+Approximate the \char`\"{}\+Heat index\char`\"{} per Steadman 1994. While the dry bulb temperature may be well within safe limits for humans, the addition of humidity reading prevents our bodies from effectively evaporatively cooling with the result that our internal temperature rises -\/ and the different of just a few degrees C can cause fatigue, aggression and eventually heat stroke and possibly death. These figures assume the person is doing mildly stressful work such as housework Workers in more extreme physical labour will suffer faster and vice versa. This is becoming a much more widespread problem as our climate changes.
+\end{DoxyRemark}
+Wikipedia \href{https://en.wikipedia.org/wiki/Heat_index}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Heat\+\_\+index}} 26–32 °C C\+A\+U\+T\+I\+ON\+: fatigue is possible with prolonged exposure and activity. Continuing activity could result in heat cramps. 32–41 °C Extreme caution\+: heat cramps and heat exhaustion are possible. Continuing activity could result in heat stroke. 41–54 °C Danger\+: heat cramps and heat exhaustion are likely. Heat stroke is probable with continued activity. \begin{quote}
+54 °C Extreme danger\+: heat stroke is imminent. \end{quote}
+\mbox{\Hypertarget{classEnvironmental_a85a15540b45e3b96993f20ea44cb7553}\label{classEnvironmental_a85a15540b45e3b96993f20ea44cb7553}} 
+\index{Environmental@{Environmental}!magnusDewpoint@{magnusDewpoint}}
+\index{magnusDewpoint@{magnusDewpoint}!Environmental@{Environmental}}
+\doxysubsubsection{\texorpdfstring{magnusDewpoint()}{magnusDewpoint()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Environmental\+::magnus\+Dewpoint (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Magnus\textquotesingle{} Dew Point (condensation temperature) calculation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature in degrees C \\
+\hline
+{\em R} & Relative humidity in \% \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float 
+\end{DoxyReturn}
+\begin{DoxyRemark}{Remarks}
+\href{https://en.wikipedia.org/wiki/Dew_point}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Dew\+\_\+point}} 
+\end{DoxyRemark}
+\mbox{\Hypertarget{classEnvironmental_ab9d7382d80b99971a4a277aaead494f4}\label{classEnvironmental_ab9d7382d80b99971a4a277aaead494f4}} 
+\index{Environmental@{Environmental}!setColour@{setColour}}
+\index{setColour@{setColour}!Environmental@{Environmental}}
+\doxysubsubsection{\texorpdfstring{setColour()}{setColour()}}
+{\footnotesize\ttfamily void Environmental\+::set\+Colour (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{value,  }\item[{const \mbox{\hyperlink{types_8h_a1d5c2e0e27602ef705e90f6cc1eb5ebd}{limits\+\_\+t}}}]{limits }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classEnvironmental_ab1d4ac7a94f3802ad95a912172407535}\label{classEnvironmental_ab1d4ac7a94f3802ad95a912172407535}} 
+\index{Environmental@{Environmental}!unsafeTempWarnings@{unsafeTempWarnings}}
+\index{unsafeTempWarnings@{unsafeTempWarnings}!Environmental@{Environmental}}
+\doxysubsubsection{\texorpdfstring{unsafeTempWarnings()}{unsafeTempWarnings()}}
+{\footnotesize\ttfamily void Environmental\+::unsafe\+Temp\+Warnings (\begin{DoxyParamCaption}\item[{const float}]{T }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{classDisplay}{Display}} warnings about effective working temperature. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & Steadman\textquotesingle{}s Effective temperature in C\\
+\hline
+\end{DoxyParams}
+\begin{DoxyRemark}{Remarks}
+Displays warnings in the lower half of the screen to stop or reduce activity for health and safety. 
+\end{DoxyRemark}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\mbox{\hyperlink{Environmental_8h}{Environmental.\+h}}\item 
+\mbox{\hyperlink{Environmental_8cpp}{Environmental.\+cpp}}\end{DoxyCompactItemize}

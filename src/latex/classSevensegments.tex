@@ -1,0 +1,458 @@
+\hypertarget{classSevensegments}{}\doxysection{Sevensegments Class Reference}
+\label{classSevensegments}\index{Sevensegments@{Sevensegments}}
+
+
+{\ttfamily \#include $<$Sevensegments.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classSevensegments_ace7d4e04fbf314011497a1e346b783bd}{Sevensegments}} (const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} lit)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classSevensegments}{Sevensegments}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_a191125499899f06709417e3ee61bb77f}{set\+Bias}} (const uint8\+\_\+t bias)
+\begin{DoxyCompactList}\small\item\em Set the Bias object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_af0eba9423d1d4941632f44f0c842a9c8}{set\+Xlen}} (const uint8\+\_\+t length)
+\begin{DoxyCompactList}\small\item\em Set the Xlen object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_ae27170406ecc652a2d2d7516df57448e}{set\+Ylen}} (const uint8\+\_\+t length)
+\begin{DoxyCompactList}\small\item\em Set the Ylen object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_af7e2cbf03102dc123402f4cf0ca29069}{set\+X\+Ylen}} (const uint8\+\_\+t length)
+\begin{DoxyCompactList}\small\item\em Sets the X \& Y segment dimensions. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_a5d81f0c8aabaeddcc6018b3691f1e508}{set\+Rows}} (const uint8\+\_\+t rows)
+\begin{DoxyCompactList}\small\item\em Set the number of lines each side of the main line. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{classSevensegments_a3576bceaf30e651a70fa694f705f0124}{set\+Lit}} (\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} colour1, \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} colour2)
+\begin{DoxyCompactList}\small\item\em Set the bright and dim colours overriding automatic settings. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{classSevensegments_a3885b4ae52ae022b21a23b32f1111f94}{set\+Lit}} (\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{types_8h_aa363ccf99c2ccd342f344b9e17a53e2e}{colour}})
+\begin{DoxyCompactList}\small\item\em Sets the colour for a lit segment. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{classSevensegments_aa659a83db028ed604e14586ba2bc444b}{set\+Unlit}} (\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{types_8h_aa363ccf99c2ccd342f344b9e17a53e2e}{colour}})
+\begin{DoxyCompactList}\small\item\em Set colour of an unlit segment. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{classSevensegments_a1151aa3cf89ef20ee2d697cd3d3d3e9e}{translate\+Char}} (const uint8\+\_\+t \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}})
+\begin{DoxyCompactList}\small\item\em finds the correct \char`\"{}glyph\char`\"{} \end{DoxyCompactList}\item 
+uint16\+\_\+t \mbox{\hyperlink{classSevensegments_ad9560392e408d82b9e83fdb96091cea4}{translate\+Char16}} (const uint8\+\_\+t \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}})
+\begin{DoxyCompactList}\small\item\em finds the correct \char`\"{}glyph\char`\"{} \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_a8a3a1cd851e70efd4b576b41edb84a32}{draw\+Glyph}} (const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, const uint8\+\_\+t \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}}, uint8\+\_\+t wide, uint8\+\_\+t high, const uint8\+\_\+t rows, const uint8\+\_\+t bias)
+\begin{DoxyCompactList}\small\item\em displays a 7-\/segment \char`\"{}glyph\char`\"{} at X, Y \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_a8132d8ad0129ba682d1ad3ea020ade29}{draw\+Glyph16}} (const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, const uint8\+\_\+t \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}}, const uint8\+\_\+t size, const uint8\+\_\+t rows, const uint8\+\_\+t bias)
+\begin{DoxyCompactList}\small\item\em As draw\+Glyph but only one size is given for squarer appearance. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_a0eb9f728f07b6f5545f6ecceb5010537}{draw\+Percent}} (const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, const uint8\+\_\+t size, const uint8\+\_\+t rows, const uint8\+\_\+t bias)
+\begin{DoxyCompactList}\small\item\em Specially produced \char`\"{}percentage\char`\"{} sign for the 7 segment display options. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_add9fa1aeafbc19d33e3adb62a6f04e4d}{slash}} (const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, const uint8\+\_\+t wide, const uint8\+\_\+t high, const uint8\+\_\+t rows)
+\begin{DoxyCompactList}\small\item\em A slash (solidus) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_a64a000694ff41bd2f3b62e4992d0aef3}{backslash}} (const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, const uint8\+\_\+t wide, const uint8\+\_\+t high, const uint8\+\_\+t rows)
+\begin{DoxyCompactList}\small\item\em Backslash (reverse solidus) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSevensegments_a7c522c6ef1620a43e344981eea6134ca}{draw\+DP}} (const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, const uint8\+\_\+t radius, const uint8\+\_\+t on\+Flag)
+\begin{DoxyCompactList}\small\item\em A simple decimal point (just a circle) \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classSevensegments_af51869c4a3a9f9d016a2240f610c7acb}{segmented\+String}} (\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, char $\ast$b, uint8\+\_\+t size, uint8\+\_\+t rows, uint8\+\_\+t bias, uint8\+\_\+t step)
+\begin{DoxyCompactList}\small\item\em A shortcut to print several 7-\/segment characters in one go. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{classSevensegments_a192104e5171d8424ec338a029bc77c9b}{dimmer}} (\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} C, uint8\+\_\+t brightness)
+\begin{DoxyCompactList}\small\item\em V\+E\+RY approximately dims 5-\/6-\/5 (16 bit) colour values by a percentage. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classSevensegments_ace7d4e04fbf314011497a1e346b783bd}\label{classSevensegments_ace7d4e04fbf314011497a1e346b783bd}} 
+\index{Sevensegments@{Sevensegments}!Sevensegments@{Sevensegments}}
+\index{Sevensegments@{Sevensegments}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{Sevensegments()}{Sevensegments()}}
+{\footnotesize\ttfamily Sevensegments\+::\+Sevensegments (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{lit }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{classSevensegments}{Sevensegments}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lit} & Colour of the lit segments (inactive segment colour is calculated) \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSevensegments_a64a000694ff41bd2f3b62e4992d0aef3}\label{classSevensegments_a64a000694ff41bd2f3b62e4992d0aef3}} 
+\index{Sevensegments@{Sevensegments}!backslash@{backslash}}
+\index{backslash@{backslash}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{backslash()}{backslash()}}
+{\footnotesize\ttfamily void Sevensegments\+::backslash (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{const uint8\+\_\+t}]{wide,  }\item[{const uint8\+\_\+t}]{high,  }\item[{const uint8\+\_\+t}]{rows }\end{DoxyParamCaption})}
+
+
+
+Backslash (reverse solidus) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & \\
+\hline
+{\em Y} & \\
+\hline
+{\em wide} & \\
+\hline
+{\em high} & \\
+\hline
+{\em rows} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_a192104e5171d8424ec338a029bc77c9b}\label{classSevensegments_a192104e5171d8424ec338a029bc77c9b}} 
+\index{Sevensegments@{Sevensegments}!dimmer@{dimmer}}
+\index{dimmer@{dimmer}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{dimmer()}{dimmer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} Sevensegments\+::dimmer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{C,  }\item[{uint8\+\_\+t}]{brightness }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+V\+E\+RY approximately dims 5-\/6-\/5 (16 bit) colour values by a percentage. 
+
+Dim a colour by a percentage.
+
+
+\begin{DoxyParams}{Parameters}
+{\em C} & The raw colour value \\
+\hline
+{\em brightness} & the new brightness (note, this can\textquotesingle{}t increase it!) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+colours\+\_\+t the new colour value 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Bug}
+\item[\mbox{\hyperlink{bug__bug000002}{Bug}}]It\textquotesingle{}s not very accurate! \end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em C} & The colour value as 5-\/6-\/5 encoded. \\
+\hline
+{\em brightness} & 100\% (max) to 0\% (min) Steps are about 7\% (so 15 levels) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+colours\+\_\+t the new colour value 
+\end{DoxyReturn}
+\begin{DoxyRemark}{Remarks}
+Due to low number of bits per colour, this is O\+N\+LY approximate! 
+\end{DoxyRemark}
+\mbox{\Hypertarget{classSevensegments_a7c522c6ef1620a43e344981eea6134ca}\label{classSevensegments_a7c522c6ef1620a43e344981eea6134ca}} 
+\index{Sevensegments@{Sevensegments}!drawDP@{drawDP}}
+\index{drawDP@{drawDP}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{drawDP()}{drawDP()}}
+{\footnotesize\ttfamily void Sevensegments\+::draw\+DP (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{const uint8\+\_\+t}]{radius,  }\item[{const uint8\+\_\+t}]{on\+Flag }\end{DoxyParamCaption})}
+
+
+
+A simple decimal point (just a circle) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & \\
+\hline
+{\em Y} & \\
+\hline
+{\em radius} & \\
+\hline
+{\em on\+Flag} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_a8a3a1cd851e70efd4b576b41edb84a32}\label{classSevensegments_a8a3a1cd851e70efd4b576b41edb84a32}} 
+\index{Sevensegments@{Sevensegments}!drawGlyph@{drawGlyph}}
+\index{drawGlyph@{drawGlyph}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{drawGlyph()}{drawGlyph()}}
+{\footnotesize\ttfamily void Sevensegments\+::draw\+Glyph (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{const uint8\+\_\+t}]{glyph,  }\item[{uint8\+\_\+t}]{wide,  }\item[{uint8\+\_\+t}]{high,  }\item[{const uint8\+\_\+t}]{rows,  }\item[{const uint8\+\_\+t}]{bias }\end{DoxyParamCaption})}
+
+
+
+displays a 7-\/segment \char`\"{}glyph\char`\"{} at X, Y 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Absolute X position \\
+\hline
+{\em Y} & Absolute Y position \\
+\hline
+{\em glyph} & A\+S\+CI character -\/ remember these are mostly just numbers! \\
+\hline
+{\em wide} & Length of the segment (X) \\
+\hline
+{\em size} & Height of the segment (Y) \\
+\hline
+{\em rows} & Number of rows -\/ 1 \char`\"{}row\char`\"{} is always displayed. \\
+\hline
+{\em bias} & Width of the gap between the segments \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_a8132d8ad0129ba682d1ad3ea020ade29}\label{classSevensegments_a8132d8ad0129ba682d1ad3ea020ade29}} 
+\index{Sevensegments@{Sevensegments}!drawGlyph16@{drawGlyph16}}
+\index{drawGlyph16@{drawGlyph16}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{drawGlyph16()}{drawGlyph16()}}
+{\footnotesize\ttfamily void Sevensegments\+::draw\+Glyph16 (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{const uint8\+\_\+t}]{glyph,  }\item[{const uint8\+\_\+t}]{size,  }\item[{const uint8\+\_\+t}]{rows,  }\item[{const uint8\+\_\+t}]{bias }\end{DoxyParamCaption})}
+
+
+
+As draw\+Glyph but only one size is given for squarer appearance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & \\
+\hline
+{\em Y} & \\
+\hline
+{\em glyph} & \\
+\hline
+{\em size} & \\
+\hline
+{\em rows} & \\
+\hline
+{\em bias} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_a0eb9f728f07b6f5545f6ecceb5010537}\label{classSevensegments_a0eb9f728f07b6f5545f6ecceb5010537}} 
+\index{Sevensegments@{Sevensegments}!drawPercent@{drawPercent}}
+\index{drawPercent@{drawPercent}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{drawPercent()}{drawPercent()}}
+{\footnotesize\ttfamily void Sevensegments\+::draw\+Percent (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{const uint8\+\_\+t}]{size,  }\item[{const uint8\+\_\+t}]{rows,  }\item[{const uint8\+\_\+t}]{bias }\end{DoxyParamCaption})}
+
+
+
+Specially produced \char`\"{}percentage\char`\"{} sign for the 7 segment display options. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & \\
+\hline
+{\em Y} & \\
+\hline
+{\em size} & \\
+\hline
+{\em rows} & \\
+\hline
+{\em bias} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_af51869c4a3a9f9d016a2240f610c7acb}\label{classSevensegments_af51869c4a3a9f9d016a2240f610c7acb}} 
+\index{Sevensegments@{Sevensegments}!segmentedString@{segmentedString}}
+\index{segmentedString@{segmentedString}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{segmentedString()}{segmentedString()}}
+{\footnotesize\ttfamily int Sevensegments\+::segmented\+String (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{char $\ast$}]{b,  }\item[{uint8\+\_\+t}]{size,  }\item[{uint8\+\_\+t}]{rows,  }\item[{uint8\+\_\+t}]{bias,  }\item[{uint8\+\_\+t}]{step }\end{DoxyParamCaption})}
+
+
+
+A shortcut to print several 7-\/segment characters in one go. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & \\
+\hline
+{\em Y} & \\
+\hline
+{\em b} & Standard C pointer to a string \\
+\hline
+{\em size} & \\
+\hline
+{\em rows} & \\
+\hline
+{\em bias} & \\
+\hline
+{\em step} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the calculated position for the next chacter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSevensegments_a191125499899f06709417e3ee61bb77f}\label{classSevensegments_a191125499899f06709417e3ee61bb77f}} 
+\index{Sevensegments@{Sevensegments}!setBias@{setBias}}
+\index{setBias@{setBias}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setBias()}{setBias()}}
+{\footnotesize\ttfamily void Sevensegments\+::set\+Bias (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{bias }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Bias object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bias} & distance in pixels separating each segment \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_a3885b4ae52ae022b21a23b32f1111f94}\label{classSevensegments_a3885b4ae52ae022b21a23b32f1111f94}} 
+\index{Sevensegments@{Sevensegments}!setLit@{setLit}}
+\index{setLit@{setLit}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setLit()}{setLit()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} Sevensegments\+::set\+Lit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{colour }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the colour for a lit segment. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em colour} & the lit colour \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+colours\+\_\+t the colour of the segment before changing it 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSevensegments_a3576bceaf30e651a70fa694f705f0124}\label{classSevensegments_a3576bceaf30e651a70fa694f705f0124}} 
+\index{Sevensegments@{Sevensegments}!setLit@{setLit}}
+\index{setLit@{setLit}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setLit()}{setLit()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} Sevensegments\+::set\+Lit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{colour1,  }\item[{\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{colour2 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the bright and dim colours overriding automatic settings. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em colour1} & Colour of the lit segments for this glyph \\
+\hline
+{\em colour2} & Colour of the unlit segments (or paper) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+colours\+\_\+t the previous colour for later use 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSevensegments_a5d81f0c8aabaeddcc6018b3691f1e508}\label{classSevensegments_a5d81f0c8aabaeddcc6018b3691f1e508}} 
+\index{Sevensegments@{Sevensegments}!setRows@{setRows}}
+\index{setRows@{setRows}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setRows()}{setRows()}}
+{\footnotesize\ttfamily void Sevensegments\+::set\+Rows (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{rows }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the number of lines each side of the main line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rows} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRemark}{Remarks}
+essentially sets, the width of the segment as displayed 
+\end{DoxyRemark}
+\mbox{\Hypertarget{classSevensegments_aa659a83db028ed604e14586ba2bc444b}\label{classSevensegments_aa659a83db028ed604e14586ba2bc444b}} 
+\index{Sevensegments@{Sevensegments}!setUnlit@{setUnlit}}
+\index{setUnlit@{setUnlit}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setUnlit()}{setUnlit()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} Sevensegments\+::set\+Unlit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{colour }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set colour of an unlit segment. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em colour} & A normal (bright) colour \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+colours\+\_\+t the previous value held for that segment 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSevensegments_af0eba9423d1d4941632f44f0c842a9c8}\label{classSevensegments_af0eba9423d1d4941632f44f0c842a9c8}} 
+\index{Sevensegments@{Sevensegments}!setXlen@{setXlen}}
+\index{setXlen@{setXlen}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setXlen()}{setXlen()}}
+{\footnotesize\ttfamily void Sevensegments\+::set\+Xlen (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Xlen object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em length} & maximum width of a segment \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_af7e2cbf03102dc123402f4cf0ca29069}\label{classSevensegments_af7e2cbf03102dc123402f4cf0ca29069}} 
+\index{Sevensegments@{Sevensegments}!setXYlen@{setXYlen}}
+\index{setXYlen@{setXYlen}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setXYlen()}{setXYlen()}}
+{\footnotesize\ttfamily void Sevensegments\+::set\+X\+Ylen (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the X \& Y segment dimensions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em length} & max size of each segment \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_ae27170406ecc652a2d2d7516df57448e}\label{classSevensegments_ae27170406ecc652a2d2d7516df57448e}} 
+\index{Sevensegments@{Sevensegments}!setYlen@{setYlen}}
+\index{setYlen@{setYlen}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{setYlen()}{setYlen()}}
+{\footnotesize\ttfamily void Sevensegments\+::set\+Ylen (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Ylen object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em length} & vertical size of a segment \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_add9fa1aeafbc19d33e3adb62a6f04e4d}\label{classSevensegments_add9fa1aeafbc19d33e3adb62a6f04e4d}} 
+\index{Sevensegments@{Sevensegments}!slash@{slash}}
+\index{slash@{slash}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{slash()}{slash()}}
+{\footnotesize\ttfamily void Sevensegments\+::slash (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{const \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{const uint8\+\_\+t}]{wide,  }\item[{const uint8\+\_\+t}]{high,  }\item[{const uint8\+\_\+t}]{rows }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+A slash (solidus) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & \\
+\hline
+{\em Y} & \\
+\hline
+{\em wide} & \\
+\hline
+{\em high} & \\
+\hline
+{\em rows} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSevensegments_a1151aa3cf89ef20ee2d697cd3d3d3e9e}\label{classSevensegments_a1151aa3cf89ef20ee2d697cd3d3d3e9e}} 
+\index{Sevensegments@{Sevensegments}!translateChar@{translateChar}}
+\index{translateChar@{translateChar}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{translateChar()}{translateChar()}}
+{\footnotesize\ttfamily uint8\+\_\+t Sevensegments\+::translate\+Char (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{glyph }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+finds the correct \char`\"{}glyph\char`\"{} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em glyph} & A\+S\+C\+II glyph \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint8\+\_\+t the a binary bitmap used to draw the actual 7-\/segment character 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSevensegments_ad9560392e408d82b9e83fdb96091cea4}\label{classSevensegments_ad9560392e408d82b9e83fdb96091cea4}} 
+\index{Sevensegments@{Sevensegments}!translateChar16@{translateChar16}}
+\index{translateChar16@{translateChar16}!Sevensegments@{Sevensegments}}
+\doxysubsubsection{\texorpdfstring{translateChar16()}{translateChar16()}}
+{\footnotesize\ttfamily uint16\+\_\+t Sevensegments\+::translate\+Char16 (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{glyph }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+finds the correct \char`\"{}glyph\char`\"{} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em glyph} & A\+S\+C\+II glyph \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint16\+\_\+t the a binary bitmap used to draw the actual 16-\/segment character 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\mbox{\hyperlink{Sevensegments_8h}{Sevensegments.\+h}}\item 
+\mbox{\hyperlink{Sevensegments_8cpp}{Sevensegments.\+cpp}}\end{DoxyCompactItemize}

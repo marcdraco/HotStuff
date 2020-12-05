@@ -347,10 +347,18 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
   ++isrTimings.timeInSeconds;  // this is determined by the ISR calculation at the head of the sketch.
   ++isrTimings.timeToRead;
 
-  if (isrTimings.timeToRead == 5)
+  if (isrTimings.timeToRead == READ_UPDATE_TIME)
   {
     isrTimings.timeToRead = 0;
     SETBIT(globals.ISR,  UPDATEREADS);
+
+      ++isrTimings.timeToGraph;
+
+      if (isrTimings.timeToGraph == CHART_UPDATE_FREQUENCY)
+      {
+        SETBIT(globals.ISR, UPDATEGRAPH);
+        isrTimings.timeToGraph = 0;
+      }
   }
 
   if (isrTimings.timeInSeconds == 60)

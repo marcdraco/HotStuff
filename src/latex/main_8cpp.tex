@@ -1,0 +1,178 @@
+\hypertarget{main_8cpp}{}\doxysection{main.\+cpp File Reference}
+\label{main_8cpp}\index{main.cpp@{main.cpp}}
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$Wire.\+h$>$}\newline
+{\ttfamily \#include $<$Adafruit\+\_\+\+G\+F\+X.\+h$>$}\newline
+{\ttfamily \#include $<$M\+C\+U\+F\+R\+I\+E\+N\+D\+\_\+kbv.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Universal\+D\+H\+T.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Alarm.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Display.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Environmental.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Fonts.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Graph.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}hotstuff\+\_\+fonts.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}hotstuff.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Messages.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Reading.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Sevensegments.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Trig.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}types.\+h\char`\"{}}\newline
+Include dependency graph for main.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup}} ()
+\begin{DoxyCompactList}\small\item\em classic Arduino setups \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop}} ()
+\begin{DoxyCompactList}\small\item\em Classic Arduino loop. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a4303fe293b9b96d93667d2c6bccb4352}{show\+L\+C\+D\+Reads\+Horizontal}} ()
+\begin{DoxyCompactList}\small\item\em Show the large temperature and humidity displays. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{main_8cpp_ab16889ae984b9b798989a0d239283cac}{I\+SR}} (T\+I\+M\+E\+R1\+\_\+\+O\+V\+F\+\_\+vect)
+\begin{DoxyCompactList}\small\item\em Hotstuff\textquotesingle{}s internal clock which ticks every second. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+M\+C\+U\+F\+R\+I\+E\+N\+D\+\_\+kbv \mbox{\hyperlink{main_8cpp_a8191543c547de0ab2693670640b24be6}{screen}}
+\item 
+\mbox{\hyperlink{classDisplay}{Display}} \mbox{\hyperlink{main_8cpp_aa5083e8fab8ddaf62944949e251663bb}{display}}
+\item 
+\mbox{\hyperlink{classUniversalDHT}{Universal\+D\+HT}} \mbox{\hyperlink{main_8cpp_a523f25a5b6a8a03a74ba5b4fde34110c}{dht22}} (\mbox{\hyperlink{constants_8h_a4101448b587cd1bac019da24b1c22289}{D\+H\+T22\+\_\+\+D\+A\+TA}})
+\item 
+\mbox{\hyperlink{classGraph}{Graph}} \mbox{\hyperlink{main_8cpp_a79a573ead42060b67960b33fa0e87a2c}{graph}}
+\item 
+\mbox{\hyperlink{classReading}{Reading}} \mbox{\hyperlink{main_8cpp_a8fffd9b7aaf335a7f31f13af8f145ad1}{humidity}}
+\item 
+\mbox{\hyperlink{classReading}{Reading}} \mbox{\hyperlink{main_8cpp_adc4ccb7d70f1c8fa01e9d70bd1aedb87}{temperature}}
+\item 
+\mbox{\hyperlink{classFonts}{Fonts}} \mbox{\hyperlink{main_8cpp_ade4f5bae3a16f5233feb888d417ea183}{fonts}}
+\item 
+\mbox{\hyperlink{classEnvironmental}{Environmental}} \mbox{\hyperlink{main_8cpp_a5d05f6d9968a61dd3ddd73a5f9ee7501}{environment}}
+\item 
+\mbox{\hyperlink{classMessages}{Messages}} \mbox{\hyperlink{main_8cpp_a59fcced9cc189b4547436d07d9eb3910}{messages}}
+\item 
+\mbox{\hyperlink{classSevensegments}{Sevensegments}} \mbox{\hyperlink{main_8cpp_a60aeb69fa184c5e39308c4be150044db}{segments}} (\mbox{\hyperlink{constants_8h_ac3d521e88a5c8df669bb06546318287c}{default\+Ink}})
+\item 
+\mbox{\hyperlink{structglobalVariables}{global\+Variables}} \mbox{\hyperlink{main_8cpp_a2a980a4725f4024fd3a862c0904de134}{globals}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{main_8cpp_ab16889ae984b9b798989a0d239283cac}\label{main_8cpp_ab16889ae984b9b798989a0d239283cac}} 
+\index{main.cpp@{main.cpp}!ISR@{ISR}}
+\index{ISR@{ISR}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{ISR()}{ISR()}}
+{\footnotesize\ttfamily I\+SR (\begin{DoxyParamCaption}\item[{T\+I\+M\+E\+R1\+\_\+\+O\+V\+F\+\_\+vect}]{ }\end{DoxyParamCaption})}
+
+
+
+Hotstuff\textquotesingle{}s internal clock which ticks every second. 
+
+\mbox{\Hypertarget{main_8cpp_afe461d27b9c48d5921c00d521181f12f}\label{main_8cpp_afe461d27b9c48d5921c00d521181f12f}} 
+\index{main.cpp@{main.cpp}!loop@{loop}}
+\index{loop@{loop}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{loop()}{loop()}}
+{\footnotesize\ttfamily void loop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Classic Arduino loop. 
+
+Following here are the annunciators\mbox{\Hypertarget{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}\label{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}} 
+\index{main.cpp@{main.cpp}!setup@{setup}}
+\index{setup@{setup}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setup()}{setup()}}
+{\footnotesize\ttfamily void setup (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+classic Arduino setups 
+
+\mbox{\Hypertarget{main_8cpp_a4303fe293b9b96d93667d2c6bccb4352}\label{main_8cpp_a4303fe293b9b96d93667d2c6bccb4352}} 
+\index{main.cpp@{main.cpp}!showLCDReadsHorizontal@{showLCDReadsHorizontal}}
+\index{showLCDReadsHorizontal@{showLCDReadsHorizontal}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{showLCDReadsHorizontal()}{showLCDReadsHorizontal()}}
+{\footnotesize\ttfamily void show\+L\+C\+D\+Reads\+Horizontal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Show the large temperature and humidity displays. 
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{main_8cpp_a523f25a5b6a8a03a74ba5b4fde34110c}\label{main_8cpp_a523f25a5b6a8a03a74ba5b4fde34110c}} 
+\index{main.cpp@{main.cpp}!dht22@{dht22}}
+\index{dht22@{dht22}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{dht22}{dht22}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classUniversalDHT}{Universal\+D\+HT}} dht22(\mbox{\hyperlink{constants_8h_a4101448b587cd1bac019da24b1c22289}{D\+H\+T22\+\_\+\+D\+A\+TA}})}
+
+\mbox{\Hypertarget{main_8cpp_aa5083e8fab8ddaf62944949e251663bb}\label{main_8cpp_aa5083e8fab8ddaf62944949e251663bb}} 
+\index{main.cpp@{main.cpp}!display@{display}}
+\index{display@{display}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{display}{display}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classDisplay}{Display}} display}
+
+\mbox{\Hypertarget{main_8cpp_a5d05f6d9968a61dd3ddd73a5f9ee7501}\label{main_8cpp_a5d05f6d9968a61dd3ddd73a5f9ee7501}} 
+\index{main.cpp@{main.cpp}!environment@{environment}}
+\index{environment@{environment}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{environment}{environment}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classEnvironmental}{Environmental}} environment}
+
+\mbox{\Hypertarget{main_8cpp_ade4f5bae3a16f5233feb888d417ea183}\label{main_8cpp_ade4f5bae3a16f5233feb888d417ea183}} 
+\index{main.cpp@{main.cpp}!fonts@{fonts}}
+\index{fonts@{fonts}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{fonts}{fonts}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classFonts}{Fonts}} fonts}
+
+\mbox{\Hypertarget{main_8cpp_a2a980a4725f4024fd3a862c0904de134}\label{main_8cpp_a2a980a4725f4024fd3a862c0904de134}} 
+\index{main.cpp@{main.cpp}!globals@{globals}}
+\index{globals@{globals}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{globals}{globals}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglobalVariables}{global\+Variables}} globals}
+
+chart update counter should count C\+H\+A\+RT updates, not C\+MA updates! C\+MA counter doesn\textquotesingle{}t work with the bloody 8-\/10 minute update, stupid! \mbox{\Hypertarget{main_8cpp_a79a573ead42060b67960b33fa0e87a2c}\label{main_8cpp_a79a573ead42060b67960b33fa0e87a2c}} 
+\index{main.cpp@{main.cpp}!graph@{graph}}
+\index{graph@{graph}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{graph}{graph}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGraph}{Graph}} graph}
+
+\mbox{\Hypertarget{main_8cpp_a8fffd9b7aaf335a7f31f13af8f145ad1}\label{main_8cpp_a8fffd9b7aaf335a7f31f13af8f145ad1}} 
+\index{main.cpp@{main.cpp}!humidity@{humidity}}
+\index{humidity@{humidity}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{humidity}{humidity}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classReading}{Reading}} humidity}
+
+\mbox{\Hypertarget{main_8cpp_a59fcced9cc189b4547436d07d9eb3910}\label{main_8cpp_a59fcced9cc189b4547436d07d9eb3910}} 
+\index{main.cpp@{main.cpp}!messages@{messages}}
+\index{messages@{messages}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{messages}{messages}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classMessages}{Messages}} messages}
+
+\mbox{\Hypertarget{main_8cpp_a8191543c547de0ab2693670640b24be6}\label{main_8cpp_a8191543c547de0ab2693670640b24be6}} 
+\index{main.cpp@{main.cpp}!screen@{screen}}
+\index{screen@{screen}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{screen}{screen}}
+{\footnotesize\ttfamily M\+C\+U\+F\+R\+I\+E\+N\+D\+\_\+kbv screen}
+
+\mbox{\Hypertarget{main_8cpp_a60aeb69fa184c5e39308c4be150044db}\label{main_8cpp_a60aeb69fa184c5e39308c4be150044db}} 
+\index{main.cpp@{main.cpp}!segments@{segments}}
+\index{segments@{segments}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{segments}{segments}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classSevensegments}{Sevensegments}} segments(\mbox{\hyperlink{constants_8h_ac3d521e88a5c8df669bb06546318287c}{default\+Ink}})}
+
+\mbox{\Hypertarget{main_8cpp_adc4ccb7d70f1c8fa01e9d70bd1aedb87}\label{main_8cpp_adc4ccb7d70f1c8fa01e9d70bd1aedb87}} 
+\index{main.cpp@{main.cpp}!temperature@{temperature}}
+\index{temperature@{temperature}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{temperature}{temperature}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classReading}{Reading}} temperature}
+

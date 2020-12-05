@@ -1,0 +1,4 @@
+<map id="FixedGFXfont" name="FixedGFXfont">
+<area shape="rect" id="node1" title="Extended font data (based on Adafruit libarary)" alt="" coords="10,95,113,121"/>
+<area shape="rect" id="node2" href="$structFixedGFXglyph.html" title="Font data stored PER GLYPH &#45; character &#45; (based on Adafruit libarary)" alt="" coords="5,5,117,32"/>
+</map>

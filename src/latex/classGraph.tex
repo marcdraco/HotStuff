@@ -1,0 +1,305 @@
+\hypertarget{classGraph}{}\doxysection{Graph Class Reference}
+\label{classGraph}\index{Graph@{Graph}}
+
+
+{\ttfamily \#include $<$Graph.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classGraph_ae4c72b8ac4d693c49800a4c7e273654f}{Graph}} ()
+\item 
+void \mbox{\hyperlink{classGraph_a15596c18db2b0d341c369aa51bca0afd}{draw\+Pointers}} ()
+\begin{DoxyCompactList}\small\item\em Simple (line art) pointer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_a97f4554f7c75aa6075244af44db5f271}{draw\+Reticles}} (const uint8\+\_\+t x\+Divs, const uint8\+\_\+t y\+Divs)
+\begin{DoxyCompactList}\small\item\em Draw the graph lines and chart calibration markings. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_abe086b673e4290ef460e6ac7bc3ab8e3}{draw\+Radials}} ()
+\begin{DoxyCompactList}\small\item\em draws circular plots for the analogue version \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_abec795f481166df9c62313d81d398c46}{draw\+Graph}} ()
+\begin{DoxyCompactList}\small\item\em Displays the main graph. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_ac4ebf045808d77ad27fa1098fb0cdcce}{draw\+Graph\+Scale\+Marks}} ()
+\begin{DoxyCompactList}\small\item\em Puts the scales and text around the chart. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_abb245a6febc7e83d556a09c23bb976d5}{draw}} (const \mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} $\ast$polygon, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} outline)
+\begin{DoxyCompactList}\small\item\em draws a trianglular polygon \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_a9457f3f8a594cd825424a9f81b716136}{draw}} (const \mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} $\ast$polygon, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} outline)
+\begin{DoxyCompactList}\small\item\em draws a quadrilateral polygon \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_a7727d47069f9e6b90724ace7912d4b27}{translate}} (\mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} $\ast$polygon, const \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} cords)
+\begin{DoxyCompactList}\small\item\em translates (moves) draws a trianglular polygon \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_a5f7958e9b991feb98835a19b25a04eab}{translate}} (\mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} $\ast$polygon, const \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} cords)
+\begin{DoxyCompactList}\small\item\em translates (moves) a quadrilateral polygon \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_ae919c79efd06133e4c4390a367dc75a8}{rotate}} (\mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} $\ast$polygon, const \mbox{\hyperlink{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}{angle\+\_\+t}} theta)
+\begin{DoxyCompactList}\small\item\em Rotates a triangular polygon. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_a27ae29c98f5823f9f36e4027822a749f}{rotate}} (\mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} $\ast$polygon, const \mbox{\hyperlink{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}{angle\+\_\+t}} theta)
+\begin{DoxyCompactList}\small\item\em Rotates a quadrilateral polygon. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_a11925d634fa3a1007da06a5eb2474f4a}{draw\+I\+Bar}} (const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} \mbox{\hyperlink{types_8h_ae1c2d516777e6b42af0d281c9ecc7375}{x}}, const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} reading, int16\+\_\+t minimum, int16\+\_\+t maximum, const int8\+\_\+t scale, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink, const bool pointer)
+\begin{DoxyCompactList}\small\item\em A simple vertial bar on the chart with maxium and minimum values. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classGraph_ac0492a5f08041e0427359072f90831f8}{draw\+Min\+Max}} (const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} \mbox{\hyperlink{types_8h_ae1c2d516777e6b42af0d281c9ecc7375}{x}}, const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} reading, const int16\+\_\+t \mbox{\hyperlink{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}{min}}, const int16\+\_\+t \mbox{\hyperlink{types_8h_a13d62d16c2a3f1fabe3b80d539755c8b}{max}}, const int8\+\_\+t scale, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink)
+\item 
+void \mbox{\hyperlink{classGraph_a0d0921c1a9a5d7ae51ac41045d3a7a57}{draw\+Diamond}} (const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} \mbox{\hyperlink{types_8h_ae1c2d516777e6b42af0d281c9ecc7375}{x}}, const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} reading, const uint16\+\_\+t scale, const uint8\+\_\+t size, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink)
+\item 
+void \mbox{\hyperlink{classGraph_ac290fd5ac8942618cd7113afc93852c6}{draw\+Target}} (const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} \mbox{\hyperlink{types_8h_ae1c2d516777e6b42af0d281c9ecc7375}{x}}, const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} reading, const uint16\+\_\+t scale, const uint8\+\_\+t size, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classGraph_ae4c72b8ac4d693c49800a4c7e273654f}\label{classGraph_ae4c72b8ac4d693c49800a4c7e273654f}} 
+\index{Graph@{Graph}!Graph@{Graph}}
+\index{Graph@{Graph}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{Graph()}{Graph()}}
+{\footnotesize\ttfamily Graph\+::\+Graph (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classGraph_a9457f3f8a594cd825424a9f81b716136}\label{classGraph_a9457f3f8a594cd825424a9f81b716136}} 
+\index{Graph@{Graph}!draw@{draw}}
+\index{draw@{draw}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Graph\+::draw (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} $\ast$}]{polygon,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{outline }\end{DoxyParamCaption})}
+
+
+
+draws a quadrilateral polygon 
+
+
+\begin{DoxyParams}{Parameters}
+{\em polygon} & pointer to a polygon structure \\
+\hline
+{\em ink} & \\
+\hline
+{\em outline} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_abb245a6febc7e83d556a09c23bb976d5}\label{classGraph_abb245a6febc7e83d556a09c23bb976d5}} 
+\index{Graph@{Graph}!draw@{draw}}
+\index{draw@{draw}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Graph\+::draw (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} $\ast$}]{polygon,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{outline }\end{DoxyParamCaption})}
+
+
+
+draws a trianglular polygon 
+
+
+\begin{DoxyParams}{Parameters}
+{\em polygon} & pointer to a polygon structure \\
+\hline
+{\em ink} & \\
+\hline
+{\em outline} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_a0d0921c1a9a5d7ae51ac41045d3a7a57}\label{classGraph_a0d0921c1a9a5d7ae51ac41045d3a7a57}} 
+\index{Graph@{Graph}!drawDiamond@{drawDiamond}}
+\index{drawDiamond@{drawDiamond}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawDiamond()}{drawDiamond()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Diamond (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}}}]{x,  }\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{reading,  }\item[{const uint16\+\_\+t}]{scale,  }\item[{const uint8\+\_\+t}]{size,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em reading} & \\
+\hline
+{\em scale} & \\
+\hline
+{\em size} & \\
+\hline
+{\em ink} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_abec795f481166df9c62313d81d398c46}\label{classGraph_abec795f481166df9c62313d81d398c46}} 
+\index{Graph@{Graph}!drawGraph@{drawGraph}}
+\index{drawGraph@{drawGraph}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawGraph()}{drawGraph()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Graph (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Displays the main graph. 
+
+convert the temperature and humidity.\+reading readings into something that scales to the chart. \mbox{\Hypertarget{classGraph_ac4ebf045808d77ad27fa1098fb0cdcce}\label{classGraph_ac4ebf045808d77ad27fa1098fb0cdcce}} 
+\index{Graph@{Graph}!drawGraphScaleMarks@{drawGraphScaleMarks}}
+\index{drawGraphScaleMarks@{drawGraphScaleMarks}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawGraphScaleMarks()}{drawGraphScaleMarks()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Graph\+Scale\+Marks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Puts the scales and text around the chart. 
+
+\mbox{\Hypertarget{classGraph_a11925d634fa3a1007da06a5eb2474f4a}\label{classGraph_a11925d634fa3a1007da06a5eb2474f4a}} 
+\index{Graph@{Graph}!drawIBar@{drawIBar}}
+\index{drawIBar@{drawIBar}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawIBar()}{drawIBar()}}
+{\footnotesize\ttfamily void Graph\+::draw\+I\+Bar (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}}}]{x,  }\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{reading,  }\item[{int16\+\_\+t}]{minimum,  }\item[{int16\+\_\+t}]{maximum,  }\item[{const int8\+\_\+t}]{scale,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink,  }\item[{const bool}]{pointer }\end{DoxyParamCaption})}
+
+
+
+A simple vertial bar on the chart with maxium and minimum values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em reading} & \\
+\hline
+{\em minimum} & \\
+\hline
+{\em maximum} & \\
+\hline
+{\em scale} & \\
+\hline
+{\em ink} & \\
+\hline
+{\em pointer} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_ac0492a5f08041e0427359072f90831f8}\label{classGraph_ac0492a5f08041e0427359072f90831f8}} 
+\index{Graph@{Graph}!drawMinMax@{drawMinMax}}
+\index{drawMinMax@{drawMinMax}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawMinMax()}{drawMinMax()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Min\+Max (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}}}]{x,  }\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{reading,  }\item[{const int16\+\_\+t}]{min,  }\item[{const int16\+\_\+t}]{max,  }\item[{const int8\+\_\+t}]{scale,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em reading} & \\
+\hline
+{\em min} & \\
+\hline
+{\em max} & \\
+\hline
+{\em scale} & \\
+\hline
+{\em ink} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_a15596c18db2b0d341c369aa51bca0afd}\label{classGraph_a15596c18db2b0d341c369aa51bca0afd}} 
+\index{Graph@{Graph}!drawPointers@{drawPointers}}
+\index{drawPointers@{drawPointers}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawPointers()}{drawPointers()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Pointers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Simple (line art) pointer. 
+
+\mbox{\Hypertarget{classGraph_abe086b673e4290ef460e6ac7bc3ab8e3}\label{classGraph_abe086b673e4290ef460e6ac7bc3ab8e3}} 
+\index{Graph@{Graph}!drawRadials@{drawRadials}}
+\index{drawRadials@{drawRadials}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawRadials()}{drawRadials()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Radials (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+draws circular plots for the analogue version 
+
+\mbox{\Hypertarget{classGraph_a97f4554f7c75aa6075244af44db5f271}\label{classGraph_a97f4554f7c75aa6075244af44db5f271}} 
+\index{Graph@{Graph}!drawReticles@{drawReticles}}
+\index{drawReticles@{drawReticles}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawReticles()}{drawReticles()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Reticles (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{x\+Divs,  }\item[{const uint8\+\_\+t}]{y\+Divs }\end{DoxyParamCaption})}
+
+
+
+Draw the graph lines and chart calibration markings. 
+
+\mbox{\Hypertarget{classGraph_ac290fd5ac8942618cd7113afc93852c6}\label{classGraph_ac290fd5ac8942618cd7113afc93852c6}} 
+\index{Graph@{Graph}!drawTarget@{drawTarget}}
+\index{drawTarget@{drawTarget}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{drawTarget()}{drawTarget()}}
+{\footnotesize\ttfamily void Graph\+::draw\+Target (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}}}]{x,  }\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{reading,  }\item[{const uint16\+\_\+t}]{scale,  }\item[{const uint8\+\_\+t}]{size,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em reading} & \\
+\hline
+{\em scale} & \\
+\hline
+{\em size} & \\
+\hline
+{\em ink} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_a27ae29c98f5823f9f36e4027822a749f}\label{classGraph_a27ae29c98f5823f9f36e4027822a749f}} 
+\index{Graph@{Graph}!rotate@{rotate}}
+\index{rotate@{rotate}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{rotate()}{rotate()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Graph\+::rotate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} $\ast$}]{polygon,  }\item[{const \mbox{\hyperlink{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}{angle\+\_\+t}}}]{theta }\end{DoxyParamCaption})}
+
+
+
+Rotates a quadrilateral polygon. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em polygon} & pointer to a polygon structure \\
+\hline
+{\em theta} & angle to rotate the shape by \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_ae919c79efd06133e4c4390a367dc75a8}\label{classGraph_ae919c79efd06133e4c4390a367dc75a8}} 
+\index{Graph@{Graph}!rotate@{rotate}}
+\index{rotate@{rotate}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{rotate()}{rotate()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Graph\+::rotate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} $\ast$}]{polygon,  }\item[{const \mbox{\hyperlink{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}{angle\+\_\+t}}}]{theta }\end{DoxyParamCaption})}
+
+
+
+Rotates a triangular polygon. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em polygon} & pointer to a polygon structure \\
+\hline
+{\em theta} & angle to rotate the shape by \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_a5f7958e9b991feb98835a19b25a04eab}\label{classGraph_a5f7958e9b991feb98835a19b25a04eab}} 
+\index{Graph@{Graph}!translate@{translate}}
+\index{translate@{translate}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{translate()}{translate()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Graph\+::translate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} $\ast$}]{polygon,  }\item[{const \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}}}]{cords }\end{DoxyParamCaption})}
+
+
+
+translates (moves) a quadrilateral polygon 
+
+
+\begin{DoxyParams}{Parameters}
+{\em polygon} & pointer to a polygon structure \\
+\hline
+{\em ink} & \\
+\hline
+{\em outline} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGraph_a7727d47069f9e6b90724ace7912d4b27}\label{classGraph_a7727d47069f9e6b90724ace7912d4b27}} 
+\index{Graph@{Graph}!translate@{translate}}
+\index{translate@{translate}!Graph@{Graph}}
+\doxysubsubsection{\texorpdfstring{translate()}{translate()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Graph\+::translate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} $\ast$}]{polygon,  }\item[{const \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}}}]{cords }\end{DoxyParamCaption})}
+
+
+
+translates (moves) draws a trianglular polygon 
+
+
+\begin{DoxyParams}{Parameters}
+{\em polygon} & pointer to a polygon structure \\
+\hline
+{\em ink} & \\
+\hline
+{\em outline} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\mbox{\hyperlink{Graph_8h}{Graph.\+h}}\item 
+\mbox{\hyperlink{Graph_8cpp}{Graph.\+cpp}}\end{DoxyCompactItemize}

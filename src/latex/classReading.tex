@@ -1,0 +1,305 @@
+\hypertarget{classReading}{}\doxysection{Reading Class Reference}
+\label{classReading}\index{Reading@{Reading}}
+
+
+{\ttfamily \#include $<$Reading.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classReading_a6dce74773104164a2f4a819952940bef}{Reading}} ()
+\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classReading_acdeb95f9822b954875471936c898673e}{get\+Fenced\+Reading}} ()
+\begin{DoxyCompactList}\small\item\em Get the fenced (-\/9 -\/$>$ 99) ranged reading. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classReading_a4b94d5b6e639c797cca9916d4752b545}{get\+Fenced\+Reading}} (\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} R)
+\begin{DoxyCompactList}\small\item\em Get the fenced (-\/9 -\/$>$ 99) ranged reading. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{classReading_ad5fd384c5ce57c85f57ca883f96e0623}{get\+Trace}} ()
+\begin{DoxyCompactList}\small\item\em Get the Trace object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classReading_a24d3a6c3b52289a49b5842e79e8f03e2}{set\+Trace}} (const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} C)
+\begin{DoxyCompactList}\small\item\em Set the Trace object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classReading_a36cec3f1b8a599d7f4e57576f9264e18}{init\+Reads}} (const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} R)
+\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classReading_a44a3172e208dd80cbefdadc5d8b7cbcd}{get\+Min\+Read}} ()
+\begin{DoxyCompactList}\small\item\em Get the Min Read object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classReading_a200e86e4439c6c93da56cac111bb3c06}{get\+Max\+Read}} ()
+\begin{DoxyCompactList}\small\item\em Get the Max Read object. \end{DoxyCompactList}\item 
+int8\+\_\+t \mbox{\hyperlink{classReading_ac465151fa82d50c619ce4dabb1714deb}{get\+Fenced\+Min}} ()
+\begin{DoxyCompactList}\small\item\em Get the Fenced Min object. \end{DoxyCompactList}\item 
+int8\+\_\+t \mbox{\hyperlink{classReading_ac8f42a801dd6bdd83966cef3ca1b719d}{get\+Fenced\+Max}} ()
+\begin{DoxyCompactList}\small\item\em Get the Fenced Max object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classReading_a2fb7d353ba528ad6f7555113db623e5c}{get\+Raw\+Reading}} ()
+\begin{DoxyCompactList}\small\item\em Get the Raw \mbox{\hyperlink{classReading}{Reading}} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classReading_afde480c1b51d585c688bbcce2b25ac6c}{get\+Reading}} ()
+\begin{DoxyCompactList}\small\item\em Get the \mbox{\hyperlink{classReading}{Reading}} object adjusted for metric or imperial (temperatures) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classReading_ab446366022cdbd264bed43dd33123e1d}{update\+Reading}} (const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} reading)
+\item 
+void \mbox{\hyperlink{classReading_add258dabc0f8690f4f321f6d8bf7adae}{buffer\+Reading}} (const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} reading, char $\ast$buffer, const \mbox{\hyperlink{types_8h_a01cc430e186dd94baa6d3e003382c88c}{semaphore\+\_\+t}} \mbox{\hyperlink{Flags_8h_aa991e2b209ef26272bf4fd920777bcda}{flags}})
+\begin{DoxyCompactList}\small\item\em Converts a number into a string. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{classReading_ab6347b45d6a47fde5715349c8a248934}{get\+C\+MA}} ()
+\begin{DoxyCompactList}\small\item\em get the cumulative moving average for this read \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classReading_a45c448ebbf8f5efa7e819defc4a01821}{go\+Metric}} ()
+\begin{DoxyCompactList}\small\item\em switches to metric measurements \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classReading_ad74db80a4069a4601e1c5fb73f10fccc}{go\+Imperial}} ()
+\begin{DoxyCompactList}\small\item\em switches to imperial measurements \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{classReading_a47d8517894f6d30d64b6a94e5083c62a}{get\+C\+M\+A\+Count}} ()
+\begin{DoxyCompactList}\small\item\em returns the C\+MA counter UP TO the maximum graph width (plottable points) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}} \mbox{\hyperlink{classReading_a7db368758340a462de91015a3c14e06f}{take\+Readings}} ()
+\begin{DoxyCompactList}\small\item\em Get the current RH and Temp from the D\+H\+T11/22. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classReading_a6dce74773104164a2f4a819952940bef}\label{classReading_a6dce74773104164a2f4a819952940bef}} 
+\index{Reading@{Reading}!Reading@{Reading}}
+\index{Reading@{Reading}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{Reading()}{Reading()}}
+{\footnotesize\ttfamily Reading\+::\+Reading (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classReading_add258dabc0f8690f4f321f6d8bf7adae}\label{classReading_add258dabc0f8690f4f321f6d8bf7adae}} 
+\index{Reading@{Reading}!bufferReading@{bufferReading}}
+\index{bufferReading@{bufferReading}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{bufferReading()}{bufferReading()}}
+{\footnotesize\ttfamily void Reading\+::buffer\+Reading (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{reading,  }\item[{char $\ast$}]{buffer,  }\item[{const \mbox{\hyperlink{types_8h_a01cc430e186dd94baa6d3e003382c88c}{semaphore\+\_\+t}}}]{flags }\end{DoxyParamCaption})}
+
+
+
+Converts a number into a string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reading} & floating point reading \\
+\hline
+{\em buffer} & pre-\/configured buffer to hold the result \\
+\hline
+{\em flags} & indicates metric or imperial conversion \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classReading_ab6347b45d6a47fde5715349c8a248934}\label{classReading_ab6347b45d6a47fde5715349c8a248934}} 
+\index{Reading@{Reading}!getCMA@{getCMA}}
+\index{getCMA@{getCMA}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getCMA()}{getCMA()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Reading\+::get\+C\+MA (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the cumulative moving average for this read 
+
+\begin{DoxyReturn}{Returns}
+reading\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_a47d8517894f6d30d64b6a94e5083c62a}\label{classReading_a47d8517894f6d30d64b6a94e5083c62a}} 
+\index{Reading@{Reading}!getCMACount@{getCMACount}}
+\index{getCMACount@{getCMACount}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getCMACount()}{getCMACount()}}
+{\footnotesize\ttfamily uint8\+\_\+t Reading\+::get\+C\+M\+A\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+returns the C\+MA counter UP TO the maximum graph width (plottable points) 
+
+\begin{DoxyReturn}{Returns}
+uint8\+\_\+t the count from 0 -\/$>$ graph\textquotesingle{}s plottable width
+\end{DoxyReturn}
+\begin{DoxyRemark}{Remarks}
+The C\+MA counter can get big, really big, you just wouldn\textquotesingle{}t believe how vastly mind-\/boggling big it can get. Listen... (apologies to Douglas Adams for butchering his script, again). The C\+MA counter is a (four byte) floating point number so it can hand numbers into the billions but this function is used to help plot the chart which is of limited width. Converting back to a byte width return helps ease the burden on the program space. Ideally this number would be in a \char`\"{}global\char`\"{} (single)value.. but hey ho, that\textquotesingle{}s an optimization you might want to do.. 
+\end{DoxyRemark}
+\mbox{\Hypertarget{classReading_ac8f42a801dd6bdd83966cef3ca1b719d}\label{classReading_ac8f42a801dd6bdd83966cef3ca1b719d}} 
+\index{Reading@{Reading}!getFencedMax@{getFencedMax}}
+\index{getFencedMax@{getFencedMax}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getFencedMax()}{getFencedMax()}}
+{\footnotesize\ttfamily int8\+\_\+t Reading\+::get\+Fenced\+Max (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Fenced Max object. 
+
+\begin{DoxyReturn}{Returns}
+int8\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_ac465151fa82d50c619ce4dabb1714deb}\label{classReading_ac465151fa82d50c619ce4dabb1714deb}} 
+\index{Reading@{Reading}!getFencedMin@{getFencedMin}}
+\index{getFencedMin@{getFencedMin}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getFencedMin()}{getFencedMin()}}
+{\footnotesize\ttfamily int8\+\_\+t Reading\+::get\+Fenced\+Min (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Fenced Min object. 
+
+\begin{DoxyReturn}{Returns}
+int8\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_acdeb95f9822b954875471936c898673e}\label{classReading_acdeb95f9822b954875471936c898673e}} 
+\index{Reading@{Reading}!getFencedReading@{getFencedReading}}
+\index{getFencedReading@{getFencedReading}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getFencedReading()}{getFencedReading()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Reading\+::get\+Fenced\+Reading (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the fenced (-\/9 -\/$>$ 99) ranged reading. 
+
+\begin{DoxyReturn}{Returns}
+reading\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_a4b94d5b6e639c797cca9916d4752b545}\label{classReading_a4b94d5b6e639c797cca9916d4752b545}} 
+\index{Reading@{Reading}!getFencedReading@{getFencedReading}}
+\index{getFencedReading@{getFencedReading}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getFencedReading()}{getFencedReading()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Reading\+::get\+Fenced\+Reading (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{R }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the fenced (-\/9 -\/$>$ 99) ranged reading. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em R} & a reading convert to ranged reading \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+reading\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_a200e86e4439c6c93da56cac111bb3c06}\label{classReading_a200e86e4439c6c93da56cac111bb3c06}} 
+\index{Reading@{Reading}!getMaxRead@{getMaxRead}}
+\index{getMaxRead@{getMaxRead}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getMaxRead()}{getMaxRead()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Reading\+::get\+Max\+Read (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Max Read object. 
+
+\begin{DoxyReturn}{Returns}
+reading\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_a44a3172e208dd80cbefdadc5d8b7cbcd}\label{classReading_a44a3172e208dd80cbefdadc5d8b7cbcd}} 
+\index{Reading@{Reading}!getMinRead@{getMinRead}}
+\index{getMinRead@{getMinRead}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getMinRead()}{getMinRead()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Reading\+::get\+Min\+Read (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Min Read object. 
+
+\begin{DoxyReturn}{Returns}
+reading\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_a2fb7d353ba528ad6f7555113db623e5c}\label{classReading_a2fb7d353ba528ad6f7555113db623e5c}} 
+\index{Reading@{Reading}!getRawReading@{getRawReading}}
+\index{getRawReading@{getRawReading}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getRawReading()}{getRawReading()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Reading\+::get\+Raw\+Reading (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Raw \mbox{\hyperlink{classReading}{Reading}} object. 
+
+\begin{DoxyReturn}{Returns}
+reading\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_afde480c1b51d585c688bbcce2b25ac6c}\label{classReading_afde480c1b51d585c688bbcce2b25ac6c}} 
+\index{Reading@{Reading}!getReading@{getReading}}
+\index{getReading@{getReading}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getReading()}{getReading()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} Reading\+::get\+Reading (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the \mbox{\hyperlink{classReading}{Reading}} object adjusted for metric or imperial (temperatures) 
+
+\begin{DoxyReturn}{Returns}
+reading\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_ad5fd384c5ce57c85f57ca883f96e0623}\label{classReading_ad5fd384c5ce57c85f57ca883f96e0623}} 
+\index{Reading@{Reading}!getTrace@{getTrace}}
+\index{getTrace@{getTrace}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{getTrace()}{getTrace()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} Reading\+::get\+Trace (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Trace object. 
+
+\begin{DoxyReturn}{Returns}
+colours\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classReading_ad74db80a4069a4601e1c5fb73f10fccc}\label{classReading_ad74db80a4069a4601e1c5fb73f10fccc}} 
+\index{Reading@{Reading}!goImperial@{goImperial}}
+\index{goImperial@{goImperial}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{goImperial()}{goImperial()}}
+{\footnotesize\ttfamily void Reading\+::go\+Imperial (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+switches to imperial measurements 
+
+\mbox{\Hypertarget{classReading_a45c448ebbf8f5efa7e819defc4a01821}\label{classReading_a45c448ebbf8f5efa7e819defc4a01821}} 
+\index{Reading@{Reading}!goMetric@{goMetric}}
+\index{goMetric@{goMetric}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{goMetric()}{goMetric()}}
+{\footnotesize\ttfamily void Reading\+::go\+Metric (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+switches to metric measurements 
+
+\mbox{\Hypertarget{classReading_a36cec3f1b8a599d7f4e57576f9264e18}\label{classReading_a36cec3f1b8a599d7f4e57576f9264e18}} 
+\index{Reading@{Reading}!initReads@{initReads}}
+\index{initReads@{initReads}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{initReads()}{initReads()}}
+{\footnotesize\ttfamily void Reading\+::init\+Reads (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{R }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em R} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classReading_a24d3a6c3b52289a49b5842e79e8f03e2}\label{classReading_a24d3a6c3b52289a49b5842e79e8f03e2}} 
+\index{Reading@{Reading}!setTrace@{setTrace}}
+\index{setTrace@{setTrace}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{setTrace()}{setTrace()}}
+{\footnotesize\ttfamily void Reading\+::set\+Trace (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{C }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Trace object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em C} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classReading_a7db368758340a462de91015a3c14e06f}\label{classReading_a7db368758340a462de91015a3c14e06f}} 
+\index{Reading@{Reading}!takeReadings@{takeReadings}}
+\index{takeReadings@{takeReadings}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{takeReadings()}{takeReadings()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}} Reading\+::take\+Readings (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get the current RH and Temp from the D\+H\+T11/22. 
+
+\mbox{\Hypertarget{classReading_ab446366022cdbd264bed43dd33123e1d}\label{classReading_ab446366022cdbd264bed43dd33123e1d}} 
+\index{Reading@{Reading}!updateReading@{updateReading}}
+\index{updateReading@{updateReading}!Reading@{Reading}}
+\doxysubsubsection{\texorpdfstring{updateReading()}{updateReading()}}
+{\footnotesize\ttfamily void Reading\+::update\+Reading (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}}}]{reading }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em reading} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\mbox{\hyperlink{Reading_8h}{Reading.\+h}}\item 
+\mbox{\hyperlink{Reading_8cpp}{Reading.\+cpp}}\end{DoxyCompactItemize}

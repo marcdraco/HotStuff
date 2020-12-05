@@ -1,0 +1,109 @@
+\hypertarget{hotstuff_8h}{}\doxysection{/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/hotstuff.h File Reference}
+\label{hotstuff_8h}\index{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/hotstuff.h@{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/hotstuff.h}}
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Universal\+D\+H\+T.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}types.\+h\char`\"{}}\newline
+Include dependency graph for hotstuff.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{hotstuff_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hotstuff_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{hotstuff_8h_a48c60b057902adf805797f183286728d}{pgm\+\_\+read\+\_\+byte}}(addr)~($\ast$(const unsigned char$\ast$)(addr))
+\item 
+\#define \mbox{\hyperlink{hotstuff_8h_a910fb5f01313d339d3b835d45e1e5ad0}{pgm\+\_\+read\+\_\+word}}(addr)~($\ast$(const unsigned short $\ast$)(addr))
+\item 
+\#define \mbox{\hyperlink{hotstuff_8h_a73cf3e57e32321cb193b3cc4b041cc6c}{pgm\+\_\+read\+\_\+dword}}(addr)~($\ast$(const unsigned long $\ast$)(addr))
+\item 
+\#define \mbox{\hyperlink{hotstuff_8h_a0d5d72a58654d35bb9c564263d1ede9a}{pgm\+\_\+read\+\_\+pointer}}(addr)~((void $\ast$)\mbox{\hyperlink{hotstuff_8h_a73cf3e57e32321cb193b3cc4b041cc6c}{pgm\+\_\+read\+\_\+dword}}(addr))
+\item 
+\#define \mbox{\hyperlink{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}{min}}(a,  b)~(((a) $<$ (b)) ? (a) \+: (b))
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structgfxglyph__t}{gfxglyph\+\_\+t}} $\ast$ \mbox{\hyperlink{hotstuff_8h_acf6c2175db8c9b6a667bdb93f3feda31}{pgm\+\_\+read\+\_\+glyph\+\_\+ptr}} (const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$gfx\+Font, uint8\+\_\+t c)
+\item 
+uint8\+\_\+t $\ast$ \mbox{\hyperlink{hotstuff_8h_adb8d91904183fac037cf9396d169982d}{pgm\+\_\+read\+\_\+bitmap\+\_\+ptr}} (const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$gfx\+Font)
+\item 
+void \mbox{\hyperlink{hotstuff_8h_ab254b0b46f68d8d0c786ae45ddd220be}{show\+L\+C\+D\+Reads\+Horizontal}} (void)
+\begin{DoxyCompactList}\small\item\em Show the large temperature and humidity displays. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{hotstuff_8h_ac879592f70d6960635c3d68d5b7364ed}{show\+L\+C\+D\+Reads\+Vertical}} (void)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}\label{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}} 
+\index{hotstuff.h@{hotstuff.h}!min@{min}}
+\index{min@{min}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{min}{min}}
+{\footnotesize\ttfamily \#define min(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~(((a) $<$ (b)) ? (a) \+: (b))}
+
+\mbox{\Hypertarget{hotstuff_8h_a48c60b057902adf805797f183286728d}\label{hotstuff_8h_a48c60b057902adf805797f183286728d}} 
+\index{hotstuff.h@{hotstuff.h}!pgm\_read\_byte@{pgm\_read\_byte}}
+\index{pgm\_read\_byte@{pgm\_read\_byte}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{pgm\_read\_byte}{pgm\_read\_byte}}
+{\footnotesize\ttfamily \#define pgm\+\_\+read\+\_\+byte(\begin{DoxyParamCaption}\item[{}]{addr }\end{DoxyParamCaption})~($\ast$(const unsigned char$\ast$)(addr))}
+
+\mbox{\Hypertarget{hotstuff_8h_a73cf3e57e32321cb193b3cc4b041cc6c}\label{hotstuff_8h_a73cf3e57e32321cb193b3cc4b041cc6c}} 
+\index{hotstuff.h@{hotstuff.h}!pgm\_read\_dword@{pgm\_read\_dword}}
+\index{pgm\_read\_dword@{pgm\_read\_dword}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{pgm\_read\_dword}{pgm\_read\_dword}}
+{\footnotesize\ttfamily \#define pgm\+\_\+read\+\_\+dword(\begin{DoxyParamCaption}\item[{}]{addr }\end{DoxyParamCaption})~($\ast$(const unsigned long $\ast$)(addr))}
+
+\mbox{\Hypertarget{hotstuff_8h_a0d5d72a58654d35bb9c564263d1ede9a}\label{hotstuff_8h_a0d5d72a58654d35bb9c564263d1ede9a}} 
+\index{hotstuff.h@{hotstuff.h}!pgm\_read\_pointer@{pgm\_read\_pointer}}
+\index{pgm\_read\_pointer@{pgm\_read\_pointer}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{pgm\_read\_pointer}{pgm\_read\_pointer}}
+{\footnotesize\ttfamily \#define pgm\+\_\+read\+\_\+pointer(\begin{DoxyParamCaption}\item[{}]{addr }\end{DoxyParamCaption})~((void $\ast$)\mbox{\hyperlink{hotstuff_8h_a73cf3e57e32321cb193b3cc4b041cc6c}{pgm\+\_\+read\+\_\+dword}}(addr))}
+
+\mbox{\Hypertarget{hotstuff_8h_a910fb5f01313d339d3b835d45e1e5ad0}\label{hotstuff_8h_a910fb5f01313d339d3b835d45e1e5ad0}} 
+\index{hotstuff.h@{hotstuff.h}!pgm\_read\_word@{pgm\_read\_word}}
+\index{pgm\_read\_word@{pgm\_read\_word}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{pgm\_read\_word}{pgm\_read\_word}}
+{\footnotesize\ttfamily \#define pgm\+\_\+read\+\_\+word(\begin{DoxyParamCaption}\item[{}]{addr }\end{DoxyParamCaption})~($\ast$(const unsigned short $\ast$)(addr))}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{hotstuff_8h_adb8d91904183fac037cf9396d169982d}\label{hotstuff_8h_adb8d91904183fac037cf9396d169982d}} 
+\index{hotstuff.h@{hotstuff.h}!pgm\_read\_bitmap\_ptr@{pgm\_read\_bitmap\_ptr}}
+\index{pgm\_read\_bitmap\_ptr@{pgm\_read\_bitmap\_ptr}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{pgm\_read\_bitmap\_ptr()}{pgm\_read\_bitmap\_ptr()}}
+{\footnotesize\ttfamily uint8\+\_\+t$\ast$ pgm\+\_\+read\+\_\+bitmap\+\_\+ptr (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$}]{gfx\+Font }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{hotstuff_8h_acf6c2175db8c9b6a667bdb93f3feda31}\label{hotstuff_8h_acf6c2175db8c9b6a667bdb93f3feda31}} 
+\index{hotstuff.h@{hotstuff.h}!pgm\_read\_glyph\_ptr@{pgm\_read\_glyph\_ptr}}
+\index{pgm\_read\_glyph\_ptr@{pgm\_read\_glyph\_ptr}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{pgm\_read\_glyph\_ptr()}{pgm\_read\_glyph\_ptr()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structgfxglyph__t}{gfxglyph\+\_\+t}}$\ast$ pgm\+\_\+read\+\_\+glyph\+\_\+ptr (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$}]{gfx\+Font,  }\item[{uint8\+\_\+t}]{c }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{hotstuff_8h_ab254b0b46f68d8d0c786ae45ddd220be}\label{hotstuff_8h_ab254b0b46f68d8d0c786ae45ddd220be}} 
+\index{hotstuff.h@{hotstuff.h}!showLCDReadsHorizontal@{showLCDReadsHorizontal}}
+\index{showLCDReadsHorizontal@{showLCDReadsHorizontal}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{showLCDReadsHorizontal()}{showLCDReadsHorizontal()}}
+{\footnotesize\ttfamily void show\+L\+C\+D\+Reads\+Horizontal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Show the large temperature and humidity displays. 
+
+\mbox{\Hypertarget{hotstuff_8h_ac879592f70d6960635c3d68d5b7364ed}\label{hotstuff_8h_ac879592f70d6960635c3d68d5b7364ed}} 
+\index{hotstuff.h@{hotstuff.h}!showLCDReadsVertical@{showLCDReadsVertical}}
+\index{showLCDReadsVertical@{showLCDReadsVertical}!hotstuff.h@{hotstuff.h}}
+\doxysubsubsection{\texorpdfstring{showLCDReadsVertical()}{showLCDReadsVertical()}}
+{\footnotesize\ttfamily void show\+L\+C\+D\+Reads\+Vertical (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+

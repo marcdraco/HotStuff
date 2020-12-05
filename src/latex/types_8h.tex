@@ -1,0 +1,491 @@
+\hypertarget{types_8h}{}\doxysection{/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/types.h File Reference}
+\label{types_8h}\index{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/types.h@{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/types.h}}
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include $<$inttypes.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}constants.\+h\char`\"{}}\newline
+Include dependency graph for types.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=228pt]{types_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{types_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglobalVariables}{global\+Variables}}
+\item 
+struct \mbox{\hyperlink{structfailures}{failures}}
+\item 
+struct \mbox{\hyperlink{structgfxglyph__t}{gfxglyph\+\_\+t}}
+\item 
+struct \mbox{\hyperlink{structFixedFontsNS}{Fixed\+Fonts\+NS}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{types_8h_a01cc430e186dd94baa6d3e003382c88c}{semaphore\+\_\+t}} = uint16\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} = uint16\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}{angle\+\_\+t}} = int16\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} = uint8\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} = uint16\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} = int16\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_ab9283096bde3331d4048d8e82327435f}{y\+Coordinate\+\_\+t}} = uint8\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_a531046da9b4fe40d565b44febc2d80cf}{x\+Coordinate\+\_\+t}} = uint8\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} = float
+\item 
+using \mbox{\hyperlink{types_8h_a2b0fad9766346981cc30fd74d65385ba}{reading\+\_\+int\+\_\+t}} = int16\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} = uint8\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_a11f018d226b5517a1b05e065843af7ae}{byte\+\_\+t}} = uint8\+\_\+t
+\item 
+using \mbox{\hyperlink{types_8h_ae7f159e02513a455dc7589d433e66938}{min\+Max\+Reads\+\_\+t}} = struct \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}{min}}
+\item 
+using \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} = struct coordinates \{ \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X
+\item 
+using \mbox{\hyperlink{types_8h_a0b50818dcf21cfc0e75d61563ccda49c}{scale\+\_\+t}} = struct scales \{ uint8\+\_\+t \mbox{\hyperlink{Reading_8h_adc4ccb7d70f1c8fa01e9d70bd1aedb87}{temperature}}
+\item 
+using \mbox{\hyperlink{types_8h_a26827a6c8e6b56c53e94f0ea54cd78be}{ucoordinates\+\_\+t}} = struct ucoordinates \{ \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} X
+\item 
+using \mbox{\hyperlink{types_8h_a6ff278feb872a99e69ba9696d685b498}{dimensions\+\_\+t}} = struct \mbox{\hyperlink{types_8h_a80bae0e46497d3ee8bcf2365a7c1feee}{dimensions}} \{ uint16\+\_\+t W
+\item 
+using \mbox{\hyperlink{types_8h_a445310e5e5505fae64f2944851c92bf6}{segment\+\_\+t}} = struct \mbox{\hyperlink{Sevensegments_8h_ab88903308a1540c3c25c6d8d52b7fc13}{segments}} \{ \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} coords\mbox{[}12\mbox{]}
+\item 
+using \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}} = struct readings \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{types_8h_a38e1d5c4c9e43fb6422619272bff5838}{H}}
+\item 
+using \mbox{\hyperlink{types_8h_a1d5c2e0e27602ef705e90f6cc1eb5ebd}{limits\+\_\+t}} = struct limits \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} lower
+\item 
+using \mbox{\hyperlink{types_8h_a0eba53388f52a3d89d3750961790bc26}{minmax\+\_\+t}} = struct minmax \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}{min}}
+\item 
+using \mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} = struct triangles \{ \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} cords\mbox{[}3\mbox{]}
+\item 
+using \mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} = struct quadrilaterals \{ \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} cords\mbox{[}4\mbox{]}
+\item 
+using \mbox{\hyperlink{types_8h_a619499775a4fdd26fd9472081ec3cb1e}{glyphdata\+\_\+t}} = struct glyphdata \{ uint16\+\_\+t offset
+\item 
+using \mbox{\hyperlink{types_8h_aee054ae81b69405493b245cd173bcf73}{hieroglyphs\+\_\+t}} = struct hieroglyphs \{ int8\+\_\+t total
+\item 
+typedef struct \mbox{\hyperlink{structFixedFontsNS}{Fixed\+Fonts\+NS}} \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \newline
+\mbox{\hyperlink{types_8h_adc29c2ff13d900c2f185ee95427fb06cab6f56678cfad9c7d345d15b8fb684e6a}{F\+O\+N\+T1}}, 
+\mbox{\hyperlink{types_8h_adc29c2ff13d900c2f185ee95427fb06ca15239a3297cfde50e046ca0c5268c1e0}{F\+O\+N\+T2}}, 
+\mbox{\hyperlink{types_8h_adc29c2ff13d900c2f185ee95427fb06ca6943a0e524c062813a8f5de27ed96dcd}{F\+O\+N\+T3}}, 
+\mbox{\hyperlink{types_8h_adc29c2ff13d900c2f185ee95427fb06ca479a4f77a54c1bd96faefdbbe1834f68}{F\+O\+N\+T4}}, 
+\newline
+\mbox{\hyperlink{types_8h_adc29c2ff13d900c2f185ee95427fb06caf10eedd866e0b64d4140a98b9bcebb3e}{F\+O\+N\+T5}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{types_8h_a13d62d16c2a3f1fabe3b80d539755c8b}{max}}
+\item 
+\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{types_8h_a3cb62182097ceb535c2f31919c98a0b6}{humidity}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{types_8h_a38e1d5c4c9e43fb6422619272bff5838}{H}}
+\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{types_8h_a3bb7dd7026aa6693d640f57f76064487}{T}}
+\item 
+\mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{types_8h_a3e2ee3d1671d3089c2de93794b76b463}{upper}}
+\item 
+\mbox{\hyperlink{types_8h_a6ff278feb872a99e69ba9696d685b498}{dimensions\+\_\+t}} \mbox{\hyperlink{types_8h_a80bae0e46497d3ee8bcf2365a7c1feee}{dimensions}}
+\item 
+\mbox{\hyperlink{types_8h_a11f018d226b5517a1b05e065843af7ae}{byte\+\_\+t}} \mbox{\hyperlink{types_8h_afb5d0d6ad33b221172a9042c6d4cb957}{bits}}
+\item 
+\mbox{\hyperlink{types_8h_a11f018d226b5517a1b05e065843af7ae}{byte\+\_\+t}} \mbox{\hyperlink{types_8h_ab9027fa2612727b45db47d169d94188e}{bit}}
+\item 
+int8\+\_\+t \mbox{\hyperlink{types_8h_a88324b9dec8baf7a5a00c5be88e14706}{xo}}
+\item 
+int8\+\_\+t \mbox{\hyperlink{types_8h_a02ea5ce38623ad8a61e80d18ff7d5369}{yo}}
+\item 
+\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} \mbox{\hyperlink{types_8h_aa363ccf99c2ccd342f344b9e17a53e2e}{colour}}
+\item 
+uint8\+\_\+t $\ast$ \mbox{\hyperlink{types_8h_a3250fefacf9576491af0701ea66b84ec}{bitmap}}
+\item 
+int16\+\_\+t \mbox{\hyperlink{types_8h_ae1c2d516777e6b42af0d281c9ecc7375}{x}}
+\item 
+int16\+\_\+t \mbox{\hyperlink{types_8h_af77b1a54442f2443cf64a4766f916bcd}{y}}
+\item 
+\mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}}
+\item 
+\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_ab990e44a7ea637e1244a60f1b95519fa}{x\+Advance}}
+\item 
+\mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ac3aa4fce75b50b3b4c6934b02cc9cf4f}{glyphics}} \mbox{[}$\,$\mbox{]}
+\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+struct \{\\
+\>volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\_t}} \mbox{\hyperlink{types_8h_adc2fd16ce06d6daf02afc0856f4bf01a}{timeInSeconds}} \{0\}\\
+\>volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\_t}} \mbox{\hyperlink{types_8h_aff5e459574857cc5ad2153c0c8367ba9}{timeInMinutes}} \{0\}\\
+\>volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\_t}} \mbox{\hyperlink{types_8h_a325117e9a01502035cf1d7a32b60c1e7}{timeInHours}} \{0\}\\
+\>volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\_t}} \mbox{\hyperlink{types_8h_ac2a20b5dbabf17aae661aafedbc76428}{timeInDays}} \{0\}\\
+\>volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\_t}} \mbox{\hyperlink{types_8h_a7fd0a4880a920ff0310b8b5da62d3a19}{timeToGraph}} \{0\}\\
+\>volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\_t}} \mbox{\hyperlink{types_8h_af6b5cc4ee2c57453e5d906abe0a68ef7}{timeToRead}} \{0\}\\
+\} \mbox{\hyperlink{types_8h_ae42c1364a50d16fd620aebbb2d7c6a63}{isrTimings}}\\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}\label{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}} 
+\index{types.h@{types.h}!angle\_t@{angle\_t}}
+\index{angle\_t@{angle\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{angle\_t}{angle\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a845c0cb2cfd672249912cbd9d5a398e5}{angle\+\_\+t}} =  int16\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_a11f018d226b5517a1b05e065843af7ae}\label{types_8h_a11f018d226b5517a1b05e065843af7ae}} 
+\index{types.h@{types.h}!byte\_t@{byte\_t}}
+\index{byte\_t@{byte\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{byte\_t}{byte\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a11f018d226b5517a1b05e065843af7ae}{byte\+\_\+t}} =  uint8\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}\label{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}} 
+\index{types.h@{types.h}!colours\_t@{colours\_t}}
+\index{colours\_t@{colours\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{colours\_t}{colours\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} =  uint16\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}\label{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}} 
+\index{types.h@{types.h}!coordinate\_t@{coordinate\_t}}
+\index{coordinate\_t@{coordinate\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{coordinate\_t}{coordinate\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} =  int16\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}\label{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}} 
+\index{types.h@{types.h}!coordinates\_t@{coordinates\_t}}
+\index{coordinates\_t@{coordinates\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{coordinates\_t}{coordinates\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} =  struct coordinates \{ \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X}
+
+\mbox{\Hypertarget{types_8h_a6ff278feb872a99e69ba9696d685b498}\label{types_8h_a6ff278feb872a99e69ba9696d685b498}} 
+\index{types.h@{types.h}!dimensions\_t@{dimensions\_t}}
+\index{dimensions\_t@{dimensions\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{dimensions\_t}{dimensions\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a6ff278feb872a99e69ba9696d685b498}{dimensions\+\_\+t}} =  struct \mbox{\hyperlink{types_8h_a80bae0e46497d3ee8bcf2365a7c1feee}{dimensions}} \{ uint16\+\_\+t W}
+
+\mbox{\Hypertarget{types_8h_ab6ead2458796188ebf4d09885988f8a3}\label{types_8h_ab6ead2458796188ebf4d09885988f8a3}} 
+\index{types.h@{types.h}!gfxfont\_t@{gfxfont\_t}}
+\index{gfxfont\_t@{gfxfont\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{gfxfont\_t}{gfxfont\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structFixedFontsNS}{Fixed\+Fonts\+NS}} \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}}}
+
+\mbox{\Hypertarget{types_8h_a3b13aeed923837e20548a30d55a7518a}\label{types_8h_a3b13aeed923837e20548a30d55a7518a}} 
+\index{types.h@{types.h}!glyph\_t@{glyph\_t}}
+\index{glyph\_t@{glyph\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{glyph\_t}{glyph\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} =  uint8\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_a619499775a4fdd26fd9472081ec3cb1e}\label{types_8h_a619499775a4fdd26fd9472081ec3cb1e}} 
+\index{types.h@{types.h}!glyphdata\_t@{glyphdata\_t}}
+\index{glyphdata\_t@{glyphdata\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{glyphdata\_t}{glyphdata\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a619499775a4fdd26fd9472081ec3cb1e}{glyphdata\+\_\+t}} =  struct glyphdata \{ uint16\+\_\+t offset}
+
+\mbox{\Hypertarget{types_8h_aee054ae81b69405493b245cd173bcf73}\label{types_8h_aee054ae81b69405493b245cd173bcf73}} 
+\index{types.h@{types.h}!hieroglyphs\_t@{hieroglyphs\_t}}
+\index{hieroglyphs\_t@{hieroglyphs\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{hieroglyphs\_t}{hieroglyphs\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_aee054ae81b69405493b245cd173bcf73}{hieroglyphs\+\_\+t}} =  struct hieroglyphs \{ int8\+\_\+t total}
+
+\mbox{\Hypertarget{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}\label{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}} 
+\index{types.h@{types.h}!isrtiming\_t@{isrtiming\_t}}
+\index{isrtiming\_t@{isrtiming\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{isrtiming\_t}{isrtiming\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} =  uint8\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_a1d5c2e0e27602ef705e90f6cc1eb5ebd}\label{types_8h_a1d5c2e0e27602ef705e90f6cc1eb5ebd}} 
+\index{types.h@{types.h}!limits\_t@{limits\_t}}
+\index{limits\_t@{limits\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{limits\_t}{limits\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a1d5c2e0e27602ef705e90f6cc1eb5ebd}{limits\+\_\+t}} =  struct limits \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} lower}
+
+\mbox{\Hypertarget{types_8h_a0eba53388f52a3d89d3750961790bc26}\label{types_8h_a0eba53388f52a3d89d3750961790bc26}} 
+\index{types.h@{types.h}!minmax\_t@{minmax\_t}}
+\index{minmax\_t@{minmax\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{minmax\_t}{minmax\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a0eba53388f52a3d89d3750961790bc26}{minmax\+\_\+t}} =  struct minmax \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}{min}}}
+
+\mbox{\Hypertarget{types_8h_ae7f159e02513a455dc7589d433e66938}\label{types_8h_ae7f159e02513a455dc7589d433e66938}} 
+\index{types.h@{types.h}!minMaxReads\_t@{minMaxReads\_t}}
+\index{minMaxReads\_t@{minMaxReads\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{minMaxReads\_t}{minMaxReads\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_ae7f159e02513a455dc7589d433e66938}{min\+Max\+Reads\+\_\+t}} =  struct \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{hotstuff_8h_ac6afabdc09a49a433ee19d8a9486056d}{min}}}
+
+\mbox{\Hypertarget{types_8h_a66335065e816e947b6d6aa15f6856596}\label{types_8h_a66335065e816e947b6d6aa15f6856596}} 
+\index{types.h@{types.h}!quadrilateral\_t@{quadrilateral\_t}}
+\index{quadrilateral\_t@{quadrilateral\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{quadrilateral\_t}{quadrilateral\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a66335065e816e947b6d6aa15f6856596}{quadrilateral\+\_\+t}} =  struct quadrilaterals \{ \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} cords\mbox{[}4\mbox{]}}
+
+\mbox{\Hypertarget{types_8h_a2b0fad9766346981cc30fd74d65385ba}\label{types_8h_a2b0fad9766346981cc30fd74d65385ba}} 
+\index{types.h@{types.h}!reading\_int\_t@{reading\_int\_t}}
+\index{reading\_int\_t@{reading\_int\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{reading\_int\_t}{reading\_int\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a2b0fad9766346981cc30fd74d65385ba}{reading\+\_\+int\+\_\+t}} =  int16\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}\label{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}} 
+\index{types.h@{types.h}!reading\_t@{reading\_t}}
+\index{reading\_t@{reading\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{reading\_t}{reading\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} =  float}
+
+\mbox{\Hypertarget{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}\label{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}} 
+\index{types.h@{types.h}!readings\_t@{readings\_t}}
+\index{readings\_t@{readings\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{readings\_t}{readings\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a1af2cb229c6e0b7b47894d709eb8a29a}{readings\+\_\+t}} =  struct readings \{ \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} \mbox{\hyperlink{types_8h_a38e1d5c4c9e43fb6422619272bff5838}{H}}}
+
+\mbox{\Hypertarget{types_8h_a0b50818dcf21cfc0e75d61563ccda49c}\label{types_8h_a0b50818dcf21cfc0e75d61563ccda49c}} 
+\index{types.h@{types.h}!scale\_t@{scale\_t}}
+\index{scale\_t@{scale\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{scale\_t}{scale\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a0b50818dcf21cfc0e75d61563ccda49c}{scale\+\_\+t}} =  struct scales \{ uint8\+\_\+t \mbox{\hyperlink{Reading_8h_adc4ccb7d70f1c8fa01e9d70bd1aedb87}{temperature}}}
+
+\mbox{\Hypertarget{types_8h_a445310e5e5505fae64f2944851c92bf6}\label{types_8h_a445310e5e5505fae64f2944851c92bf6}} 
+\index{types.h@{types.h}!segment\_t@{segment\_t}}
+\index{segment\_t@{segment\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{segment\_t}{segment\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a445310e5e5505fae64f2944851c92bf6}{segment\+\_\+t}} =  struct \mbox{\hyperlink{Sevensegments_8h_ab88903308a1540c3c25c6d8d52b7fc13}{segments}} \{ \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} coords\mbox{[}12\mbox{]}}
+
+\mbox{\Hypertarget{types_8h_a01cc430e186dd94baa6d3e003382c88c}\label{types_8h_a01cc430e186dd94baa6d3e003382c88c}} 
+\index{types.h@{types.h}!semaphore\_t@{semaphore\_t}}
+\index{semaphore\_t@{semaphore\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{semaphore\_t}{semaphore\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a01cc430e186dd94baa6d3e003382c88c}{semaphore\+\_\+t}} =  uint16\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_a71b847e1d2260d8e256cb1267fca0be8}\label{types_8h_a71b847e1d2260d8e256cb1267fca0be8}} 
+\index{types.h@{types.h}!triangle\_t@{triangle\_t}}
+\index{triangle\_t@{triangle\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{triangle\_t}{triangle\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a71b847e1d2260d8e256cb1267fca0be8}{triangle\+\_\+t}} =  struct triangles \{ \mbox{\hyperlink{types_8h_a863edd2aef1c7f1bf38779fa87c5742c}{coordinates\+\_\+t}} cords\mbox{[}3\mbox{]}}
+
+\mbox{\Hypertarget{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}\label{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}} 
+\index{types.h@{types.h}!ucoordinate\_t@{ucoordinate\_t}}
+\index{ucoordinate\_t@{ucoordinate\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{ucoordinate\_t}{ucoordinate\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} =  uint16\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_a26827a6c8e6b56c53e94f0ea54cd78be}\label{types_8h_a26827a6c8e6b56c53e94f0ea54cd78be}} 
+\index{types.h@{types.h}!ucoordinates\_t@{ucoordinates\_t}}
+\index{ucoordinates\_t@{ucoordinates\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{ucoordinates\_t}{ucoordinates\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a26827a6c8e6b56c53e94f0ea54cd78be}{ucoordinates\+\_\+t}} =  struct ucoordinates \{ \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} X}
+
+\mbox{\Hypertarget{types_8h_a531046da9b4fe40d565b44febc2d80cf}\label{types_8h_a531046da9b4fe40d565b44febc2d80cf}} 
+\index{types.h@{types.h}!xCoordinate\_t@{xCoordinate\_t}}
+\index{xCoordinate\_t@{xCoordinate\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{xCoordinate\_t}{xCoordinate\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_a531046da9b4fe40d565b44febc2d80cf}{x\+Coordinate\+\_\+t}} =  uint8\+\_\+t}
+
+\mbox{\Hypertarget{types_8h_ab9283096bde3331d4048d8e82327435f}\label{types_8h_ab9283096bde3331d4048d8e82327435f}} 
+\index{types.h@{types.h}!yCoordinate\_t@{yCoordinate\_t}}
+\index{yCoordinate\_t@{yCoordinate\_t}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{yCoordinate\_t}{yCoordinate\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{types_8h_ab9283096bde3331d4048d8e82327435f}{y\+Coordinate\+\_\+t}} =  uint8\+\_\+t}
+
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{types_8h_adc29c2ff13d900c2f185ee95427fb06c}\label{types_8h_adc29c2ff13d900c2f185ee95427fb06c}} 
+\doxysubsubsection{\texorpdfstring{anonymous enum}{anonymous enum}}
+{\footnotesize\ttfamily anonymous enum}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FONT1@{FONT1}!types.h@{types.h}}\index{types.h@{types.h}!FONT1@{FONT1}}}\mbox{\Hypertarget{types_8h_adc29c2ff13d900c2f185ee95427fb06cab6f56678cfad9c7d345d15b8fb684e6a}\label{types_8h_adc29c2ff13d900c2f185ee95427fb06cab6f56678cfad9c7d345d15b8fb684e6a}} 
+F\+O\+N\+T1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FONT2@{FONT2}!types.h@{types.h}}\index{types.h@{types.h}!FONT2@{FONT2}}}\mbox{\Hypertarget{types_8h_adc29c2ff13d900c2f185ee95427fb06ca15239a3297cfde50e046ca0c5268c1e0}\label{types_8h_adc29c2ff13d900c2f185ee95427fb06ca15239a3297cfde50e046ca0c5268c1e0}} 
+F\+O\+N\+T2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FONT3@{FONT3}!types.h@{types.h}}\index{types.h@{types.h}!FONT3@{FONT3}}}\mbox{\Hypertarget{types_8h_adc29c2ff13d900c2f185ee95427fb06ca6943a0e524c062813a8f5de27ed96dcd}\label{types_8h_adc29c2ff13d900c2f185ee95427fb06ca6943a0e524c062813a8f5de27ed96dcd}} 
+F\+O\+N\+T3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FONT4@{FONT4}!types.h@{types.h}}\index{types.h@{types.h}!FONT4@{FONT4}}}\mbox{\Hypertarget{types_8h_adc29c2ff13d900c2f185ee95427fb06ca479a4f77a54c1bd96faefdbbe1834f68}\label{types_8h_adc29c2ff13d900c2f185ee95427fb06ca479a4f77a54c1bd96faefdbbe1834f68}} 
+F\+O\+N\+T4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FONT5@{FONT5}!types.h@{types.h}}\index{types.h@{types.h}!FONT5@{FONT5}}}\mbox{\Hypertarget{types_8h_adc29c2ff13d900c2f185ee95427fb06caf10eedd866e0b64d4140a98b9bcebb3e}\label{types_8h_adc29c2ff13d900c2f185ee95427fb06caf10eedd866e0b64d4140a98b9bcebb3e}} 
+F\+O\+N\+T5&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{types_8h_ab9027fa2612727b45db47d169d94188e}\label{types_8h_ab9027fa2612727b45db47d169d94188e}} 
+\index{types.h@{types.h}!bit@{bit}}
+\index{bit@{bit}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{bit}{bit}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a11f018d226b5517a1b05e065843af7ae}{byte\+\_\+t}} bit}
+
+\mbox{\Hypertarget{types_8h_a3250fefacf9576491af0701ea66b84ec}\label{types_8h_a3250fefacf9576491af0701ea66b84ec}} 
+\index{types.h@{types.h}!bitmap@{bitmap}}
+\index{bitmap@{bitmap}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{bitmap}{bitmap}}
+{\footnotesize\ttfamily uint8\+\_\+t$\ast$ bitmap}
+
+\mbox{\Hypertarget{types_8h_afb5d0d6ad33b221172a9042c6d4cb957}\label{types_8h_afb5d0d6ad33b221172a9042c6d4cb957}} 
+\index{types.h@{types.h}!bits@{bits}}
+\index{bits@{bits}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{bits}{bits}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a11f018d226b5517a1b05e065843af7ae}{byte\+\_\+t}} bits}
+
+\mbox{\Hypertarget{types_8h_aa363ccf99c2ccd342f344b9e17a53e2e}\label{types_8h_aa363ccf99c2ccd342f344b9e17a53e2e}} 
+\index{types.h@{types.h}!colour@{colour}}
+\index{colour@{colour}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{colour}{colour}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} colour}
+
+\mbox{\Hypertarget{types_8h_a80bae0e46497d3ee8bcf2365a7c1feee}\label{types_8h_a80bae0e46497d3ee8bcf2365a7c1feee}} 
+\index{types.h@{types.h}!dimensions@{dimensions}}
+\index{dimensions@{dimensions}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{dimensions}{dimensions}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a6ff278feb872a99e69ba9696d685b498}{dimensions\+\_\+t}} dimensions}
+
+\mbox{\Hypertarget{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}\label{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}} 
+\index{types.h@{types.h}!glyph@{glyph}}
+\index{glyph@{glyph}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{glyph}{glyph}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} glyph}
+
+\mbox{\Hypertarget{types_8h_ac3aa4fce75b50b3b4c6934b02cc9cf4f}\label{types_8h_ac3aa4fce75b50b3b4c6934b02cc9cf4f}} 
+\index{types.h@{types.h}!glyphics@{glyphics}}
+\index{glyphics@{glyphics}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{glyphics}{glyphics}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} glyphics\mbox{[}$\,$\mbox{]}}
+
+\mbox{\Hypertarget{types_8h_a38e1d5c4c9e43fb6422619272bff5838}\label{types_8h_a38e1d5c4c9e43fb6422619272bff5838}} 
+\index{types.h@{types.h}!H@{H}}
+\index{H@{H}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{H}{H}}
+{\footnotesize\ttfamily uint16\+\_\+t H}
+
+\mbox{\Hypertarget{types_8h_a3cb62182097ceb535c2f31919c98a0b6}\label{types_8h_a3cb62182097ceb535c2f31919c98a0b6}} 
+\index{types.h@{types.h}!humidity@{humidity}}
+\index{humidity@{humidity}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{humidity}{humidity}}
+{\footnotesize\ttfamily uint8\+\_\+t humidity}
+
+\mbox{\Hypertarget{types_8h_ae42c1364a50d16fd620aebbb2d7c6a63}\label{types_8h_ae42c1364a50d16fd620aebbb2d7c6a63}} 
+\index{types.h@{types.h}!isrTimings@{isrTimings}}
+\index{isrTimings@{isrTimings}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{isrTimings}{isrTimings}}
+{\footnotesize\ttfamily struct \{ ... \}  isr\+Timings}
+
+\mbox{\Hypertarget{types_8h_a13d62d16c2a3f1fabe3b80d539755c8b}\label{types_8h_a13d62d16c2a3f1fabe3b80d539755c8b}} 
+\index{types.h@{types.h}!max@{max}}
+\index{max@{max}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{max}{max}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} max}
+
+\mbox{\Hypertarget{types_8h_a3bb7dd7026aa6693d640f57f76064487}\label{types_8h_a3bb7dd7026aa6693d640f57f76064487}} 
+\index{types.h@{types.h}!T@{T}}
+\index{T@{T}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{T}{T}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} T}
+
+\mbox{\Hypertarget{types_8h_ac2a20b5dbabf17aae661aafedbc76428}\label{types_8h_ac2a20b5dbabf17aae661aafedbc76428}} 
+\index{types.h@{types.h}!timeInDays@{timeInDays}}
+\index{timeInDays@{timeInDays}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{timeInDays}{timeInDays}}
+{\footnotesize\ttfamily volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} time\+In\+Days \{0\}}
+
+\mbox{\Hypertarget{types_8h_a325117e9a01502035cf1d7a32b60c1e7}\label{types_8h_a325117e9a01502035cf1d7a32b60c1e7}} 
+\index{types.h@{types.h}!timeInHours@{timeInHours}}
+\index{timeInHours@{timeInHours}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{timeInHours}{timeInHours}}
+{\footnotesize\ttfamily volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} time\+In\+Hours \{0\}}
+
+\mbox{\Hypertarget{types_8h_aff5e459574857cc5ad2153c0c8367ba9}\label{types_8h_aff5e459574857cc5ad2153c0c8367ba9}} 
+\index{types.h@{types.h}!timeInMinutes@{timeInMinutes}}
+\index{timeInMinutes@{timeInMinutes}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{timeInMinutes}{timeInMinutes}}
+{\footnotesize\ttfamily volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} time\+In\+Minutes \{0\}}
+
+\mbox{\Hypertarget{types_8h_adc2fd16ce06d6daf02afc0856f4bf01a}\label{types_8h_adc2fd16ce06d6daf02afc0856f4bf01a}} 
+\index{types.h@{types.h}!timeInSeconds@{timeInSeconds}}
+\index{timeInSeconds@{timeInSeconds}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{timeInSeconds}{timeInSeconds}}
+{\footnotesize\ttfamily volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} time\+In\+Seconds \{0\}}
+
+\mbox{\Hypertarget{types_8h_a7fd0a4880a920ff0310b8b5da62d3a19}\label{types_8h_a7fd0a4880a920ff0310b8b5da62d3a19}} 
+\index{types.h@{types.h}!timeToGraph@{timeToGraph}}
+\index{timeToGraph@{timeToGraph}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{timeToGraph}{timeToGraph}}
+{\footnotesize\ttfamily volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} time\+To\+Graph \{0\}}
+
+\mbox{\Hypertarget{types_8h_af6b5cc4ee2c57453e5d906abe0a68ef7}\label{types_8h_af6b5cc4ee2c57453e5d906abe0a68ef7}} 
+\index{types.h@{types.h}!timeToRead@{timeToRead}}
+\index{timeToRead@{timeToRead}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{timeToRead}{timeToRead}}
+{\footnotesize\ttfamily volatile \mbox{\hyperlink{types_8h_a9c3a5ef8f0eca06148f59318a0e02ca8}{isrtiming\+\_\+t}} time\+To\+Read \{0\}}
+
+\mbox{\Hypertarget{types_8h_a3e2ee3d1671d3089c2de93794b76b463}\label{types_8h_a3e2ee3d1671d3089c2de93794b76b463}} 
+\index{types.h@{types.h}!upper@{upper}}
+\index{upper@{upper}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{upper}{upper}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a0f876cf489beb15546a5d4a1d4c479ca}{reading\+\_\+t}} upper}
+
+\mbox{\Hypertarget{types_8h_ae1c2d516777e6b42af0d281c9ecc7375}\label{types_8h_ae1c2d516777e6b42af0d281c9ecc7375}} 
+\index{types.h@{types.h}!x@{x}}
+\index{x@{x}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily int16\+\_\+t x}
+
+\mbox{\Hypertarget{types_8h_ab990e44a7ea637e1244a60f1b95519fa}\label{types_8h_ab990e44a7ea637e1244a60f1b95519fa}} 
+\index{types.h@{types.h}!xAdvance@{xAdvance}}
+\index{xAdvance@{xAdvance}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{xAdvance}{xAdvance}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} x\+Advance}
+
+\mbox{\Hypertarget{types_8h_a88324b9dec8baf7a5a00c5be88e14706}\label{types_8h_a88324b9dec8baf7a5a00c5be88e14706}} 
+\index{types.h@{types.h}!xo@{xo}}
+\index{xo@{xo}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{xo}{xo}}
+{\footnotesize\ttfamily int8\+\_\+t xo}
+
+\mbox{\Hypertarget{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}\label{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}} 
+\index{types.h@{types.h}!Y@{Y}}
+\index{Y@{Y}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{Y}{Y}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} Y}
+
+\mbox{\Hypertarget{types_8h_af77b1a54442f2443cf64a4766f916bcd}\label{types_8h_af77b1a54442f2443cf64a4766f916bcd}} 
+\index{types.h@{types.h}!y@{y}}
+\index{y@{y}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily int16\+\_\+t y}
+
+\mbox{\Hypertarget{types_8h_a02ea5ce38623ad8a61e80d18ff7d5369}\label{types_8h_a02ea5ce38623ad8a61e80d18ff7d5369}} 
+\index{types.h@{types.h}!yo@{yo}}
+\index{yo@{yo}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{yo}{yo}}
+{\footnotesize\ttfamily int8\+\_\+t yo}
+

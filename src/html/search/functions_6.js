@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['getcma_508',['getCMA',['../classReading.html#ab6347b45d6a47fde5715349c8a248934',1,'Reading']]],
+  ['getcmacount_509',['getCMACount',['../classReading.html#a47d8517894f6d30d64b6a94e5083c62a',1,'Reading']]],
+  ['getfencedmax_510',['getFencedMax',['../classReading.html#ac8f42a801dd6bdd83966cef3ca1b719d',1,'Reading']]],
+  ['getfencedmin_511',['getFencedMin',['../classReading.html#ac465151fa82d50c619ce4dabb1714deb',1,'Reading']]],
+  ['getfencedreading_512',['getFencedReading',['../classReading.html#acdeb95f9822b954875471936c898673e',1,'Reading::getFencedReading()'],['../classReading.html#a4b94d5b6e639c797cca9916d4752b545',1,'Reading::getFencedReading(reading_t R)']]],
+  ['getfont_513',['getFont',['../classFonts.html#a1e9ab161ee1a2d98dea6a7eb9196d4d0',1,'Fonts']]],
+  ['getglyphdimensions_514',['getGlyphDimensions',['../classFonts.html#a362246520f3ea03433150fcfeffa73b4',1,'Fonts']]],
+  ['getink_515',['getInk',['../classDisplay.html#adafb8c06e269465403bf2f99829ae81c',1,'Display']]],
+  ['getmaxread_516',['getMaxRead',['../classReading.html#a200e86e4439c6c93da56cac111bb3c06',1,'Reading']]],
+  ['getminread_517',['getMinRead',['../classReading.html#a44a3172e208dd80cbefdadc5d8b7cbcd',1,'Reading']]],
+  ['getpaper_518',['getPaper',['../classDisplay.html#a2a258540d5d8b755d03d1c0c5e7924a6',1,'Display']]],
+  ['getrawreading_519',['getRawReading',['../classReading.html#a2fb7d353ba528ad6f7555113db623e5c',1,'Reading']]],
+  ['getreading_520',['getReading',['../classReading.html#afde480c1b51d585c688bbcce2b25ac6c',1,'Reading']]],
+  ['getrotation_521',['getRotation',['../classFonts.html#a2e149987c88c6e0dc284701900cb5f0d',1,'Fonts']]],
+  ['getstring_522',['getString',['../classMessages.html#a8f21c7b4e4153e76e876d568e08a18d2',1,'Messages']]],
+  ['gettrace_523',['getTrace',['../classReading.html#ad5fd384c5ce57c85f57ca883f96e0623',1,'Reading']]],
+  ['getx_524',['getX',['../classFonts.html#aab3e97d76152d25c84c7df4efd8bee89',1,'Fonts']]],
+  ['getxstep_525',['getXstep',['../classFonts.html#a75ad7c2c6c8ef83199e5bbe20f45ac1f',1,'Fonts']]],
+  ['gety_526',['getY',['../classFonts.html#a09897d58e3f7a3e83f54443486293ac6',1,'Fonts']]],
+  ['getystep_527',['getYstep',['../classFonts.html#a2a1232b33536cec35253168336aab926',1,'Fonts']]],
+  ['goimperial_528',['goImperial',['../classReading.html#ad74db80a4069a4601e1c5fb73f10fccc',1,'Reading']]],
+  ['gometric_529',['goMetric',['../classReading.html#a45c448ebbf8f5efa7e819defc4a01821',1,'Reading']]],
+  ['graph_530',['Graph',['../classGraph.html#ae4c72b8ac4d693c49800a4c7e273654f',1,'Graph']]]
+];

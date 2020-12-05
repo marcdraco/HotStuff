@@ -1,0 +1,204 @@
+\hypertarget{pack24_8h}{}\doxysection{/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/pack24.h File Reference}
+\label{pack24_8h}\index{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/pack24.h@{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/pack24.h}}
+{\ttfamily \#include \char`\"{}Arduino.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}types.\+h\char`\"{}}\newline
+Include dependency graph for pack24.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=288pt]{pack24_8h__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{pack24_8h_a85f2fac44b6f9b1895fe319ce1681f37}{pack24\+\_\+t}} = struct \{ uint8\+\_\+t U8
+\item 
+using \mbox{\hyperlink{pack24_8h_aea7be707b22e5018f10ce7d2e441ae7a}{unpack24\+\_\+t}} = struct \{ uint16\+\_\+t X
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{pack24_8h_aa727b1c23cb534e9e25e4943a4287cd3}{pack24}} (uint16\+\_\+t X, uint16\+\_\+t \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, uint8\+\_\+t $\ast$U8, uint16\+\_\+t $\ast$\mbox{\hyperlink{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}{L16}})
+\begin{DoxyCompactList}\small\item\em pack 32 bits into 24 bits \end{DoxyCompactList}\item 
+\mbox{\hyperlink{pack24_8h_a85f2fac44b6f9b1895fe319ce1681f37}{pack24\+\_\+t}} \mbox{\hyperlink{pack24_8h_a1347c96da5ffabe082207a1a84d58ffd}{pack24}} (uint16\+\_\+t X, uint16\+\_\+t \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}})
+\begin{DoxyCompactList}\small\item\em Pack an X, Y 32 bit pair into 24 bits. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{pack24_8h_a6c468c787d1210ae35ec026681b16018}{unpack24}} (uint8\+\_\+t U8, uint16\+\_\+t \mbox{\hyperlink{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}{L16}}, uint16\+\_\+t $\ast$X, uint16\+\_\+t $\ast$\mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}})
+\begin{DoxyCompactList}\small\item\em Unpack a previously packed 16 bit pair. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{pack24_8h_aea7be707b22e5018f10ce7d2e441ae7a}{unpack24\+\_\+t}} \mbox{\hyperlink{pack24_8h_a2a839285f9db4c718065a4a313990034}{unpack24}} (uint8\+\_\+t U8, uint16\+\_\+t \mbox{\hyperlink{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}{L16}})
+\begin{DoxyCompactList}\small\item\em Unpack a previously packed 16 bit pair. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{pack24_8h_ada46164e1474f7f048a7389d40965d6f}{pack\+Signed24}} (int16\+\_\+t X, int16\+\_\+t \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, uint8\+\_\+t $\ast$U8, uint16\+\_\+t $\ast$\mbox{\hyperlink{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}{L16}})
+\begin{DoxyCompactList}\small\item\em Pack 32 bits from two signed variables into 24 bits. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{pack24_8h_aedd21fdd71416f1d112e65fb32326c7d}{unpack\+Signed24}} (uint8\+\_\+t U8, uint16\+\_\+t \mbox{\hyperlink{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}{L16}}, int16\+\_\+t $\ast$X, int16\+\_\+t $\ast$\mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}})
+\begin{DoxyCompactList}\small\item\em Unpack a previously packed signed 16 bit pair. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}{L16}}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{pack24_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{pack24_8h_a85f2fac44b6f9b1895fe319ce1681f37}\label{pack24_8h_a85f2fac44b6f9b1895fe319ce1681f37}} 
+\index{pack24.h@{pack24.h}!pack24\_t@{pack24\_t}}
+\index{pack24\_t@{pack24\_t}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{pack24\_t}{pack24\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{pack24_8h_a85f2fac44b6f9b1895fe319ce1681f37}{pack24\+\_\+t}} =  struct \{ uint8\+\_\+t U8}
+
+Copyright (c) 2020 Marc Draco
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \char`\"{}\+Software\char`\"{}), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions\+:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+T\+HE S\+O\+F\+T\+W\+A\+RE IS P\+R\+O\+V\+I\+D\+ED \char`\"{}\+A\+S I\+S\char`\"{}, W\+I\+T\+H\+O\+UT W\+A\+R\+R\+A\+N\+TY OF A\+NY K\+I\+ND, E\+X\+P\+R\+E\+SS OR I\+M\+P\+L\+I\+ED, I\+N\+C\+L\+U\+D\+I\+NG B\+UT N\+OT L\+I\+M\+I\+T\+ED TO T\+HE W\+A\+R\+R\+A\+N\+T\+I\+ES OF M\+E\+R\+C\+H\+A\+N\+T\+A\+B\+I\+L\+I\+TY, F\+I\+T\+N\+E\+SS F\+OR A P\+A\+R\+T\+I\+C\+U\+L\+AR P\+U\+R\+P\+O\+SE A\+ND N\+O\+N\+I\+N\+F\+R\+I\+N\+G\+E\+M\+E\+NT. IN NO E\+V\+E\+NT S\+H\+A\+LL T\+HE A\+U\+T\+H\+O\+RS OR C\+O\+P\+Y\+R\+I\+G\+HT H\+O\+L\+D\+E\+RS BE L\+I\+A\+B\+LE F\+OR A\+NY C\+L\+A\+IM, D\+A\+M\+A\+G\+ES OR O\+T\+H\+ER L\+I\+A\+B\+I\+L\+I\+TY, W\+H\+E\+T\+H\+ER IN AN A\+C\+T\+I\+ON OF C\+O\+N\+T\+R\+A\+CT, T\+O\+RT OR O\+T\+H\+E\+R\+W\+I\+SE, A\+R\+I\+S\+I\+NG F\+R\+OM, O\+UT OF OR IN C\+O\+N\+N\+E\+C\+T\+I\+ON W\+I\+TH T\+HE S\+O\+F\+T\+W\+A\+RE OR T\+HE U\+SE OR O\+T\+H\+ER D\+E\+A\+L\+I\+N\+GS IN T\+HE S\+O\+F\+T\+W\+A\+RE. \mbox{\Hypertarget{pack24_8h_aea7be707b22e5018f10ce7d2e441ae7a}\label{pack24_8h_aea7be707b22e5018f10ce7d2e441ae7a}} 
+\index{pack24.h@{pack24.h}!unpack24\_t@{unpack24\_t}}
+\index{unpack24\_t@{unpack24\_t}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{unpack24\_t}{unpack24\_t}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{pack24_8h_aea7be707b22e5018f10ce7d2e441ae7a}{unpack24\+\_\+t}} =  struct \{ uint16\+\_\+t X}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{pack24_8h_a1347c96da5ffabe082207a1a84d58ffd}\label{pack24_8h_a1347c96da5ffabe082207a1a84d58ffd}} 
+\index{pack24.h@{pack24.h}!pack24@{pack24}}
+\index{pack24@{pack24}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{pack24()}{pack24()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{pack24_8h_a85f2fac44b6f9b1895fe319ce1681f37}{pack24\+\_\+t}} pack24 (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{X,  }\item[{uint16\+\_\+t}]{Y }\end{DoxyParamCaption})}
+
+
+
+Pack an X, Y 32 bit pair into 24 bits. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Unsigned int 0 -\/ 4095 \\
+\hline
+{\em Y} & Unsigned int 0 -\/ 4095\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pack24\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{pack24_8h_aa727b1c23cb534e9e25e4943a4287cd3}\label{pack24_8h_aa727b1c23cb534e9e25e4943a4287cd3}} 
+\index{pack24.h@{pack24.h}!pack24@{pack24}}
+\index{pack24@{pack24}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{pack24()}{pack24()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void pack24 (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{X,  }\item[{uint16\+\_\+t}]{Y,  }\item[{uint8\+\_\+t $\ast$}]{U8,  }\item[{uint16\+\_\+t $\ast$}]{L16 }\end{DoxyParamCaption})}
+
+
+
+pack 32 bits into 24 bits 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & First 16 bit number range +/-\/ 4095 \\
+\hline
+{\em Y} & Second 16 bit number +/-\/ 4095 \\
+\hline
+{\em U8} & unsigned char packed value \\
+\hline
+{\em L16} & unsigned word packed value \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{pack24_8h_ada46164e1474f7f048a7389d40965d6f}\label{pack24_8h_ada46164e1474f7f048a7389d40965d6f}} 
+\index{pack24.h@{pack24.h}!packSigned24@{packSigned24}}
+\index{packSigned24@{packSigned24}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{packSigned24()}{packSigned24()}}
+{\footnotesize\ttfamily void pack\+Signed24 (\begin{DoxyParamCaption}\item[{int16\+\_\+t}]{X,  }\item[{int16\+\_\+t}]{Y,  }\item[{uint8\+\_\+t $\ast$}]{U8,  }\item[{uint16\+\_\+t $\ast$}]{L16 }\end{DoxyParamCaption})}
+
+
+
+Pack 32 bits from two signed variables into 24 bits. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & First variable -\/ +/-\/ 2047 \\
+\hline
+{\em Y} & Second variable -\/ +/-\/ 2047 \\
+\hline
+{\em U8} & Address to store 8 bit variable \\
+\hline
+{\em L16} & Address to store 16 bit variable \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{pack24_8h_a2a839285f9db4c718065a4a313990034}\label{pack24_8h_a2a839285f9db4c718065a4a313990034}} 
+\index{pack24.h@{pack24.h}!unpack24@{unpack24}}
+\index{unpack24@{unpack24}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{unpack24()}{unpack24()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{pack24_8h_aea7be707b22e5018f10ce7d2e441ae7a}{unpack24\+\_\+t}} unpack24 (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{U8,  }\item[{uint16\+\_\+t}]{L16 }\end{DoxyParamCaption})}
+
+
+
+Unpack a previously packed 16 bit pair. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em U8} & Packed char from pack routine \\
+\hline
+{\em L16} & Packed word from pack routine\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+unpacked24\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{pack24_8h_a6c468c787d1210ae35ec026681b16018}\label{pack24_8h_a6c468c787d1210ae35ec026681b16018}} 
+\index{pack24.h@{pack24.h}!unpack24@{unpack24}}
+\index{unpack24@{unpack24}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{unpack24()}{unpack24()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void unpack24 (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{U8,  }\item[{uint16\+\_\+t}]{L16,  }\item[{uint16\+\_\+t $\ast$}]{X,  }\item[{uint16\+\_\+t $\ast$}]{Y }\end{DoxyParamCaption})}
+
+
+
+Unpack a previously packed 16 bit pair. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em U8} & Packed char from pack routine \\
+\hline
+{\em L16} & Packed word from pack routine \\
+\hline
+{\em X} & Address of var to return \char`\"{}\+X\char`\"{} \\
+\hline
+{\em Y} & Address of var to return \char`\"{}\+Y\char`\"{} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{pack24_8h_aedd21fdd71416f1d112e65fb32326c7d}\label{pack24_8h_aedd21fdd71416f1d112e65fb32326c7d}} 
+\index{pack24.h@{pack24.h}!unpackSigned24@{unpackSigned24}}
+\index{unpackSigned24@{unpackSigned24}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{unpackSigned24()}{unpackSigned24()}}
+{\footnotesize\ttfamily void unpack\+Signed24 (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{U8,  }\item[{uint16\+\_\+t}]{L16,  }\item[{int16\+\_\+t $\ast$}]{X,  }\item[{int16\+\_\+t $\ast$}]{Y }\end{DoxyParamCaption})}
+
+
+
+Unpack a previously packed signed 16 bit pair. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em U8} & Packed char from pack routine \\
+\hline
+{\em L16} & Packed word from pack routine \\
+\hline
+{\em X} & Address of var to return \char`\"{}\+X\char`\"{} \\
+\hline
+{\em Y} & Address of var to return \char`\"{}\+Y\char`\"{} \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}\label{pack24_8h_a992c6fa1c29540bf478f10a7ee5ea509}} 
+\index{pack24.h@{pack24.h}!L16@{L16}}
+\index{L16@{L16}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{L16}{L16}}
+{\footnotesize\ttfamily uint16\+\_\+t L16}
+
+\mbox{\Hypertarget{pack24_8h_a31fd572842ad520a9bc3d29aa5e7642e}\label{pack24_8h_a31fd572842ad520a9bc3d29aa5e7642e}} 
+\index{pack24.h@{pack24.h}!Y@{Y}}
+\index{Y@{Y}!pack24.h@{pack24.h}}
+\doxysubsubsection{\texorpdfstring{Y}{Y}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a37580d1fa43be1917f1ccfe0d6c1b4b4}{ucoordinate\+\_\+t}} Y}
+

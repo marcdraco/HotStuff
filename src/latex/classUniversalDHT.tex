@@ -1,0 +1,46 @@
+\hypertarget{classUniversalDHT}{}\doxysection{Universal\+D\+HT Class Reference}
+\label{classUniversalDHT}\index{UniversalDHT@{UniversalDHT}}
+
+
+{\ttfamily \#include $<$Universal\+D\+H\+T.\+h$>$}
+
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structUniversalDHT_1_1RawReading}{Raw\+Reading}}
+\item 
+struct \mbox{\hyperlink{structUniversalDHT_1_1Response}{Response}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classUniversalDHT_a85f0f1ef6bcf02f54d3504d587b704ae}{Universal\+D\+HT}} (uint8\+\_\+t)
+\item 
+\mbox{\hyperlink{structUniversalDHT_1_1Response}{Response}} \mbox{\hyperlink{classUniversalDHT_adf549da5e1514663c2346f505b32207a}{read}} (float $\ast$\mbox{\hyperlink{Reading_8h_adc4ccb7d70f1c8fa01e9d70bd1aedb87}{temperature}}, float $\ast$\mbox{\hyperlink{types_8h_a3cb62182097ceb535c2f31919c98a0b6}{humidity}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classUniversalDHT_a85f0f1ef6bcf02f54d3504d587b704ae}\label{classUniversalDHT_a85f0f1ef6bcf02f54d3504d587b704ae}} 
+\index{UniversalDHT@{UniversalDHT}!UniversalDHT@{UniversalDHT}}
+\index{UniversalDHT@{UniversalDHT}!UniversalDHT@{UniversalDHT}}
+\doxysubsubsection{\texorpdfstring{UniversalDHT()}{UniversalDHT()}}
+{\footnotesize\ttfamily Universal\+D\+H\+T\+::\+Universal\+D\+HT (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{pin }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+This module is a rewrite of Simple\+D\+HT\+: \href{https://github.com/winlinvip/SimpleDHT}{\texttt{ https\+://github.\+com/winlinvip/\+Simple\+D\+HT}}
+
+Simple\+D\+HT is Copyright (c) 2016-\/2017 winlin, and is also licensed M\+IT 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classUniversalDHT_adf549da5e1514663c2346f505b32207a}\label{classUniversalDHT_adf549da5e1514663c2346f505b32207a}} 
+\index{UniversalDHT@{UniversalDHT}!read@{read}}
+\index{read@{read}!UniversalDHT@{UniversalDHT}}
+\doxysubsubsection{\texorpdfstring{read()}{read()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structUniversalDHT_1_1Response}{Universal\+D\+H\+T\+::\+Response}} Universal\+D\+H\+T\+::read (\begin{DoxyParamCaption}\item[{float $\ast$}]{temperature,  }\item[{float $\ast$}]{humidity }\end{DoxyParamCaption})}
+
+D\+H\+T11 min humidity sensitivity is 20 and is reported as 20, 0 D\+H\+T22 max humidity is 100 and is reported as 3, 232 A value of 4, x or greater can be safely assumed as a D\+H\+T11 reading (it would be 102.\+4\% humidity interpretted as D\+H\+T22)
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\mbox{\hyperlink{UniversalDHT_8h}{Universal\+D\+H\+T.\+h}}\item 
+\mbox{\hyperlink{UniversalDHT_8cpp}{Universal\+D\+H\+T.\+cpp}}\end{DoxyCompactItemize}

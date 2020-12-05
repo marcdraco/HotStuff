@@ -42,9 +42,17 @@ extern Fonts fonts;
 extern Messages messages;
 extern globalVariables globals;
 
+/**
+ * @brief 
+ * 
+ * @param value the value to convert
+ * @param digits the number of digits after the FP.
+ * @param b A buffer for the result
+ * @bug this function truncates the least significant digit which should be rounded!
+ */
 void formatQuickFloat(float value, uint8_t digits, char* b)
 {
-  // note this function truncates the least significant digit
+  
   char buffer[15];  // should be large enough for most cases
   sprintf(buffer, "%d", static_cast<int> (value));
 
@@ -358,6 +366,13 @@ void Graph::drawGraphScaleMarks(void)
 
     // Return rotation to normal for the rest of the printing
     fonts.setRotation(0);
+
+    float resolution = (CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME) / 60.0;
+    char b[10];
+    formatQuickFloat(resolution, 1, b);
+    screen.setCursor(90, 232);
+    fonts.print(b);
+    (resolution > 1.0) ? messages.execute(Messages::xScale2) : messages.execute(Messages::xScale1);
 
     /**
      * Much of this is optimised out, but is left for clearer code.

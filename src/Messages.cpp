@@ -107,11 +107,11 @@ void Messages::showMinMax(void)
   
   if (dp > 0)
   {
-    fonts.print(const_cast<char *>("Dew Point"));
+    messages.execute(dew);
   }
   else
   {
-    fonts.print(const_cast<char *>("Frost Pnt"));
+    messages.execute(frost);
   }
 
   char b[10]; 

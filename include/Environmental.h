@@ -27,16 +27,6 @@
 
 class Environmental
 {
-  const int  CAUTION          {32};     // Three watermarks (32,41,54)
-  const int  WARNING          {41};     // per Steadman "safe" for working temperatures
-  const int  RISK             {54};     // Above 54c is very bad
-  const float FROST_WATERSHED {4.0};    // ice can appear/persist around this temp
-
-  const float DRY_AIR_WATERSHED  {45.0};
-  const float DAMP_AIR_WATERSHED {65.0};
-  
-  const float MIN_COMFORT_TEMP  {18.0};      // the minium temperature considered "normal"
-  const float MAX_COMFORT_TEMP  {24.0};     // the maxium temperature considered "normal"
 
   public:
   /**

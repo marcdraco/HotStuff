@@ -1,0 +1,312 @@
+\hypertarget{classFonts}{}\doxysection{Fonts Class Reference}
+\label{classFonts}\index{Fonts@{Fonts}}
+
+
+{\ttfamily \#include $<$Fonts.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classFonts_a45eefc38057ad57973216627645d60c9}{Fonts}} ()
+\item 
+\mbox{\hyperlink{classFonts_a0c8be0cba3541b2b2ddf1a52fd153233}{Fonts}} (\mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$font)
+\item 
+\mbox{\hyperlink{classFonts_ac49e1c3974a649f120cfb46feb221d33}{$\sim$\+Fonts}} ()
+\item 
+void \mbox{\hyperlink{classFonts_a3b59aec98a441d208c349cda97f85a29}{init}} ()
+\item 
+void \mbox{\hyperlink{classFonts_ab9291b13d8f9037cb60f69b0c308c559}{set\+Buffer\+Dimensions}} (const uint16\+\_\+t W, const uint16\+\_\+t \mbox{\hyperlink{types_8h_a38e1d5c4c9e43fb6422619272bff5838}{H}})
+\item 
+void \mbox{\hyperlink{classFonts_ad8a6bb02ee1d53f25d644a54c3abf608}{set\+Rotation}} (const uint8\+\_\+t R)
+\item 
+uint8\+\_\+t \mbox{\hyperlink{classFonts_a2e149987c88c6e0dc284701900cb5f0d}{get\+Rotation}} (const uint8\+\_\+t R)
+\item 
+void \mbox{\hyperlink{classFonts_af43bce947baa85a8b8ab121401e398e2}{set\+Font}} (const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$p\+New\+Size)
+\item 
+const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$ \mbox{\hyperlink{classFonts_a1e9ab161ee1a2d98dea6a7eb9196d4d0}{get\+Font}} ()
+\item 
+int16\+\_\+t \mbox{\hyperlink{classFonts_aab3e97d76152d25c84c7df4efd8bee89}{getX}} ()
+\item 
+int16\+\_\+t \mbox{\hyperlink{classFonts_a09897d58e3f7a3e83f54443486293ac6}{getY}} ()
+\item 
+uint8\+\_\+t \mbox{\hyperlink{classFonts_a2a1232b33536cec35253168336aab926}{get\+Ystep}} ()
+\item 
+uint8\+\_\+t \mbox{\hyperlink{classFonts_a75ad7c2c6c8ef83199e5bbe20f45ac1f}{get\+Xstep}} ()
+\item 
+uint8\+\_\+t \mbox{\hyperlink{classFonts_a6cf3cb4d364fbf20e0e0d38c02038de0}{draw\+Img\+Glyph}} (const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}})
+\item 
+void \mbox{\hyperlink{classFonts_ae8602a2fbfeee5b165068e4beff4ce43}{prep\+Img\+Glyph}} (const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}}, \mbox{\hyperlink{types_8h_a619499775a4fdd26fd9472081ec3cb1e}{glyphdata\+\_\+t}} $\ast$data)
+\begin{DoxyCompactList}\small\item\em Reads the \char`\"{}flash\char`\"{} data for the glyph. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{classFonts_a63a5f567ade5aac51099c8bb1b75251b}{buffer\+Img\+Glyph}} (const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}})
+\item 
+\mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{classFonts_afe2eb135d90925ebd7d225424543aba8}{find\+Glyph\+Code}} (const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}})
+\item 
+\mbox{\hyperlink{types_8h_a6ff278feb872a99e69ba9696d685b498}{dimensions\+\_\+t}} \mbox{\hyperlink{classFonts_a362246520f3ea03433150fcfeffa73b4}{get\+Glyph\+Dimensions}} (const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}})
+\item 
+void \mbox{\hyperlink{classFonts_a84e7a3141f92c4ffb7a7da023fa434d7}{bleach\+Glyph}} (const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} \mbox{\hyperlink{types_8h_ade69ecca6ac9f209b8e92912a7f017e6}{glyph}})
+\item 
+void \mbox{\hyperlink{classFonts_a5125c0b2ad5d309ee192be2779b1d71a}{print}} (const char $\ast$b)
+\item 
+void \mbox{\hyperlink{classFonts_afb85b60be463edbd999416c6ff13ac3a}{print}} (const String \&string)
+\begin{DoxyCompactList}\small\item\em prints a C++ string type \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classFonts_a863b76057834605e8b2239cebc463c28}{print}} (const \+\_\+\+\_\+\+Flash\+String\+Helper $\ast$flash\+String)
+\item 
+void \mbox{\hyperlink{classFonts_a4884ed79e073d12a8240021bcc443f38}{print}} (char $\ast$b)
+\begin{DoxyCompactList}\small\item\em Prints a C string. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classFonts_a6fbd5e9ad965fcf309cc0182471349a9}{print}} (char $\ast$b1, const bool switch\+Floats)
+\item 
+void \mbox{\hyperlink{classFonts_aa61e3b8b65d0689359a092ae58bc607a}{print}} (const int X, const int \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, char $\ast$buffer)
+\item 
+void \mbox{\hyperlink{classFonts_aa1fe74099a88b7a53c4cc853ecc505e9}{set\+Text\+Color}} (const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink, const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} paper)
+\item 
+void \mbox{\hyperlink{classFonts_a213ccdaa4ac02d9b1e0b680e10af2cde}{print\+Pixel}} (\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} X, \mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}} \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink)
+\item 
+void \mbox{\hyperlink{classFonts_a3415e23e609613621c0823c7cb5733c5}{buffer\+Pixel}} (const uint16\+\_\+t X, const uint16\+\_\+t \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}})
+\item 
+void \mbox{\hyperlink{classFonts_aad695cae5cfc8d0f26f2749b917fc373}{show\+Buffer}} (const int X, const int \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classFonts_a45eefc38057ad57973216627645d60c9}\label{classFonts_a45eefc38057ad57973216627645d60c9}} 
+\index{Fonts@{Fonts}!Fonts@{Fonts}}
+\index{Fonts@{Fonts}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{Fonts()}{Fonts()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Fonts\+::\+Fonts (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_a0c8be0cba3541b2b2ddf1a52fd153233}\label{classFonts_a0c8be0cba3541b2b2ddf1a52fd153233}} 
+\index{Fonts@{Fonts}!Fonts@{Fonts}}
+\index{Fonts@{Fonts}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{Fonts()}{Fonts()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Fonts\+::\+Fonts (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$}]{font }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_ac49e1c3974a649f120cfb46feb221d33}\label{classFonts_ac49e1c3974a649f120cfb46feb221d33}} 
+\index{Fonts@{Fonts}!````~Fonts@{$\sim$Fonts}}
+\index{````~Fonts@{$\sim$Fonts}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{$\sim$Fonts()}{~Fonts()}}
+{\footnotesize\ttfamily Fonts\+::$\sim$\+Fonts (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classFonts_a84e7a3141f92c4ffb7a7da023fa434d7}\label{classFonts_a84e7a3141f92c4ffb7a7da023fa434d7}} 
+\index{Fonts@{Fonts}!bleachGlyph@{bleachGlyph}}
+\index{bleachGlyph@{bleachGlyph}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{bleachGlyph()}{bleachGlyph()}}
+{\footnotesize\ttfamily void Fonts\+::bleach\+Glyph (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}}}]{glyph }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_a63a5f567ade5aac51099c8bb1b75251b}\label{classFonts_a63a5f567ade5aac51099c8bb1b75251b}} 
+\index{Fonts@{Fonts}!bufferImgGlyph@{bufferImgGlyph}}
+\index{bufferImgGlyph@{bufferImgGlyph}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{bufferImgGlyph()}{bufferImgGlyph()}}
+{\footnotesize\ttfamily uint8\+\_\+t Fonts\+::buffer\+Img\+Glyph (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}}}]{glyph }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em glyph} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint8\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classFonts_a3415e23e609613621c0823c7cb5733c5}\label{classFonts_a3415e23e609613621c0823c7cb5733c5}} 
+\index{Fonts@{Fonts}!bufferPixel@{bufferPixel}}
+\index{bufferPixel@{bufferPixel}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{bufferPixel()}{bufferPixel()}}
+{\footnotesize\ttfamily void Fonts\+::buffer\+Pixel (\begin{DoxyParamCaption}\item[{const uint16\+\_\+t}]{X,  }\item[{const uint16\+\_\+t}]{Y }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_a6cf3cb4d364fbf20e0e0d38c02038de0}\label{classFonts_a6cf3cb4d364fbf20e0e0d38c02038de0}} 
+\index{Fonts@{Fonts}!drawImgGlyph@{drawImgGlyph}}
+\index{drawImgGlyph@{drawImgGlyph}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{drawImgGlyph()}{drawImgGlyph()}}
+{\footnotesize\ttfamily uint8\+\_\+t Fonts\+::draw\+Img\+Glyph (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}}}]{glyph }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_afe2eb135d90925ebd7d225424543aba8}\label{classFonts_afe2eb135d90925ebd7d225424543aba8}} 
+\index{Fonts@{Fonts}!findGlyphCode@{findGlyphCode}}
+\index{findGlyphCode@{findGlyphCode}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{findGlyphCode()}{findGlyphCode()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}} Fonts\+::find\+Glyph\+Code (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}}}]{glyph }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em glyph} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+glyph\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classFonts_a1e9ab161ee1a2d98dea6a7eb9196d4d0}\label{classFonts_a1e9ab161ee1a2d98dea6a7eb9196d4d0}} 
+\index{Fonts@{Fonts}!getFont@{getFont}}
+\index{getFont@{getFont}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{getFont()}{getFont()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}}$\ast$ Fonts\+::get\+Font (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_a362246520f3ea03433150fcfeffa73b4}\label{classFonts_a362246520f3ea03433150fcfeffa73b4}} 
+\index{Fonts@{Fonts}!getGlyphDimensions@{getGlyphDimensions}}
+\index{getGlyphDimensions@{getGlyphDimensions}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{getGlyphDimensions()}{getGlyphDimensions()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{types_8h_a6ff278feb872a99e69ba9696d685b498}{dimensions\+\_\+t}} Fonts\+::get\+Glyph\+Dimensions (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}}}]{glyph }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_a2e149987c88c6e0dc284701900cb5f0d}\label{classFonts_a2e149987c88c6e0dc284701900cb5f0d}} 
+\index{Fonts@{Fonts}!getRotation@{getRotation}}
+\index{getRotation@{getRotation}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{getRotation()}{getRotation()}}
+{\footnotesize\ttfamily uint8\+\_\+t Fonts\+::get\+Rotation (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{R }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_aab3e97d76152d25c84c7df4efd8bee89}\label{classFonts_aab3e97d76152d25c84c7df4efd8bee89}} 
+\index{Fonts@{Fonts}!getX@{getX}}
+\index{getX@{getX}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{getX()}{getX()}}
+{\footnotesize\ttfamily int16\+\_\+t Fonts\+::getX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_a75ad7c2c6c8ef83199e5bbe20f45ac1f}\label{classFonts_a75ad7c2c6c8ef83199e5bbe20f45ac1f}} 
+\index{Fonts@{Fonts}!getXstep@{getXstep}}
+\index{getXstep@{getXstep}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{getXstep()}{getXstep()}}
+{\footnotesize\ttfamily uint8\+\_\+t Fonts\+::get\+Xstep (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_a09897d58e3f7a3e83f54443486293ac6}\label{classFonts_a09897d58e3f7a3e83f54443486293ac6}} 
+\index{Fonts@{Fonts}!getY@{getY}}
+\index{getY@{getY}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{getY()}{getY()}}
+{\footnotesize\ttfamily int16\+\_\+t Fonts\+::getY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_a2a1232b33536cec35253168336aab926}\label{classFonts_a2a1232b33536cec35253168336aab926}} 
+\index{Fonts@{Fonts}!getYstep@{getYstep}}
+\index{getYstep@{getYstep}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{getYstep()}{getYstep()}}
+{\footnotesize\ttfamily uint8\+\_\+t Fonts\+::get\+Ystep (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_a3b59aec98a441d208c349cda97f85a29}\label{classFonts_a3b59aec98a441d208c349cda97f85a29}} 
+\index{Fonts@{Fonts}!init@{init}}
+\index{init@{init}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void Fonts\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_ae8602a2fbfeee5b165068e4beff4ce43}\label{classFonts_ae8602a2fbfeee5b165068e4beff4ce43}} 
+\index{Fonts@{Fonts}!prepImgGlyph@{prepImgGlyph}}
+\index{prepImgGlyph@{prepImgGlyph}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{prepImgGlyph()}{prepImgGlyph()}}
+{\footnotesize\ttfamily void Fonts\+::prep\+Img\+Glyph (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_a3b13aeed923837e20548a30d55a7518a}{glyph\+\_\+t}}}]{g,  }\item[{\mbox{\hyperlink{types_8h_a619499775a4fdd26fd9472081ec3cb1e}{glyphdata\+\_\+t}} $\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+Reads the \char`\"{}flash\char`\"{} data for the glyph. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em g} & \\
+\hline
+{\em data} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFonts_a4884ed79e073d12a8240021bcc443f38}\label{classFonts_a4884ed79e073d12a8240021bcc443f38}} 
+\index{Fonts@{Fonts}!print@{print}}
+\index{print@{print}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [1/6]}}
+{\footnotesize\ttfamily void Fonts\+::print (\begin{DoxyParamCaption}\item[{char $\ast$}]{b }\end{DoxyParamCaption})}
+
+
+
+Prints a C string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & pointer to a null-\/terminated buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFonts_a6fbd5e9ad965fcf309cc0182471349a9}\label{classFonts_a6fbd5e9ad965fcf309cc0182471349a9}} 
+\index{Fonts@{Fonts}!print@{print}}
+\index{print@{print}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [2/6]}}
+{\footnotesize\ttfamily void Fonts\+::print (\begin{DoxyParamCaption}\item[{char $\ast$}]{b1,  }\item[{const bool}]{switch\+Floats }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_a863b76057834605e8b2239cebc463c28}\label{classFonts_a863b76057834605e8b2239cebc463c28}} 
+\index{Fonts@{Fonts}!print@{print}}
+\index{print@{print}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [3/6]}}
+{\footnotesize\ttfamily void Fonts\+::print (\begin{DoxyParamCaption}\item[{const \+\_\+\+\_\+\+Flash\+String\+Helper $\ast$}]{flash\+String }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em flash\+String} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFonts_a5125c0b2ad5d309ee192be2779b1d71a}\label{classFonts_a5125c0b2ad5d309ee192be2779b1d71a}} 
+\index{Fonts@{Fonts}!print@{print}}
+\index{print@{print}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [4/6]}}
+{\footnotesize\ttfamily void Fonts\+::print (\begin{DoxyParamCaption}\item[{const char $\ast$}]{b }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_aa61e3b8b65d0689359a092ae58bc607a}\label{classFonts_aa61e3b8b65d0689359a092ae58bc607a}} 
+\index{Fonts@{Fonts}!print@{print}}
+\index{print@{print}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [5/6]}}
+{\footnotesize\ttfamily void Fonts\+::print (\begin{DoxyParamCaption}\item[{const int}]{X,  }\item[{const int}]{Y,  }\item[{char $\ast$}]{buffer }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & \\
+\hline
+{\em Y} & \\
+\hline
+{\em buffer} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFonts_afb85b60be463edbd999416c6ff13ac3a}\label{classFonts_afb85b60be463edbd999416c6ff13ac3a}} 
+\index{Fonts@{Fonts}!print@{print}}
+\index{print@{print}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [6/6]}}
+{\footnotesize\ttfamily void Fonts\+::print (\begin{DoxyParamCaption}\item[{const String \&}]{string }\end{DoxyParamCaption})}
+
+
+
+prints a C++ string type 
+
+
+\begin{DoxyParams}{Parameters}
+{\em string} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFonts_a213ccdaa4ac02d9b1e0b680e10af2cde}\label{classFonts_a213ccdaa4ac02d9b1e0b680e10af2cde}} 
+\index{Fonts@{Fonts}!printPixel@{printPixel}}
+\index{printPixel@{printPixel}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{printPixel()}{printPixel()}}
+{\footnotesize\ttfamily void Fonts\+::print\+Pixel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{X,  }\item[{\mbox{\hyperlink{types_8h_ae8cb99ba51232aebbdd3ee4ffc48f03d}{coordinate\+\_\+t}}}]{Y,  }\item[{\mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_ab9291b13d8f9037cb60f69b0c308c559}\label{classFonts_ab9291b13d8f9037cb60f69b0c308c559}} 
+\index{Fonts@{Fonts}!setBufferDimensions@{setBufferDimensions}}
+\index{setBufferDimensions@{setBufferDimensions}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{setBufferDimensions()}{setBufferDimensions()}}
+{\footnotesize\ttfamily void Fonts\+::set\+Buffer\+Dimensions (\begin{DoxyParamCaption}\item[{const uint16\+\_\+t}]{W,  }\item[{const uint16\+\_\+t}]{H }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_af43bce947baa85a8b8ab121401e398e2}\label{classFonts_af43bce947baa85a8b8ab121401e398e2}} 
+\index{Fonts@{Fonts}!setFont@{setFont}}
+\index{setFont@{setFont}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{setFont()}{setFont()}}
+{\footnotesize\ttfamily void Fonts\+::set\+Font (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_ab6ead2458796188ebf4d09885988f8a3}{gfxfont\+\_\+t}} $\ast$}]{p\+New\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_ad8a6bb02ee1d53f25d644a54c3abf608}\label{classFonts_ad8a6bb02ee1d53f25d644a54c3abf608}} 
+\index{Fonts@{Fonts}!setRotation@{setRotation}}
+\index{setRotation@{setRotation}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{setRotation()}{setRotation()}}
+{\footnotesize\ttfamily void Fonts\+::set\+Rotation (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{R }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classFonts_aa1fe74099a88b7a53c4cc853ecc505e9}\label{classFonts_aa1fe74099a88b7a53c4cc853ecc505e9}} 
+\index{Fonts@{Fonts}!setTextColor@{setTextColor}}
+\index{setTextColor@{setTextColor}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{setTextColor()}{setTextColor()}}
+{\footnotesize\ttfamily void Fonts\+::set\+Text\+Color (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink,  }\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{paper }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFonts_aad695cae5cfc8d0f26f2749b917fc373}\label{classFonts_aad695cae5cfc8d0f26f2749b917fc373}} 
+\index{Fonts@{Fonts}!showBuffer@{showBuffer}}
+\index{showBuffer@{showBuffer}!Fonts@{Fonts}}
+\doxysubsubsection{\texorpdfstring{showBuffer()}{showBuffer()}}
+{\footnotesize\ttfamily void Fonts\+::show\+Buffer (\begin{DoxyParamCaption}\item[{const int}]{X,  }\item[{const int}]{Y }\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\mbox{\hyperlink{Fonts_8h}{Fonts.\+h}}\item 
+\mbox{\hyperlink{Fonts_8cpp}{Fonts.\+cpp}}\end{DoxyCompactItemize}

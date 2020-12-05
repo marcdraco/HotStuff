@@ -1,0 +1,259 @@
+\hypertarget{Sevensegments_8h}{}\doxysection{/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\+Sevensegments.h File Reference}
+\label{Sevensegments_8h}\index{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/Sevensegments.h@{/home/marc/Documents/PlatformIO/Projects/HotStuff/include/Sevensegments.h}}
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include $<$inttypes.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}types.\+h\char`\"{}}\newline
+Include dependency graph for Sevensegments.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=263pt]{Sevensegments_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Sevensegments_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classSevensegments}{Sevensegments}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{Sevensegments_8h_a4e000513b9464b4b8a13b6ac95f87f80}{\+\_\+swap\+\_\+int16\+\_\+t}}(a,  b)~\{int16\+\_\+t t = a; a = b; b = t;\}
+\item 
+\#define \mbox{\hyperlink{Sevensegments_8h_a410ae39130ad0024c7074f25ae481878}{X256}}(b,  a)~(unsigned int) ((a $<$$<$ 8) + b)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr uint8\+\_\+t \mbox{\hyperlink{Sevensegments_8h_ad06326f415d00e6718ea5eaeaaeb5f65}{seven\+Seg\+Codes}} \mbox{[}44\mbox{]}
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a2b7ba7e783ae9e3df8321d817f6bed8f}{S\+E\+G\+\_\+\+A1}} =0x0001
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_aa7a8550a957862c18bc4ea3ae44ca178}{S\+E\+G\+\_\+\+A2}} =0x0002
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a0c642dd1986750e5345fd2d9d9cd4483}{S\+E\+G\+\_\+B}} =0x0004
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_ab67386da0db3e9dbd248a15889014dd9}{S\+E\+G\+\_\+C}} =0x0008
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a88ed3605866a5630943a42ce9fc14358}{S\+E\+G\+\_\+\+D1}} =0x0010
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_af941462b9786f9dcf994b6af204184ec}{S\+E\+G\+\_\+\+D2}} =0x0020
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_ae5b15ab2e7859104ed770f3a194a6f6e}{S\+E\+G\+\_\+E}} =0x0040
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_aeb15ec72b591ef56531ffcad7557d810}{S\+E\+G\+\_\+F}} =0x0080
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_ad32f13e51e991713ea898989467cbba6}{S\+E\+G\+\_\+\+G1}} =0x0100
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_ab10a242ebcfbc464b29551d552d474b6}{S\+E\+G\+\_\+\+G2}} =0x0200
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_aec2e5a0ec58e841babc2c3763cdfe978}{S\+E\+G\+\_\+H}} =0x0400
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a1d7b185fad520a84b858e6a6baf2f4d3}{S\+E\+G\+\_\+I}} =0x0800
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a45709fc43494fdddf656ccbfb28a70b6}{S\+E\+G\+\_\+J}} =0x1000
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a1bfa5478546154f5ea286c800148cc40}{S\+E\+G\+\_\+K}} =0x2000
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a8f2835484b6cbe71a57af6b0a8c34eeb}{S\+E\+G\+\_\+L}} =0x4000
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a24b49887c3acb05d44d22b46f35b1ee8}{S\+E\+G\+\_\+M}} =0x8000
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a95634d55ef93c1b1603a43bf5efc8f3f}{S\+E\+G\+\_\+A}} = \mbox{\hyperlink{Sevensegments_8h_a2b7ba7e783ae9e3df8321d817f6bed8f}{S\+E\+G\+\_\+\+A1}} + \mbox{\hyperlink{Sevensegments_8h_aa7a8550a957862c18bc4ea3ae44ca178}{S\+E\+G\+\_\+\+A2}}
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a6833f84e15ab6fd24c7975248edf8122}{S\+E\+G\+\_\+D}} = \mbox{\hyperlink{Sevensegments_8h_a88ed3605866a5630943a42ce9fc14358}{S\+E\+G\+\_\+\+D1}} + \mbox{\hyperlink{Sevensegments_8h_af941462b9786f9dcf994b6af204184ec}{S\+E\+G\+\_\+\+D2}}
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a58c4274e03f850dac8bc004f5d176162}{S\+E\+G\+\_\+G}} = \mbox{\hyperlink{Sevensegments_8h_ad32f13e51e991713ea898989467cbba6}{S\+E\+G\+\_\+\+G1}} + \mbox{\hyperlink{Sevensegments_8h_ab10a242ebcfbc464b29551d552d474b6}{S\+E\+G\+\_\+\+G2}}
+\item 
+constexpr uint16\+\_\+t \mbox{\hyperlink{Sevensegments_8h_a03e366b69321dd8fd31b58839b6453d2}{sixteen\+Seg\+Codes}} \mbox{[}120\mbox{]}
+\item 
+\mbox{\hyperlink{classSevensegments}{Sevensegments}} \mbox{\hyperlink{Sevensegments_8h_ab88903308a1540c3c25c6d8d52b7fc13}{segments}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{Sevensegments_8h_a4e000513b9464b4b8a13b6ac95f87f80}\label{Sevensegments_8h_a4e000513b9464b4b8a13b6ac95f87f80}} 
+\index{Sevensegments.h@{Sevensegments.h}!\_swap\_int16\_t@{\_swap\_int16\_t}}
+\index{\_swap\_int16\_t@{\_swap\_int16\_t}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{\_swap\_int16\_t}{\_swap\_int16\_t}}
+{\footnotesize\ttfamily \#define \+\_\+swap\+\_\+int16\+\_\+t(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~\{int16\+\_\+t t = a; a = b; b = t;\}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a410ae39130ad0024c7074f25ae481878}\label{Sevensegments_8h_a410ae39130ad0024c7074f25ae481878}} 
+\index{Sevensegments.h@{Sevensegments.h}!X256@{X256}}
+\index{X256@{X256}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{X256}{X256}}
+{\footnotesize\ttfamily \#define X256(\begin{DoxyParamCaption}\item[{}]{b,  }\item[{}]{a }\end{DoxyParamCaption})~(unsigned int) ((a $<$$<$ 8) + b)}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{Sevensegments_8h_a95634d55ef93c1b1603a43bf5efc8f3f}\label{Sevensegments_8h_a95634d55ef93c1b1603a43bf5efc8f3f}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_A@{SEG\_A}}
+\index{SEG\_A@{SEG\_A}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_A}{SEG\_A}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+A = \mbox{\hyperlink{Sevensegments_8h_a2b7ba7e783ae9e3df8321d817f6bed8f}{S\+E\+G\+\_\+\+A1}} + \mbox{\hyperlink{Sevensegments_8h_aa7a8550a957862c18bc4ea3ae44ca178}{S\+E\+G\+\_\+\+A2}}\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a2b7ba7e783ae9e3df8321d817f6bed8f}\label{Sevensegments_8h_a2b7ba7e783ae9e3df8321d817f6bed8f}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_A1@{SEG\_A1}}
+\index{SEG\_A1@{SEG\_A1}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_A1}{SEG\_A1}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+\+A1 =0x0001\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_aa7a8550a957862c18bc4ea3ae44ca178}\label{Sevensegments_8h_aa7a8550a957862c18bc4ea3ae44ca178}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_A2@{SEG\_A2}}
+\index{SEG\_A2@{SEG\_A2}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_A2}{SEG\_A2}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+\+A2 =0x0002\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a0c642dd1986750e5345fd2d9d9cd4483}\label{Sevensegments_8h_a0c642dd1986750e5345fd2d9d9cd4483}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_B@{SEG\_B}}
+\index{SEG\_B@{SEG\_B}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_B}{SEG\_B}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+B =0x0004\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_ab67386da0db3e9dbd248a15889014dd9}\label{Sevensegments_8h_ab67386da0db3e9dbd248a15889014dd9}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_C@{SEG\_C}}
+\index{SEG\_C@{SEG\_C}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_C}{SEG\_C}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+C =0x0008\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a6833f84e15ab6fd24c7975248edf8122}\label{Sevensegments_8h_a6833f84e15ab6fd24c7975248edf8122}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_D@{SEG\_D}}
+\index{SEG\_D@{SEG\_D}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_D}{SEG\_D}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+D = \mbox{\hyperlink{Sevensegments_8h_a88ed3605866a5630943a42ce9fc14358}{S\+E\+G\+\_\+\+D1}} + \mbox{\hyperlink{Sevensegments_8h_af941462b9786f9dcf994b6af204184ec}{S\+E\+G\+\_\+\+D2}}\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a88ed3605866a5630943a42ce9fc14358}\label{Sevensegments_8h_a88ed3605866a5630943a42ce9fc14358}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_D1@{SEG\_D1}}
+\index{SEG\_D1@{SEG\_D1}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_D1}{SEG\_D1}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+\+D1 =0x0010\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_af941462b9786f9dcf994b6af204184ec}\label{Sevensegments_8h_af941462b9786f9dcf994b6af204184ec}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_D2@{SEG\_D2}}
+\index{SEG\_D2@{SEG\_D2}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_D2}{SEG\_D2}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+\+D2 =0x0020\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_ae5b15ab2e7859104ed770f3a194a6f6e}\label{Sevensegments_8h_ae5b15ab2e7859104ed770f3a194a6f6e}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_E@{SEG\_E}}
+\index{SEG\_E@{SEG\_E}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_E}{SEG\_E}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+E =0x0040\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_aeb15ec72b591ef56531ffcad7557d810}\label{Sevensegments_8h_aeb15ec72b591ef56531ffcad7557d810}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_F@{SEG\_F}}
+\index{SEG\_F@{SEG\_F}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_F}{SEG\_F}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+F =0x0080\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a58c4274e03f850dac8bc004f5d176162}\label{Sevensegments_8h_a58c4274e03f850dac8bc004f5d176162}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_G@{SEG\_G}}
+\index{SEG\_G@{SEG\_G}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_G}{SEG\_G}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+G = \mbox{\hyperlink{Sevensegments_8h_ad32f13e51e991713ea898989467cbba6}{S\+E\+G\+\_\+\+G1}} + \mbox{\hyperlink{Sevensegments_8h_ab10a242ebcfbc464b29551d552d474b6}{S\+E\+G\+\_\+\+G2}}\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_ad32f13e51e991713ea898989467cbba6}\label{Sevensegments_8h_ad32f13e51e991713ea898989467cbba6}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_G1@{SEG\_G1}}
+\index{SEG\_G1@{SEG\_G1}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_G1}{SEG\_G1}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+\+G1 =0x0100\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_ab10a242ebcfbc464b29551d552d474b6}\label{Sevensegments_8h_ab10a242ebcfbc464b29551d552d474b6}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_G2@{SEG\_G2}}
+\index{SEG\_G2@{SEG\_G2}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_G2}{SEG\_G2}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+\+G2 =0x0200\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_aec2e5a0ec58e841babc2c3763cdfe978}\label{Sevensegments_8h_aec2e5a0ec58e841babc2c3763cdfe978}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_H@{SEG\_H}}
+\index{SEG\_H@{SEG\_H}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_H}{SEG\_H}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+H =0x0400\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a1d7b185fad520a84b858e6a6baf2f4d3}\label{Sevensegments_8h_a1d7b185fad520a84b858e6a6baf2f4d3}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_I@{SEG\_I}}
+\index{SEG\_I@{SEG\_I}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_I}{SEG\_I}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+I =0x0800\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a45709fc43494fdddf656ccbfb28a70b6}\label{Sevensegments_8h_a45709fc43494fdddf656ccbfb28a70b6}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_J@{SEG\_J}}
+\index{SEG\_J@{SEG\_J}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_J}{SEG\_J}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+J =0x1000\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a1bfa5478546154f5ea286c800148cc40}\label{Sevensegments_8h_a1bfa5478546154f5ea286c800148cc40}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_K@{SEG\_K}}
+\index{SEG\_K@{SEG\_K}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_K}{SEG\_K}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+K =0x2000\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a8f2835484b6cbe71a57af6b0a8c34eeb}\label{Sevensegments_8h_a8f2835484b6cbe71a57af6b0a8c34eeb}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_L@{SEG\_L}}
+\index{SEG\_L@{SEG\_L}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_L}{SEG\_L}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+L =0x4000\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_a24b49887c3acb05d44d22b46f35b1ee8}\label{Sevensegments_8h_a24b49887c3acb05d44d22b46f35b1ee8}} 
+\index{Sevensegments.h@{Sevensegments.h}!SEG\_M@{SEG\_M}}
+\index{SEG\_M@{SEG\_M}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{SEG\_M}{SEG\_M}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t S\+E\+G\+\_\+M =0x8000\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Sevensegments_8h_ab88903308a1540c3c25c6d8d52b7fc13}\label{Sevensegments_8h_ab88903308a1540c3c25c6d8d52b7fc13}} 
+\index{Sevensegments.h@{Sevensegments.h}!segments@{segments}}
+\index{segments@{segments}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{segments}{segments}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classSevensegments}{Sevensegments}} segments}
+
+\mbox{\Hypertarget{Sevensegments_8h_ad06326f415d00e6718ea5eaeaaeb5f65}\label{Sevensegments_8h_ad06326f415d00e6718ea5eaeaaeb5f65}} 
+\index{Sevensegments.h@{Sevensegments.h}!sevenSegCodes@{sevenSegCodes}}
+\index{sevenSegCodes@{sevenSegCodes}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{sevenSegCodes}{sevenSegCodes}}
+{\footnotesize\ttfamily constexpr uint8\+\_\+t seven\+Seg\+Codes\mbox{[}44\mbox{]}\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{    \textcolor{charliteral}{'0'}, B11111100,}
+\DoxyCodeLine{    \textcolor{charliteral}{'1'}, B01100000,    }
+\DoxyCodeLine{    \textcolor{charliteral}{'2'}, B11011010,    }
+\DoxyCodeLine{    \textcolor{charliteral}{'3'}, B11110010,}
+\DoxyCodeLine{    \textcolor{charliteral}{'4'}, B01100110,}
+\DoxyCodeLine{    \textcolor{charliteral}{'5'}, B10110110,     }
+\DoxyCodeLine{    \textcolor{charliteral}{'6'}, B10111110,}
+\DoxyCodeLine{    \textcolor{charliteral}{'7'}, B11100000,}
+\DoxyCodeLine{    \textcolor{charliteral}{'8'}, B11111111,}
+\DoxyCodeLine{    \textcolor{charliteral}{'9'}, B11100110,}
+\DoxyCodeLine{    \textcolor{charliteral}{'A'}, B11101111,}
+\DoxyCodeLine{    \textcolor{charliteral}{'B'}, B00111111,}
+\DoxyCodeLine{    \textcolor{charliteral}{'C'}, B10011101,}
+\DoxyCodeLine{    \textcolor{charliteral}{'D'}, B01111011,}
+\DoxyCodeLine{    \textcolor{charliteral}{'E'}, B10011110,}
+\DoxyCodeLine{    \textcolor{charliteral}{'F'}, B10001110,}
+\DoxyCodeLine{    \textcolor{charliteral}{'-\/'}, B00000010,}
+\DoxyCodeLine{    \textcolor{charliteral}{'o'}, B11000110,}
+\DoxyCodeLine{    \textcolor{charliteral}{'C'}, B00011010,}
+\DoxyCodeLine{    \textcolor{charliteral}{'.'}, B00000001,}
+\DoxyCodeLine{    \textcolor{charliteral}{'/'}, B11111110,}
+\DoxyCodeLine{    \textcolor{charliteral}{' '}, B00000000}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{Sevensegments_8h_a03e366b69321dd8fd31b58839b6453d2}\label{Sevensegments_8h_a03e366b69321dd8fd31b58839b6453d2}} 
+\index{Sevensegments.h@{Sevensegments.h}!sixteenSegCodes@{sixteenSegCodes}}
+\index{sixteenSegCodes@{sixteenSegCodes}!Sevensegments.h@{Sevensegments.h}}
+\doxysubsubsection{\texorpdfstring{sixteenSegCodes}{sixteenSegCodes}}
+{\footnotesize\ttfamily constexpr uint16\+\_\+t sixteen\+Seg\+Codes\mbox{[}120\mbox{]}\hspace{0.3cm}{\ttfamily [constexpr]}}
+

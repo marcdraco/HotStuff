@@ -1,0 +1,282 @@
+\hypertarget{classMessages}{}\doxysection{Messages Class Reference}
+\label{classMessages}\index{Messages@{Messages}}
+
+
+{\ttfamily \#include $<$Messages.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \newline
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba4615268ee5bdb76f9204645560b09e07}{c}}, 
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba6bdca8c13c898f9e86242db298b21a7d}{f}}, 
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba90d0dde7fa696e8e254b4fbf64447215}{temperature\+Scale}}, 
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba34ce2b81b254bd408f2987fc2ed8ac7f}{humidity\+Scale}}, 
+\newline
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3baaffc1d5817425b7940290f8520e2912b}{work1}}, 
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bad12aa17f3defffc4f414041648718616}{work2}}, 
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba7470efa0427a8e5e77ae35c04ae5d5b4}{caution}}, 
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bae2222d0cd3903acf8581e2ff527c0c7d}{xcaution}}, 
+\newline
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba9779b091befe048b88c65ab73942f8c8}{danger}}, 
+\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bab2099172d5e68ff83bf30863ace59ed8}{xdanger}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classMessages_abd3013dea54bfd87550739c3fa6e20d5}{Messages}} ()
+\item 
+void \mbox{\hyperlink{classMessages_a0e13eb5e456b037ece6ee531637e7e76}{debugger}} (const int X, const int \mbox{\hyperlink{types_8h_a31fd572842ad520a9bc3d29aa5e7642e}{Y}}, char $\ast$msg)
+\item 
+void \mbox{\hyperlink{classMessages_a7f50127e86c65cad45d373e3d696d734}{execute}} (const uint8\+\_\+t M)
+\begin{DoxyCompactList}\small\item\em Print a short enumerated message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classMessages_a18bb67ec57287470e57ffc79fc0f0fe9}{execute}} (const char $\ast$\mbox{\hyperlink{classMessages_a6202b0eb6cf719b5cd07272bc3d04078}{p\+Text}})
+\begin{DoxyCompactList}\small\item\em Print a buffer of text prepared by sprintf. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classMessages_a19251e85e2ecbbb5a67af77ea9fce4e6}{clear}} (const uint8\+\_\+t M)
+\begin{DoxyCompactList}\small\item\em Overwrite a predefined message in background. \end{DoxyCompactList}\item 
+const char $\ast$ \mbox{\hyperlink{classMessages_a8f21c7b4e4153e76e876d568e08a18d2}{get\+String}} (const uint8\+\_\+t M)
+\begin{DoxyCompactList}\small\item\em Get a pointed to an enumerated message block. \end{DoxyCompactList}\item 
+uint16\+\_\+t \mbox{\hyperlink{classMessages_aed78bc4ba1140c482dedac890ad93c48}{text\+Width}} (char $\ast$message)
+\begin{DoxyCompactList}\small\item\em Centers a block of text given character size. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classMessages_afbd01fc74204ef3c1df124d538573547}{print\+Number}} (const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}} ink, const uint8\+\_\+t character\+Size, const uint8\+\_\+t number, const \mbox{\hyperlink{types_8h_a01cc430e186dd94baa6d3e003382c88c}{semaphore\+\_\+t}} \mbox{\hyperlink{Flags_8h_aa991e2b209ef26272bf4fd920777bcda}{flags}})
+\item 
+void \mbox{\hyperlink{classMessages_a144b409e3825638466bbadc0213c1e83}{right\+Align}} (const float floaty, const char $\ast$buffer, const uint8\+\_\+t format\+Width, const uint16\+\_\+t integral\+Width)
+\item 
+void \mbox{\hyperlink{classMessages_aa17fdee4f3e3adc0c02dbbaddf69c6d7}{show\+Uptime}} ()
+\begin{DoxyCompactList}\small\item\em A little nod to $\ast$nix systems. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classMessages_ae0def820536d4b24d36cb145abfcfeb9}{show\+Min\+Max}} (void)
+\begin{DoxyCompactList}\small\item\em the min/max temp and humidity display \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+String \mbox{\hyperlink{classMessages_ae83eafe93d5d22ea4cf210002b1f4c15}{translations}} \mbox{[}\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bab2099172d5e68ff83bf30863ace59ed8}{xdanger}}+1\mbox{]}
+\item 
+char $\ast$ \mbox{\hyperlink{classMessages_a6202b0eb6cf719b5cd07272bc3d04078}{p\+Text}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3b}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3b}} 
+\doxysubsubsection{\texorpdfstring{anonymous enum}{anonymous enum}}
+{\footnotesize\ttfamily anonymous enum}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{c@{c}!Messages@{Messages}}\index{Messages@{Messages}!c@{c}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba4615268ee5bdb76f9204645560b09e07}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba4615268ee5bdb76f9204645560b09e07}} 
+c&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{f@{f}!Messages@{Messages}}\index{Messages@{Messages}!f@{f}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba6bdca8c13c898f9e86242db298b21a7d}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba6bdca8c13c898f9e86242db298b21a7d}} 
+f&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{temperatureScale@{temperatureScale}!Messages@{Messages}}\index{Messages@{Messages}!temperatureScale@{temperatureScale}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba90d0dde7fa696e8e254b4fbf64447215}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba90d0dde7fa696e8e254b4fbf64447215}} 
+temperature\+Scale&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{humidityScale@{humidityScale}!Messages@{Messages}}\index{Messages@{Messages}!humidityScale@{humidityScale}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba34ce2b81b254bd408f2987fc2ed8ac7f}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba34ce2b81b254bd408f2987fc2ed8ac7f}} 
+humidity\+Scale&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{work1@{work1}!Messages@{Messages}}\index{Messages@{Messages}!work1@{work1}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3baaffc1d5817425b7940290f8520e2912b}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3baaffc1d5817425b7940290f8520e2912b}} 
+work1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{work2@{work2}!Messages@{Messages}}\index{Messages@{Messages}!work2@{work2}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bad12aa17f3defffc4f414041648718616}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bad12aa17f3defffc4f414041648718616}} 
+work2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{caution@{caution}!Messages@{Messages}}\index{Messages@{Messages}!caution@{caution}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba7470efa0427a8e5e77ae35c04ae5d5b4}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba7470efa0427a8e5e77ae35c04ae5d5b4}} 
+caution&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{xcaution@{xcaution}!Messages@{Messages}}\index{Messages@{Messages}!xcaution@{xcaution}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bae2222d0cd3903acf8581e2ff527c0c7d}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bae2222d0cd3903acf8581e2ff527c0c7d}} 
+xcaution&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{danger@{danger}!Messages@{Messages}}\index{Messages@{Messages}!danger@{danger}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba9779b091befe048b88c65ab73942f8c8}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3ba9779b091befe048b88c65ab73942f8c8}} 
+danger&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{xdanger@{xdanger}!Messages@{Messages}}\index{Messages@{Messages}!xdanger@{xdanger}}}\mbox{\Hypertarget{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bab2099172d5e68ff83bf30863ace59ed8}\label{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bab2099172d5e68ff83bf30863ace59ed8}} 
+xdanger&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classMessages_abd3013dea54bfd87550739c3fa6e20d5}\label{classMessages_abd3013dea54bfd87550739c3fa6e20d5}} 
+\index{Messages@{Messages}!Messages@{Messages}}
+\index{Messages@{Messages}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{Messages()}{Messages()}}
+{\footnotesize\ttfamily Messages\+::\+Messages (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classMessages_a19251e85e2ecbbb5a67af77ea9fce4e6}\label{classMessages_a19251e85e2ecbbb5a67af77ea9fce4e6}} 
+\index{Messages@{Messages}!clear@{clear}}
+\index{clear@{clear}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{clear()}{clear()}}
+{\footnotesize\ttfamily void Messages\+::clear (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{M }\end{DoxyParamCaption})}
+
+
+
+Overwrite a predefined message in background. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em M} & enumerated message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classMessages_a0e13eb5e456b037ece6ee531637e7e76}\label{classMessages_a0e13eb5e456b037ece6ee531637e7e76}} 
+\index{Messages@{Messages}!debugger@{debugger}}
+\index{debugger@{debugger}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{debugger()}{debugger()}}
+{\footnotesize\ttfamily void Messages\+::debugger (\begin{DoxyParamCaption}\item[{const int}]{X,  }\item[{const int}]{Y,  }\item[{char $\ast$}]{msg }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classMessages_a18bb67ec57287470e57ffc79fc0f0fe9}\label{classMessages_a18bb67ec57287470e57ffc79fc0f0fe9}} 
+\index{Messages@{Messages}!execute@{execute}}
+\index{execute@{execute}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Messages\+::execute (\begin{DoxyParamCaption}\item[{const char $\ast$}]{p\+Text }\end{DoxyParamCaption})}
+
+
+
+Print a buffer of text prepared by sprintf. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Text} & char$\ast$ to the buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classMessages_a7f50127e86c65cad45d373e3d696d734}\label{classMessages_a7f50127e86c65cad45d373e3d696d734}} 
+\index{Messages@{Messages}!execute@{execute}}
+\index{execute@{execute}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{execute()}{execute()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Messages\+::execute (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{M }\end{DoxyParamCaption})}
+
+
+
+Print a short enumerated message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em M} & Message number \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classMessages_a8f21c7b4e4153e76e876d568e08a18d2}\label{classMessages_a8f21c7b4e4153e76e876d568e08a18d2}} 
+\index{Messages@{Messages}!getString@{getString}}
+\index{getString@{getString}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{getString()}{getString()}}
+{\footnotesize\ttfamily const char$\ast$ Messages\+::get\+String (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{M }\end{DoxyParamCaption})}
+
+
+
+Get a pointed to an enumerated message block. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em M} & enumerated message \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+const char$\ast$ to message string (N\+OT a string object!) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classMessages_afbd01fc74204ef3c1df124d538573547}\label{classMessages_afbd01fc74204ef3c1df124d538573547}} 
+\index{Messages@{Messages}!printNumber@{printNumber}}
+\index{printNumber@{printNumber}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{printNumber()}{printNumber()}}
+{\footnotesize\ttfamily void Messages\+::print\+Number (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{types_8h_af1ef13e8c541b7c69fca7a9ba115120d}{colours\+\_\+t}}}]{ink,  }\item[{const uint8\+\_\+t}]{character\+Size,  }\item[{const uint8\+\_\+t}]{number,  }\item[{const \mbox{\hyperlink{types_8h_a01cc430e186dd94baa6d3e003382c88c}{semaphore\+\_\+t}}}]{flags }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em ink} & \\
+\hline
+{\em character\+Size} & \\
+\hline
+{\em number} & \\
+\hline
+{\em flags} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classMessages_a144b409e3825638466bbadc0213c1e83}\label{classMessages_a144b409e3825638466bbadc0213c1e83}} 
+\index{Messages@{Messages}!rightAlign@{rightAlign}}
+\index{rightAlign@{rightAlign}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{rightAlign()}{rightAlign()}}
+{\footnotesize\ttfamily void Messages\+::right\+Align (\begin{DoxyParamCaption}\item[{const float}]{floaty,  }\item[{const char $\ast$}]{buffer,  }\item[{const uint8\+\_\+t}]{format\+Width,  }\item[{const uint16\+\_\+t}]{integral\+Width }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em floaty} & \\
+\hline
+{\em buffer} & \\
+\hline
+{\em format\+Width} & \\
+\hline
+{\em integral\+Width} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classMessages_ae0def820536d4b24d36cb145abfcfeb9}\label{classMessages_ae0def820536d4b24d36cb145abfcfeb9}} 
+\index{Messages@{Messages}!showMinMax@{showMinMax}}
+\index{showMinMax@{showMinMax}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{showMinMax()}{showMinMax()}}
+{\footnotesize\ttfamily void Messages\+::show\+Min\+Max (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+the min/max temp and humidity display 
+
+\mbox{\Hypertarget{classMessages_aa17fdee4f3e3adc0c02dbbaddf69c6d7}\label{classMessages_aa17fdee4f3e3adc0c02dbbaddf69c6d7}} 
+\index{Messages@{Messages}!showUptime@{showUptime}}
+\index{showUptime@{showUptime}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{showUptime()}{showUptime()}}
+{\footnotesize\ttfamily void Messages\+::show\+Uptime (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+A little nod to $\ast$nix systems. 
+
+\begin{DoxyRemark}{Remarks}
+Hotstuff was developed on Linux Mint due to the much faster compiler using V\+S\+Code 
+\end{DoxyRemark}
+\mbox{\Hypertarget{classMessages_aed78bc4ba1140c482dedac890ad93c48}\label{classMessages_aed78bc4ba1140c482dedac890ad93c48}} 
+\index{Messages@{Messages}!textWidth@{textWidth}}
+\index{textWidth@{textWidth}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{textWidth()}{textWidth()}}
+{\footnotesize\ttfamily uint16\+\_\+t Messages\+::text\+Width (\begin{DoxyParamCaption}\item[{char $\ast$}]{message }\end{DoxyParamCaption})}
+
+
+
+Centers a block of text given character size. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & String of characters \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+uint8\+\_\+t central X offset based on the screen width 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classMessages_a6202b0eb6cf719b5cd07272bc3d04078}\label{classMessages_a6202b0eb6cf719b5cd07272bc3d04078}} 
+\index{Messages@{Messages}!pText@{pText}}
+\index{pText@{pText}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{pText}{pText}}
+{\footnotesize\ttfamily char$\ast$ Messages\+::p\+Text}
+
+\mbox{\Hypertarget{classMessages_ae83eafe93d5d22ea4cf210002b1f4c15}\label{classMessages_ae83eafe93d5d22ea4cf210002b1f4c15}} 
+\index{Messages@{Messages}!translations@{translations}}
+\index{translations@{translations}!Messages@{Messages}}
+\doxysubsubsection{\texorpdfstring{translations}{translations}}
+{\footnotesize\ttfamily String Messages\+::translations\mbox{[}\mbox{\hyperlink{classMessages_a0f523b7c6fabedf5fc76f1e198301f3bab2099172d5e68ff83bf30863ace59ed8}{xdanger}}+1\mbox{]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/marc/\+Documents/\+Platform\+I\+O/\+Projects/\+Hot\+Stuff/include/\mbox{\hyperlink{Messages_8h}{Messages.\+h}}\item 
+\mbox{\hyperlink{Messages_8cpp}{Messages.\+cpp}}\end{DoxyCompactItemize}
