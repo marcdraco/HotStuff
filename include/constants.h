@@ -37,7 +37,7 @@
  * @see READ_UPDATE_TIME.
  * 
  */
-#define CHART_UPDATE_FREQUENCY 12
+#define CHART_UPDATE_FREQUENCY 2
 
 /**
  * @brief DHT read time in seconds.
@@ -51,7 +51,7 @@
  * 
  * @see CHART_UPDATE_FREQUENCY
  */
-#define READ_UPDATE_TIME 5
+#define READ_UPDATE_TIME 5  // don't use less than 3 and 5+ is better!
 
 /**
  * @brief 
@@ -262,6 +262,8 @@ constexpr int GRAPH_HEIGHT {100};
 constexpr int GRAPH_LEFT   {63};
 constexpr int GRAPH_Y      {120};
 constexpr int BASE         {GRAPH_Y + GRAPH_HEIGHT};
+constexpr int XSCALE_X     {90}; // position of the X-scale text on the graph
+constexpr int XSCALE_Y     {232};
 
 constexpr uint16_t defaultPaper  {BLACK};
 constexpr uint16_t defaultInk    {CYAN};

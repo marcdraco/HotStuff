@@ -96,7 +96,7 @@ void Environmental::checkHumidityConditions(void)
 void Environmental::checkTemperatureConditions(void)
 {
   // This is for incubation systems. Under 35C is chilly for eggs
-  // It *could be used for normal environments, but that seems overko;;.
+  // It *could be used for normal environments, but that seems overkill.
   if (temperature.getRawReading() <= 35)   
   {
     SETBIT(globals.ISR, FROST);          // start das-blinky-flashun light
@@ -118,8 +118,8 @@ void Environmental::checkHeatIndex(readings_t readings)
 
   // heat routine only works reliably(ish) for temps >26 celcius and RH >= 40%
   if ((effectiveTemperature < 26) || 
-                          readings.T < 26 || 
-                          readings.H < 40)
+                 readings.T < 26 || 
+                 readings.H < 40)
   {
     if (CHECKBIT(globals.gp, WARNDANGER))
     {
@@ -129,8 +129,6 @@ void Environmental::checkHeatIndex(readings_t readings)
   }
 
   SETBIT(globals.gp, WARNDANGER);
-
-  screen.fillRect(0, 100, TFT_WIDTH, TFT_HEIGHT - 110, defaultPaper);
 
   if (effectiveTemperature <= CAUTION)
   {

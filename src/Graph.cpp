@@ -368,11 +368,22 @@ void Graph::drawGraphScaleMarks(void)
     fonts.setRotation(0);
 
     float resolution = (CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME) / 60.0;
-    char b[10];
-    formatQuickFloat(resolution, 1, b);
-    screen.setCursor(90, 232);
-    fonts.print(b);
-    (resolution > 1.0) ? messages.execute(Messages::xScale2) : messages.execute(Messages::xScale1);
+    if (resolution >= 1.0)
+    { 
+      char b[10];
+      formatQuickFloat(resolution, 1, b);
+      screen.setCursor(XSCALE_X, XSCALE_Y);
+      fonts.print(b);
+      (resolution > 1.0) ? messages.execute(Messages::xScale2) : messages.execute(Messages::xScale1);
+    }
+    else
+    {
+      char b[10];
+      sprintf(b, "%d", CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME);
+      screen.setCursor(XSCALE_X, XSCALE_Y);
+      fonts.print(b);
+      messages.execute(Messages::xScale0);
+    }
 
     /**
      * Much of this is optimised out, but is left for clearer code.

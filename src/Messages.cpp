@@ -103,7 +103,7 @@ void Messages::showMinMax(void)
   fonts.print(const_cast<char *>("Max"));
   screen.setCursor(5, 103);
 
-  int8_t dp  = static_cast<int>(environment.magnusDewpoint());
+  int8_t dp  = static_cast<int>(round((environment.magnusDewpoint())));
   
   if (dp > 0)
   {

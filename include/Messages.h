@@ -36,7 +36,6 @@
 #include "UniversalDHT.h"   // @winlinvip's DHT11/22 library functions modified by Tim Harper
 
 #include "Fonts.h"
-#include "Flags.h"
 #include "hotstuff_fonts.h"
 #include "hotstuff.h"
 #include "Sevensegments.h"
@@ -48,7 +47,7 @@ class Messages
 
   enum
   {
-    c, f, temperatureScale, humidityScale, xScale1, xScale2, dew, frost,
+    c, f, temperatureScale, humidityScale, xScale0, xScale1, xScale2, dew, frost,
     work1, work2, caution, xcaution, danger, xdanger
   };
 
@@ -64,6 +63,7 @@ class Messages
     translations[caution]  = F("Extreme CAUTION");
     translations[temperatureScale] = F("Temperature in ");
     translations[humidityScale] = F("Relative Humidity %");
+    translations[xScale0]  = F(" seconds per pixel");
     translations[xScale1]  = F(" minute per pixel");
     translations[xScale2]  = F(" minutes per pixel");
     translations[dew]      = F("Dew Point");
