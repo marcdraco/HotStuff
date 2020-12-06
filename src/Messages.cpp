@@ -101,20 +101,10 @@ void Messages::showMinMax(void)
   fonts.print(const_cast<char *>("Min"));
   screen.setCursor(130, 73);
   fonts.print(const_cast<char *>("Max"));
-  screen.setCursor(5, 103);
-
-  int8_t dp  = static_cast<int>(round((environment.magnusDewpoint())));
-  
-  if (dp > 0)
-  {
-    messages.execute(dew);
-  }
-  else
-  {
-    messages.execute(frost);
-  }
 
   char b[10]; 
+
+  int8_t dp  = static_cast<int>(round((environment.magnusDewpoint())));
   int8_t min = temperature.getFencedMin();
   int8_t max = temperature.getFencedMax();
   

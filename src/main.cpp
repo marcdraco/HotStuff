@@ -306,15 +306,18 @@ void showLCDReadsHorizontal()
     r = temperature.getReading();
   }
 
-
-  static float hh = 26.0;
-  hh += 0.01;
+#ifdef STEADMAN
   char b[5];
   colours_t ink;
+  bool jumpTheShark = false;
   if (CHECKBIT(globals.gp, WARNDANGER))
   {
-    r = temperature.getEffective();
+    jumpTheShark = true;
+    segments.drawGlyph(190, 0, 'o', L1, L1, ROWS1, BIAS1);
+    segments.drawGlyph(240, 0, 'H', L1, L1, ROWS1, BIAS1);
 
+    r = temperature.getEffective();
+    
     switch (static_cast<int>(r))
     {
     case TEMP_CAUTION:
@@ -370,6 +373,12 @@ void showLCDReadsHorizontal()
   
   segments.setLit(T, T);
 
+  if (jumpTheShark)
+  {
+    return;
+  }
+#endif 
+
   // Now the humidty, which only has an upper range stop of 99%
   r = round(humidity.getFencedReading());
   sprintf(b, "%2d", static_cast<int>(r));
@@ -377,9 +386,11 @@ void showLCDReadsHorizontal()
   {
     T = segments.setLit(RED, RED);
   }
+
   segments.drawGlyph(190,   0, b[0], L1, L1, ROWS1, BIAS1);
   segments.drawGlyph(240,   0, b[1], L1, L1, ROWS1, BIAS1);
   segments.drawPercent(290, 0, S1, 1, 1);
+
   segments.setLit(T, T);
 }
 
@@ -404,7 +415,7 @@ ISR(TIMER1_OVF_vect)    // interrupt service routine for overflow
 
       ++isrTimings.timeToGraph;
 
-      if (isrTimings.timeToGraph == CHART_UPDATE_FREQUENCY)
+      if (isrTimings.timeToGraph == CHART_UPDATE_FREQUENCY) // note this only "ticks" when the data is read!
       {
         SETBIT(globals.ISR, UPDATEGRAPH);
         isrTimings.timeToGraph = 0;

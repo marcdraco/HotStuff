@@ -122,7 +122,6 @@ UniversalDHT::Response UniversalDHT::read(float* ptemperature, float* phumidity)
   }
 }
 
-
 inline int advance(uint32_t &last_frame, uint32_t &next_frame) 
 {
   last_frame = next_frame;

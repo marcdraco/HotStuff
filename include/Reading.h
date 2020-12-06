@@ -48,7 +48,7 @@ class Reading
     reading_t m_cumulativeMovingAverage {};
     reading_t m_correction {};
     reading_t m_cmaCounter {};
-    reading_t m_currRead   {};
+    reading_t m_currRead   {};  
     reading_t m_special    {};    // Holder when overtemp occurs (so we don't break the chart!) Not used by humidity
     colours_t m_trace      {};    // graph line colour
     colours_t m_flashing   {};
@@ -59,7 +59,7 @@ class Reading
     Reading() {}
     
     /**
-     * @brief Set the special object (temperature only)
+     * @brief Set the Special object (temperature only)
      * 
      * @param value - the "effective" temp
      */
@@ -142,8 +142,9 @@ class Reading
   void initReads(const reading_t R)
   {
     m_cumulativeMovingAverage = R;
-    m_maxRead = R;
-    m_minRead = R;
+    m_maxRead  = R;
+    m_minRead  = R;
+    m_currRead = R;
   }
 
   /**

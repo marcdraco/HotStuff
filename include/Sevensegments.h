@@ -41,7 +41,7 @@
 #define _swap_int16_t(a, b){int16_t t = a; a = b; b = t;}
 #endif
 
-constexpr uint8_t sevenSegCodes[44] =
+constexpr uint8_t sevenSegCodes[50] =
 {
     '0', B11111100,
     '1', B01100000,    
@@ -59,6 +59,9 @@ constexpr uint8_t sevenSegCodes[44] =
     'D', B01111011,
     'E', B10011110,
     'F', B10001110,
+    'O', B00111010,
+    'H', B01101110,
+    'h', B00101110,
     '-', B00000010,
     'o', B11000110,
     'C', B00011010,
@@ -167,7 +170,6 @@ class Sevensegments
 
     ucoordinate_t m_X;
     ucoordinate_t m_newline;
-
 
     /**
      * @brief A diagonal line but using 8-bit values in the rendering loop.

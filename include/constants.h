@@ -29,17 +29,6 @@
 #include <inttypes.h>
 
 /**
- * @brief 
- * @remark determines how often the chart gets prodded to update its readings. Measured in minutes
- * 12 "ticks" = 1 minute. gives about of three hours of coverage with the current design.
- * Maximum value is 255 (uint) for about 21 hours per dot. 
- * Also influenced by reading frequency.
- * @see READ_UPDATE_TIME.
- * 
- */
-#define CHART_UPDATE_FREQUENCY 12
-
-/**
  * @brief DHT read time in seconds.
  * @remark Should not be less than three seconds (although the DHT22 is capable of 2.5 seconds)
  * this also affects the update time for the main displays of temperature, humidty, dew/frost
@@ -51,7 +40,21 @@
  * 
  * @see CHART_UPDATE_FREQUENCY
  */
-#define READ_UPDATE_TIME 5  // don't use less than 3 and 5+ is better!
+#define READ_UPDATE_TIME 5  // don't mess with this unless you know what you're doing.
+
+/**
+ * @brief 
+ * @remark determines how often the chart gets prodded to update its readings. Measured in minutes
+ * 12 "ticks" = 1 minute. gives about of three hours of coverage with the current design.
+ * Maximum value is 255 (uint) for about 21 hours per dot. 
+ * 91 gives about 24 hours. 
+ * Also influenced by reading frequency.
+ * @see READ_UPDATE_TIME.
+ * 
+ */
+
+
+#define CHART_UPDATE_FREQUENCY 91
 
 /**
  * @brief 
@@ -59,6 +62,12 @@
  */
 #define USE_METRIC                   
 
+/**
+ * @brief Steadman's environmental working temperatures
+ * @remark These work on relative humidity AND temperature producing an "effective" temperature
+ * that we feel (think wind chill, but without the nice cool breeze). These limits are based on
+ * a person working and active in these conditions and don't apply if you're just sunning yourself.
+ */
 #define  TEMP_CAUTION  27 ... 31     // Three watermarks (32,41,54)
 #define  TEMP_WARNING  32 ... 40     // per Steadman "safe" for working temperatures
 #define  TEMP_RISK     41 ... 53     // Above 54c is very bad
@@ -98,6 +107,11 @@ constexpr float DRY_AIR_WATERSHED  {35.0};
  */
 constexpr float DAMP_AIR_WATERSHED {65.0};
   
+/**
+ * @brief Human comfort temperature ranges.
+ * 
+ * @remark Not used in this version
+ */
 constexpr float MIN_COMFORT_TEMP   {18.0};      // the minium temperature considered "normal"
 constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature considered "normal"
 
@@ -123,6 +137,12 @@ constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature conside
 
 #define USE_GRAPH
 
+/**
+ * @brief Enables the "steadman" functions for heat index
+ * 
+ */
+
+#define STEADMAN
 /**
  * @brief TOPLESS is for the version with i2C displays (no shield, hence topless)
  */
@@ -172,7 +192,7 @@ constexpr int FONT_BUFF_HEIGHT   {40};  // The size of this is crucial because i
 
 constexpr int SYMX1            {0};      // ICE/Overheat symbol
 constexpr int SYMX2          {260};      // DAMP/DRY symbol X position
-constexpr int SYMY            {80};      // flashing symbol Y positions
+constexpr int SYMY            {74};      // flashing symbol Y positions
 
 /**
  * @brief Macro to convert metric temperatures to Imperial values.

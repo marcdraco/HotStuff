@@ -43,16 +43,16 @@ extern Messages messages;
 extern globalVariables globals;
 
 /**
- * @brief 
+ * @brief Formats a float into a text buffer
  * 
  * @param value the value to convert
  * @param digits the number of digits after the FP.
  * @param b A buffer for the result
- * @bug this function truncates the least significant digit which should be rounded!
  */
 void formatQuickFloat(float value, uint8_t digits, char* b)
 {
-  
+  value = 31.65;
+  value = (round(value * 10) / 10);
   char buffer[15];  // should be large enough for most cases
   sprintf(buffer, "%d", static_cast<int> (value));
 
@@ -367,7 +367,23 @@ void Graph::drawGraphScaleMarks(void)
     // Return rotation to normal for the rest of the printing
     fonts.setRotation(0);
 
-    float resolution = (CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME) / 60.0;
+    // Overwrite the Dew/Frost Point messages.
+    screen.fillRect(5, 95, 60,10, defaultPaper);  
+
+    int8_t dp  = static_cast<int>((environment.magnusDewpoint()));
+
+    screen.setCursor(5, 103);
+    if (dp > 0)
+    {
+      messages.execute(Messages::dew);
+    }
+    else
+    {
+      messages.execute(Messages::frost);
+    }
+
+    // Calculate the chart update time in minutes
+    constexpr float resolution = (CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME * GRAPH_WIDTH) / 3600.0;
     if (resolution >= 1.0)
     { 
       char b[10];
@@ -385,10 +401,9 @@ void Graph::drawGraphScaleMarks(void)
       messages.execute(Messages::xScale0);
     }
 
-    /**
-     * Much of this is optimised out, but is left for clearer code.
-     */
-
+    
+    //Much of this is optimised out, but is left for clearer code.
+    
     minmax_t T;
     minmax_t H;
     readings_t range;
@@ -412,7 +427,7 @@ void Graph::drawGraphScaleMarks(void)
     step.T     = range.T / 5;
     step.H     = range.H / 5;
 
-
+    // Develop the temperature and humidity annotations
     for (uint8_t i {0}; i < 6; i++) 
     {
       int yShift = (fonts.getYstep() / 2) - 2;
