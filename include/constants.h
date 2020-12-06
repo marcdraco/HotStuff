@@ -55,7 +55,7 @@
  */
 
 
-#define CHART_UPDATE_FREQUENCY 91
+#define CHART_UPDATE_FREQUENCY 1
 
 
 /**

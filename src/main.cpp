@@ -128,6 +128,9 @@ Sevensegments segments(defaultInk);
 
 globalVariables globals;
 
+void showMinMax();
+void showLargeReads();
+
 /**
  * @brief classic Arduino setups
  *  
@@ -200,8 +203,8 @@ void loop()
   }
 #endif
 
-messages.showMinMax();
-showLCDReadsHorizontal();
+showMinMax();
+showLargeReads();
 
 /**
  * @brief Following here are the annunciators
@@ -269,11 +272,51 @@ showLCDReadsHorizontal();
   }
 }
 
+
+void showMinMax(void)
+{  
+
+  screen.setCursor(130, 53);
+  fonts.print(const_cast<char *>("Min"));
+  screen.setCursor(130, 73);
+  fonts.print(const_cast<char *>("Max"));
+
+  char b[10]; 
+
+  int8_t dp  = static_cast<int>(round((environment.magnusDewpoint())));
+  int8_t min = static_cast<int>(floor(temperature.getReading()));
+  int8_t max = static_cast<int>(ceil(temperature.getReading()));
+  
+  if (!(CHECKBIT(globals.gp, USEMETRIC)))
+  {
+    dp  = static_cast<int>(toFahrenheit(environment.magnusDewpoint()));
+  }
+  
+  sprintf(b,"%2d", (min < -9) ? -9 : min);
+  segments.segmentedString(100, 38, b, 6, 0, 1, 12);
+
+  sprintf(b,"%2d", (max > 99) ? 99 : max);
+  segments.segmentedString(100, 58, b, 6, 0, 1, 12);
+
+  sprintf(b,"%2d", dp);
+  segments.segmentedString(70,  88, b, 6, 0, 1, 12);
+
+  min = static_cast<int>((floor(humidity.getRawReading())));
+  max = static_cast<int>((ceil(humidity.getRawReading())));
+
+  sprintf(b,"%2d", min);
+  segments.segmentedString(160, 38, b, 6, 0, 1, 12);
+
+  sprintf(b,"%2d", (max > 99)   ? 99 : max);
+  segments.segmentedString(160, 58, b, 6, 0, 1, 12);
+}
+
+
 /**
  * @brief Show the large temperature and humidity displays
  * 
  */
-void showLCDReadsHorizontal()
+void showLargeReads()
 {
   constexpr uint8_t L1 = 30;
   constexpr uint8_t T1 = 10;
@@ -283,6 +326,7 @@ void showLCDReadsHorizontal()
   constexpr uint8_t BIAS1 = 2;
 
   reading_t r = temperature.getRawReading();
+  r = (CHECKBIT(globals.gp, USEMETRIC)) ? r : toFahrenheit(r);
 
   colours_t T;
 
@@ -290,10 +334,12 @@ void showLCDReadsHorizontal()
   if (r >= 99)
   {
     T = segments.setLit(RED, RED);
+    r = 99;
   }
   else if (r <= -9)
   {
     T = segments.setLit(BLUE, BLUE);
+    r = -9;
   }
   else
   {
@@ -307,9 +353,9 @@ void showLCDReadsHorizontal()
   bool jumpTheShark = false;
   if (CHECKBIT(globals.gp, WARNDANGER))
   {
-    jumpTheShark = true;
-    segments.drawGlyph(190, 0, 'o', L1, L1, ROWS1, BIAS1);
-    segments.drawGlyph(240, 0, 'H', L1, L1, ROWS1, BIAS1);
+    jumpTheShark = true;  
+    segments.drawGlyph(190, 0, 'o', L1, L1, ROWS1, BIAS1);    // Marks RH%
+    segments.drawGlyph(240, 0, 'H', L1, L1, ROWS1, BIAS1);    // as Overheat (oH)
 
     r = temperature.getEffective();
     

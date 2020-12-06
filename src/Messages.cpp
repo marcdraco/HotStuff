@@ -94,44 +94,6 @@ void Messages::showUptime(void)
   free(msg);
 }
 
-void Messages::showMinMax(void)
-{  
-
-  screen.setCursor(130, 53);
-  fonts.print(const_cast<char *>("Min"));
-  screen.setCursor(130, 73);
-  fonts.print(const_cast<char *>("Max"));
-
-  char b[10]; 
-
-  int8_t dp  = static_cast<int>(round((environment.magnusDewpoint())));
-  int8_t min = static_cast<int>(floor(temperature.getReading()));
-  int8_t max = static_cast<int>(ceil(temperature.getReading()));
-  
-  if (!(CHECKBIT(globals.gp, USEMETRIC)))
-  {
-    dp  = static_cast<int>(toFahrenheit(environment.magnusDewpoint()));
-  }
-  
-  sprintf(b,"%2d", (min < -9) ? -9 : min);
-  segments.segmentedString(100, 38, b, 6, 0, 1, 12);
-
-  sprintf(b,"%2d", (max > 99) ? 99 : max);
-  segments.segmentedString(100, 58, b, 6, 0, 1, 12);
-
-  sprintf(b,"%2d", dp);
-  segments.segmentedString(70,  88, b, 6, 0, 1, 12);
-
-  min = static_cast<int>((floor(humidity.getRawReading())));
-  max = static_cast<int>((ceil(humidity.getRawReading())));
-
-  sprintf(b,"%2d", min);
-  segments.segmentedString(160, 38, b, 6, 0, 1, 12);
-
-  sprintf(b,"%2d", (max > 99)   ? 99 : max);
-  segments.segmentedString(160, 58, b, 6, 0, 1, 12);
-}
-
 void Messages::debugger(const int X, const int Y, char* msg)
 {
   fonts.setFont(&HOTSMALL);
