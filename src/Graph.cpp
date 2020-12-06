@@ -51,31 +51,28 @@ extern globalVariables globals;
  */
 void formatQuickFloat(float value, uint8_t digits, char* b)
 {
-  value = 31.65;
-  value = (round(value * 10) / 10);
-  char buffer[15];  // should be large enough for most cases
-  sprintf(buffer, "%d", static_cast<int> (value));
+    value *=  pow(10, digits);  // shift the decimal point by n digits
+    char buffer[15];  // should be large enough for most cases
+    sprintf(buffer, "%d", static_cast<int> (value));
 
-  uint8_t intsize = strlen(buffer); // find how many integer digits are present.
-  sprintf(buffer, "%d", static_cast<int> (value * (pow(10, digits))));
+    int intsize = strlen(buffer); // find how many digits are present.
+    int pos {0};
 
-  uint8_t pos {0};
+    for (; pos < intsize - digits; pos++)
+    {
+        *b++ = buffer[pos];
+    }
+    if (digits) 
+    {
+      *b++ = '.';
+    }
 
-  for (; pos < intsize; pos++)
-  {
-    *b++ = buffer[pos];
-  }
+    for (int i =0; i < digits; i++)
+    {
+        *b++ = buffer[pos + i];
+    }
+    *b = 0; // just make damn sure this is null terminated
 
-  if (value)
-  {
-    *b++ = '.';
-  }
-
-  for (uint8_t i {0}; i < digits; i++)
-  {
-    *b++ = buffer[pos + i];
-  }
-  *b = 0; // just make damn sure this is null terminated
 }
 
 void Graph::draw(const quadrilateral_t* quad, const colours_t ink, const colours_t outline)
@@ -382,23 +379,29 @@ void Graph::drawGraphScaleMarks(void)
       messages.execute(Messages::frost);
     }
 
-    // Calculate the chart update time in minutes
-    constexpr float resolution = (CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME * GRAPH_WIDTH) / 3600.0;
-    if (resolution >= 1.0)
+    // Calculate the abd display the APPROXIMATE chart width in hours
+    constexpr int   SECONDS_PER_DAY = 60 * 60;
+    constexpr float r1 = (CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME);
+    constexpr float r2 = r1 * GRAPH_WIDTH;
+    constexpr float hours = r2 / SECONDS_PER_DAY;
+
+    screen.setCursor(XSCALE_X, XSCALE_Y);
+    messages.execute(Messages::xScale0);
+
+    if (hours >= 1.0)
     { 
       char b[10];
-      formatQuickFloat(resolution, 1, b);
-      screen.setCursor(XSCALE_X, XSCALE_Y);
+      formatQuickFloat(hours, 1, b);
       fonts.print(b);
-      (resolution > 1.0) ? messages.execute(Messages::xScale2) : messages.execute(Messages::xScale1);
+      messages.execute(Messages::xScale2);
     }
     else
     {
       char b[10];
-      sprintf(b, "%d", CHART_UPDATE_FREQUENCY * READ_UPDATE_TIME);
-      screen.setCursor(XSCALE_X, XSCALE_Y);
+      float time = hours * 60;
+      formatQuickFloat(time, 1, b);
       fonts.print(b);
-      messages.execute(Messages::xScale0);
+      messages.execute(Messages::xScale1);
     }
 
     

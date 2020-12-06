@@ -46,7 +46,8 @@
  * @brief 
  * @remark determines how often the chart gets prodded to update its readings. Measured in minutes
  * 12 "ticks" = 1 minute. gives about of three hours of coverage with the current design.
- * Maximum value is 255 (uint) for about 21 hours per dot. 
+ * Maximum value is 255 (uint) for about 21 hours per dot but that's ridiculous.
+ *  
  * 91 gives about 24 hours. 
  * Also influenced by reading frequency.
  * @see READ_UPDATE_TIME.
@@ -55,6 +56,7 @@
 
 
 #define CHART_UPDATE_FREQUENCY 91
+
 
 /**
  * @brief 
@@ -169,8 +171,7 @@ constexpr int SimpleDHTErrDataHigh     {4};
 constexpr int SimpleDHTErrDataEOF      {5};
 constexpr int SimpleDHTErrDataChecksum {6};
 
-constexpr int DHT22_POWER    {11};      // pin to power the DHT22 since the power pins are covered.
-constexpr int DHT22_DATA     {12};      // The DHT 22 can be powered elsewhere leaving this free however.
+constexpr int DHT22_DATA     {10};      // The DHT 22 can be powered elsewhere leaving this free however.
 
 constexpr int TRADIAL_X      {160};
 constexpr int TRADIAL_Y      {120};

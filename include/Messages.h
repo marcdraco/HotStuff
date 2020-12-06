@@ -61,9 +61,9 @@ class Messages
     translations[f]        = F("f");
     translations[temperatureScale] = F("Temperature in ");
     translations[humidityScale] = F("Relative Humidity %");
-    translations[xScale0]  = F(" seconds per pixel");
-    translations[xScale1]  = F(" minute per pixel");
-    translations[xScale2]  = F(" minutes per pixel");
+    translations[xScale0]  = F("-- ");
+    translations[xScale1]  = F(" minutes(s) --");
+    translations[xScale2]  = F(" hour(s) --");
     translations[dew]      = F("Dew Point");
     translations[frost]    = F("Frost Pnt");
   };
