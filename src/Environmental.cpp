@@ -97,6 +97,19 @@ void Environmental::checkTemperatureConditions(void)
 {
   // This is for incubation systems. Under 35C is chilly for eggs
   // It *could be used for normal environments, but that seems overkill.
+
+  reading_t temp = temperature.getRawReading();
+  if (temp < MIN_COMFORT_TEMP)
+  {
+    digitalWrite(HEATER_RELAY, HIGH);
+  }
+  
+  if (temp > MAX_COMFORT_TEMP)
+  {
+    digitalWrite(HEATER_RELAY, LOW);
+  }
+ 
+  #ifdef INCUBATOR
   if (temperature.getRawReading() <= 35)   
   {
     SETBIT(globals.ISR, FROST);          // start das-blinky-flashun light
@@ -110,6 +123,7 @@ void Environmental::checkTemperatureConditions(void)
       SETBIT(globals.ISR, CLEARFROST);  // for clean up
     }
   }
+  #endif
 }
 
 void Environmental::checkHeatIndex(readings_t readings)

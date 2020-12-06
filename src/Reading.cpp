@@ -63,7 +63,7 @@ readings_t Reading::takeReadings(void)
   humidity.updateReading(R.H);
   environment.checkHumidityConditions();
   
-  #ifdef INCUBATOR
+  #ifndef INCUBATOR
   environment.checkTemperatureConditions();
   #endif
 

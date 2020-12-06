@@ -52,7 +52,6 @@ class Reading
     reading_t m_special    {};    // Holder when overtemp occurs (so we don't break the chart!) Not used by humidity
     colours_t m_trace      {};    // graph line colour
     colours_t m_flashing   {};
-    uint8_t   m_metric    {1};
    
     public:
     
@@ -77,41 +76,6 @@ class Reading
     reading_t getEffective()
     {
       return m_special;
-    }
-
-    /**
-     * @brief Get the fenced (-9 -> 99) ranged reading
-     * 
-     * @return reading_t 
-     */
-    
-    reading_t getFencedReading()
-    {
-      return getFencedReading(getReading());
-    }
-
-    /**
-     * @brief Get the fenced (-9 -> 99) ranged reading
-     * @param R a reading convert to ranged reading 
-     * @return reading_t 
-     */
-    reading_t getFencedReading(reading_t R)
-    {
-      if (R > 99.0)
-      {
-        R = 99.0;
-        m_flashing = RED;
-      }
-      else if (R < -9.0)
-      {
-        R = -9.0;
-        m_flashing = BLUE;
-      }
-      else 
-      {
-        m_flashing = 0;
-      }
-      return R;
     }
 
   /**
@@ -168,28 +132,6 @@ class Reading
   }
 
   /**
-   * @brief Get the Fenced Min object
-   * 
-   * @return int8_t 
-   */
-  int8_t getFencedMin()
-  {
-    return static_cast<int>(getFencedReading(
-                            floor((m_metric) ? m_minRead : toFahrenheit(m_minRead))));
-  }
-
-  /**
-   * @brief Get the Fenced Max object
-   * 
-   * @return int8_t 
-   */
-  int8_t getFencedMax()
-  {
-    return static_cast<int>(getFencedReading(
-                            ceil((m_metric) ? m_maxRead : toFahrenheit(m_maxRead))));
-  }
-
-  /**
    * @brief Get the Raw Reading object
    * 
    * @return reading_t 
@@ -206,7 +148,7 @@ class Reading
    */
   reading_t getReading()
   {
-    return (m_metric) ? m_currRead : toFahrenheit(m_currRead);
+    return (CHECKBIT(globals.gp, USEMETRIC) ) ? m_currRead : toFahrenheit(m_currRead);
   }
 
   /**
@@ -241,24 +183,6 @@ class Reading
     reading_t getCMA()
     {
       return m_cumulativeMovingAverage;
-    }
-
-    /**
-     * @brief switches to metric measurements
-     * 
-     */
-    void goMetric()
-    {
-      m_metric = true;
-    }
-
-    /**
-     * @brief switches to imperial measurements
-     * 
-     */
-    void goImperial()
-    {
-      m_metric = false;
     }
 
   /**

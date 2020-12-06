@@ -135,8 +135,7 @@ globalVariables globals;
 
 void setup()
 {
-  const int DHT22_POWER {11};      // pin to power the DHT22 since the power pins are covered.
-  const int DHT22_DATA  {12};      // The DHT 22 can be powered elsewhere leaving this free however.
+ 
   uint16_t ID{screen.readID()};
 
   if (ID == 0xD3D3)
@@ -148,12 +147,6 @@ void setup()
   temperature.setTrace(YELLOW);   // temperature graph line
   fonts.setFont(static_cast<const gfxfont_t *>(&HOTSMALL));
 
-#ifdef USE_METRIC
-  SETBIT(globals.gp, USEMETRIC);
-  temperature.goMetric();
-#else
-  temperature.goImperial();
-#endif
 
   noInterrupts();                       // disable all interrupts
   TCCR1A = 0;
@@ -167,12 +160,16 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  pinMode(DHT22_POWER, OUTPUT);       // cheeky way to power the DHT22, but it only requires 1.5mA
-  digitalWrite(DHT22_POWER, HIGH);    // and saves wiring from the ICSP ports on UNO with a TFT shield
-  pinMode(DHT22_DATA, INPUT_PULLUP);  // keep the data pin from just hanging around
+  pinMode(DHT22_POWER, OUTPUT);         // cheeky way to power the DHT22, but it only requires 1.5mA
+  digitalWrite(DHT22_POWER, HIGH);      // and saves wiring from the ICSP ports on UNO with a TFT shield
+  pinMode(DHT22_DATA, INPUT_PULLUP);    // keep the data pin from just hanging around
+  pinMode(HEATER_RELAY, OUTPUT);        // signal to relay to switch on/off
+  pinMode(SCALE_SWITCH, INPUT_PULLUP);  // optional switch to change to F from C on boot.
+  
+  //(digitalRead(SCALE_SWITCH)) 
+  (0)? SETBIT(globals.gp, USEMETRIC) : CLEARBIT(globals.gp, USEMETRIC);
 
   readings_t read;
-  
   delay(3000);
   dht22.read(&read.H, &read.T);
   temperature.initReads(read.T);
@@ -193,11 +190,7 @@ void loop()
   {    
     CLEARBIT(globals.ISR,  UPDATEREADS);
     Reading::takeReadings();
-    messages.showMinMax();
   }
-//graph.drawRadials();
-
-showLCDReadsHorizontal();
 
 #ifdef USE_GRAPH
   if (CHECKBIT(globals.ISR,  UPDATEGRAPH))
@@ -207,6 +200,8 @@ showLCDReadsHorizontal();
   }
 #endif
 
+messages.showMinMax();
+showLCDReadsHorizontal();
 
 /**
  * @brief Following here are the annunciators
@@ -287,7 +282,7 @@ void showLCDReadsHorizontal()
   constexpr uint8_t ROWS2 = 1;
   constexpr uint8_t BIAS1 = 2;
 
-  reading_t r = (temperature.getFencedReading());
+  reading_t r = temperature.getRawReading();
 
   colours_t T;
 
@@ -380,7 +375,7 @@ void showLCDReadsHorizontal()
 #endif 
 
   // Now the humidty, which only has an upper range stop of 99%
-  r = round(humidity.getFencedReading());
+  r = round(humidity.getRawReading());
   sprintf(b, "%2d", static_cast<int>(r));
   if (r == 99)
   {

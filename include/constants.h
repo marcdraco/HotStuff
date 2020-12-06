@@ -111,9 +111,10 @@ constexpr float DAMP_AIR_WATERSHED {65.0};
   
 /**
  * @brief Human comfort temperature ranges.
- * 
- * @remark Not used in this version
+ *
+ * @remark Determines when the heater is switched on at MIN, and off at MAX 
  */
+
 constexpr float MIN_COMFORT_TEMP   {18.0};      // the minium temperature considered "normal"
 constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature considered "normal"
 
@@ -130,7 +131,6 @@ constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature conside
  */
  
 //#define SENSOR_MISSING_OR_BUSTED  
-
 
 /**
  * @brief Determines if chart function is used
@@ -171,7 +171,11 @@ constexpr int SimpleDHTErrDataHigh     {4};
 constexpr int SimpleDHTErrDataEOF      {5};
 constexpr int SimpleDHTErrDataChecksum {6};
 
-constexpr int DHT22_DATA     {10};      // The DHT 22 can be powered elsewhere leaving this free however.
+constexpr int DHT22_POWER     {11};      // pin to power the DHT22 since the power pins are covered.
+constexpr int DHT22_DATA      {12};      // The DHT 22 can be powered elsewhere leaving this free however.
+
+constexpr int SCALE_SWITCH    {10};      // optional switch to change to F from C on boot.
+constexpr int HEATER_RELAY    {13};      // signal to relay to switch on/off
 
 constexpr int TRADIAL_X      {160};
 constexpr int TRADIAL_Y      {120};
@@ -331,8 +335,8 @@ enum semaphores : uint16_t
   CLEARHOT    = 0x0800,
   CLEARDAMP   = 0x1000,
   UPDATEGRAPH = 0x2000,
-  RESERVED1   = 0x4000,
-  RESERVED2   = 0x8000,
+  HEATER_ON   = 0x4000,
+  RESERVED    = 0x8000,
   RESETALL    = 0xFFFF
 };
 

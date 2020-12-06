@@ -347,7 +347,6 @@ void Graph::drawReticles(const uint8_t xDivs, const uint8_t yDivs)
 }
 
 void Graph::drawGraphScaleMarks(void)
-
 {
     // Pop the screen sideways on for some font printing   
     fonts.setRotation(3);
