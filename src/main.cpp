@@ -163,8 +163,6 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  pinMode(DHT22_POWER, OUTPUT);         // cheeky way to power the DHT22, but it only requires 1.5mA
-  digitalWrite(DHT22_POWER, HIGH);      // and saves wiring from the ICSP ports on UNO with a TFT shield
   pinMode(DHT22_DATA, INPUT_PULLUP);    // keep the data pin from just hanging around
   pinMode(HEATER_RELAY, OUTPUT);        // signal to relay to switch on/off
   pinMode(SCALE_SWITCH, INPUT_PULLUP);  // optional switch to change to F from C on boot.
