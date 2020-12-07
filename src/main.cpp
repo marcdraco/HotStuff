@@ -118,14 +118,6 @@ Fonts fonts;
 Environmental environment;
 Messages messages;
 Sevensegments segments(defaultInk);
-
-// convert KNOWN Y coords to 8-bit only for a hair more speed.
-
-// start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
-
-/// chart update counter should count CHART updates, not CMA updates!
-/// CMA counter doesn't work with the bloody 8-10 minute update, stupid!
-
 globalVariables globals;
 
 void showMinMax();
