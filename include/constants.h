@@ -172,10 +172,9 @@ constexpr int SimpleDHTErrDataHigh     {4};
 constexpr int SimpleDHTErrDataEOF      {5};
 constexpr int SimpleDHTErrDataChecksum {6};
 
-constexpr int DHT22_POWER     {11};      // pin to power the DHT22 since the power pins are covered.
-constexpr int DHT22_DATA      {12};      // The DHT 22 can be powered elsewhere leaving this free however.
+constexpr int DHT22_DATA      {10};      // The DHT 22 can be powered elsewhere leaving this free however.
 
-constexpr int SCALE_SWITCH    {10};      // optional switch to change to F from C on boot.
+constexpr int SCALE_SWITCH    {11};      // optional switch to change to F from C on boot.
 constexpr int HEATER_RELAY    {13};      // signal to relay to switch on/off
 
 constexpr int TRADIAL_X      {160};
