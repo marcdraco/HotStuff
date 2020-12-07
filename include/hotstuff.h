@@ -83,8 +83,4 @@ inline uint8_t* pgm_read_bitmap_ptr(const gfxfont_t* gfxFont)
 #ifndef min
   #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
-void showLCDReadsHorizontal(void);
-void showLCDReadsVertical(void);
-
-
 #endif
