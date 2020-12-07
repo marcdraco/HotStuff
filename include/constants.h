@@ -145,6 +145,7 @@ constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature conside
  */
 
 #define STEADMAN
+
 /**
  * @brief TOPLESS is for the version with i2C displays (no shield, hence topless)
  */
