@@ -31,7 +31,7 @@ Applications include:
 * Programmable heater control (for incubators, etc.)
 * Simple to build
 * Highly modular code
-* <lie mode>Clean, fully commented & documented code</lie mode>
+* [lie mode]Clean, fully commented & documented code[/lie mode]
 * Did we say it was free?
 
 (1) Buffering limitations on the UNO mean the chart flashes briefly during updates.
@@ -52,7 +52,9 @@ At the other end of the scale is dry air. Now you might think dry air would be f
 If you’re watching the “real time” (default 5 second) reading updates, you’ll notice that the lamps don’t come on immediately and it may take a few minutes before they do (or clear after the condition passes). The clue is in the chart - or more specifically the cumulative averaged figure that we use to prevent sudden blips (like someone breathing on the sensor!) from setting off a visible warning. 
 
 Compile constants:
+
 DAMP_AIR_WATERSHED
+
 DRY_AIR_WATERSHED
 
 Q: How does the graph work?
@@ -60,6 +62,7 @@ Q: How does the graph work?
 A: The graph attempts to cover a fairly narrow range by calculating the maximum and minimum temperature/humidity. Each value is treated separately. Readings are taken (by default) every five seconds and stored as a statistic called a “cumulative moving average”. The chart’s resolution is programmable from 5 seconds per plotted point. New plotted points only appear on the chart update but this allows for a horizontal resolution for about 15 minutes to at least 24 hours.
 
 Compile Constant:
+
 CHART_UPDATE_FREQUENCY: 
 
 Q: Why does the graph appear as a straight line even though there are obvious fluctuations in the readings?
@@ -91,17 +94,27 @@ As the limit is passed the display changes so the “instant” temperature star
 There are four levels of Heat Index according to the danger to human health (of people who are active in this climate). It’s important to note these numbers are the effective temperature, not the actual temperature.
 
 Blue:     27 - 31 c / 81 - 88 f - CAUTION
+
 Yellow: 32 - 40 c / 90 - 105 f  - EXTREME CAUTION
+
 Purple:  41 - 53 c / 106 - 127 f - DANGER
+
 Red:       > 53 c / > 130 f - EXTREME DANGER
+
 https://en.wikipedia.org/wiki/Basal_metabolic_rate
+
 https://en.wikipedia.org/wiki/Heat_index
 
 Compile Constants:
+
 TEMP_CAUTION
+
 TEMP_WARNING
+
 TEMP_RISK
+
 TEMP_DANGER
+
 STEADMAN
 
 Q: Why are the main numbers on the display flashing?
