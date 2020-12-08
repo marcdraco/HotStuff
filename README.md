@@ -34,6 +34,8 @@ Applications include:
 * [lie mode]Clean, fully commented & documented code[/lie mode]
 * Did we say it was free?
 
+NOTE: While this compiles cleanly under VSCode/Pio, much of the code contains old parts that have not been refactored which is a bit tatty but as (Marc) isn't that great with Github, we're using it for backups. A lot of untested code is not compiled or included in the binary even though it appears in the source.
+
 (1) Buffering limitations on the UNO mean the chart flashes briefly during updates.
 
 In the following documentation, the compilation constants can be found in “constants.h”.
