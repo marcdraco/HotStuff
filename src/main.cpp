@@ -144,10 +144,10 @@ void setup()
 
 
   noInterrupts();                       // disable all interrupts
-  TCCR1A = 0;
-  TCCR1B = 0;
+  TCCR1A  = 0;
+  TCCR1B  = 0;
 
-  TCNT1 = UPDATER;                      // pre-calculated re-read time.
+  TCNT1   = UPDATER;                    // pre-calculated re-read time.
   TCCR1B |= (1 << CS10) | (1 << CS12);  // 1024 prescaler (see header)
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
@@ -159,8 +159,7 @@ void setup()
   pinMode(HEATER_RELAY, OUTPUT);        // signal to relay to switch on/off
   pinMode(SCALE_SWITCH, INPUT_PULLUP);  // optional switch to change to F from C on boot.
   
-  //(digitalRead(SCALE_SWITCH)) 
-  (0)? SETBIT(globals.gp, USEMETRIC) : CLEARBIT(globals.gp, USEMETRIC);
+  (digitalRead(SCALE_SWITCH)) ? SETBIT(globals.gp, USEMETRIC) : CLEARBIT(globals.gp, USEMETRIC);
 
   readings_t read;
   delay(3000);
