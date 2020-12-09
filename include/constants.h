@@ -298,7 +298,7 @@ constexpr int XSCALE_X           {90}; // X - position of the X-scale text on th
 constexpr int XSCALE_Y          {232}; // Y - position of the X-scale text on the graph
 
 #ifdef NIGHT_MODE
-constexpr uint16_t defaultPaper   {RGB(2, 0, 0)};
+constexpr uint16_t defaultPaper   {BLACK};
 constexpr uint16_t defaultInk     {DARKRED};
 constexpr uint16_t reticleColour  {DEEPRED};
 constexpr uint16_t HUMIDITY_TRACE {RGB(36, 0, 0)};
