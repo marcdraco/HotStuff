@@ -138,10 +138,17 @@ constexpr float MAX_COMFORT_TEMP   {24.0};     // the maxium temperature conside
  */
 
 #define USE_GRAPH
+/**
+ * @brief Sets colours for "red light" to avoid eye strain
+ * @note This is a compilation example!
+ */
+
+// #define NIGHT_MODE
 
 /**
  * @brief Enables the "steadman" functions for heat index
- * 
+ *
+ * @bug This define causes compilation errors if removed! 
  */
 
 #define STEADMAN
@@ -290,10 +297,20 @@ constexpr int BASE              {GRAPH_Y + GRAPH_HEIGHT};
 constexpr int XSCALE_X           {90}; // X - position of the X-scale text on the graph
 constexpr int XSCALE_Y          {232}; // Y - position of the X-scale text on the graph
 
-constexpr uint16_t defaultPaper  {BLACK};
-constexpr uint16_t defaultInk    {CYAN};
-constexpr uint16_t reticleColour {DEEPGREY};
+#ifdef NIGHT_MODE
+constexpr uint16_t defaultPaper   {RGB(2, 0, 0)};
+constexpr uint16_t defaultInk     {DARKRED};
+constexpr uint16_t reticleColour  {DEEPRED};
+constexpr uint16_t HUMIDITY_TRACE {RGB(36, 0, 0)};
+constexpr uint16_t TEMP_TRACE     {RGB(36, 0, 0)};
+#else
+constexpr uint16_t defaultPaper   {BLACK};
+constexpr uint16_t defaultInk     {CYAN};
+constexpr uint16_t reticleColour  {GREY};
+constexpr uint16_t HUMIDITY_TRACE {AZURE};
+constexpr uint16_t TEMP_TRACE     {YELLOW};
 
+#endif
 /**
  * @brief 
  * @remark Timer 1 is the 16 bit timer so this is also used for the "in-app" RTC so be careful! 

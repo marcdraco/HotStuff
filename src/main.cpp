@@ -138,8 +138,8 @@ void setup()
     ID = 0x9481; //force ID if write-only screen
   }
   screen.begin(ID);
-  humidity.setTrace(AZURE);       // humidity graph line
-  temperature.setTrace(YELLOW);   // temperature graph line
+  humidity.setTrace(HUMIDITY_TRACE);       // humidity graph line
+  temperature.setTrace(TEMP_TRACE);   // temperature graph line
   fonts.setFont(static_cast<const gfxfont_t *>(&HOTSMALL));
 
 
