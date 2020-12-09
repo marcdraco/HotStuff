@@ -118,14 +118,6 @@ Fonts fonts;
 Environmental environment;
 Messages messages;
 Sevensegments segments(defaultInk);
-
-// convert KNOWN Y coords to 8-bit only for a hair more speed.
-
-// start working on a version for i2C displays with 128 x 240 etc. screens... both XY are 8-bit
-
-/// chart update counter should count CHART updates, not CMA updates!
-/// CMA counter doesn't work with the bloody 8-10 minute update, stupid!
-
 globalVariables globals;
 
 void showMinMax();
@@ -152,10 +144,10 @@ void setup()
 
 
   noInterrupts();                       // disable all interrupts
-  TCCR1A = 0;
-  TCCR1B = 0;
+  TCCR1A  = 0;
+  TCCR1B  = 0;
 
-  TCNT1 = UPDATER;                      // pre-calculated re-read time.
+  TCNT1   = UPDATER;                    // pre-calculated re-read time.
   TCCR1B |= (1 << CS10) | (1 << CS12);  // 1024 prescaler (see header)
   TIMSK1 |= (1 << TOIE1);               // enable timer overflow interrupt ISR
   interrupts();                         // enable all interrupts
@@ -163,14 +155,11 @@ void setup()
   screen.setRotation(display.rotateLandscapeSouth); // possible values 0-3 for 0, 90, 180 and 270 degrees rotation
   screen.fillScreen(defaultPaper);
 
-  pinMode(DHT22_POWER, OUTPUT);         // cheeky way to power the DHT22, but it only requires 1.5mA
-  digitalWrite(DHT22_POWER, HIGH);      // and saves wiring from the ICSP ports on UNO with a TFT shield
   pinMode(DHT22_DATA, INPUT_PULLUP);    // keep the data pin from just hanging around
   pinMode(HEATER_RELAY, OUTPUT);        // signal to relay to switch on/off
   pinMode(SCALE_SWITCH, INPUT_PULLUP);  // optional switch to change to F from C on boot.
   
-  //(digitalRead(SCALE_SWITCH)) 
-  (0)? SETBIT(globals.gp, USEMETRIC) : CLEARBIT(globals.gp, USEMETRIC);
+  (digitalRead(SCALE_SWITCH)) ? SETBIT(globals.gp, USEMETRIC) : CLEARBIT(globals.gp, USEMETRIC);
 
   readings_t read;
   delay(3000);
