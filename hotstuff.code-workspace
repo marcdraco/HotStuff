@@ -6,6 +6,10 @@
 		{
 			"name": "HotStuff",
 			"path": "."
+		},
+		{
+			"name": "HotStuff Dials",
+			"path": "../HotStuff Dials"
 		}
 	],
 	"settings": {}
